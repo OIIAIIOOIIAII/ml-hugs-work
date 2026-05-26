@@ -188,8 +188,12 @@ class NeumanDataset(torch.utils.data.Dataset):
         num_bg_points=204_800,
         bg_sphere_dist=5.0,
         clean_pcd=False,
+        init_pcd_path=None,
+        depth_prior_dir=None,
     ):
         dataset_path = f"{NEUMAN_PATH}/{seq}"
+        self.dataset_path = dataset_path
+        self.depth_prior_dir = depth_prior_dir
         scene = neuman_helper.NeuManReader.read_scene(
             dataset_path,
             tgt_size=None,
@@ -230,6 +234,14 @@ class NeumanDataset(torch.utils.data.Dataset):
         
         pcd_xyz = self.scene.point_cloud[:, :3]
         pcd_col = self.scene.point_cloud[:, 3:6] / 255.
+
+        if init_pcd_path:
+            init_pcd = np.load(init_pcd_path)
+            pcd_xyz = init_pcd["points"].astype(np.float32)
+            pcd_col = init_pcd["colors"].astype(np.float32)
+            if pcd_col.max() > 1.0:
+                pcd_col = pcd_col / 255.0
+            logger.info(f"Using external scene init point cloud: {init_pcd_path} ({pcd_xyz.shape[0]} points)")
         
         if clean_pcd:
             import open3d as o3d
@@ -304,7 +316,7 @@ class NeumanDataset(torch.utils.data.Dataset):
             return len(self.train_split)
         elif self.split == "val":
             return len(self.val_split)
-        elif self.split == "anim":
+        elif self.split in ["anim", "all"]:
             return self.num_frames
     
     def get_single_item(self, i):
@@ -313,7 +325,7 @@ class NeumanDataset(torch.utils.data.Dataset):
             idx = self.train_split[i]
         elif self.split == "val":
             idx = self.val_split[i]
-        elif self.split == "anim":
+        elif self.split in ["anim", "all"]:
             idx = i
         
         cap = self.scene.captures[idx]
@@ -361,6 +373,17 @@ class NeumanDataset(torch.utils.data.Dataset):
         full_proj_transform = (world_view_transform.unsqueeze(0).bmm(projection_matrix.unsqueeze(0))).squeeze(0)
         camera_center = world_view_transform.inverse()[3, :3]
         cam_intrinsics = torch.from_numpy(cap.intrinsic_matrix).float()
+
+        depth_prior = None
+        if self.depth_prior_dir is not None and self.split in ['train', 'val']:
+            depth_path = os.path.join(self.depth_prior_dir, f"{idx:05d}_depth.npy")
+            if not os.path.exists(depth_path):
+                depth_path = os.path.join(self.depth_prior_dir, f"{idx:06d}.npy")
+            if os.path.exists(depth_path):
+                depth_prior_np = np.load(depth_path).astype(np.float32)
+                if depth_prior_np.shape != (height, width):
+                    depth_prior_np = cv2.resize(depth_prior_np, (width, height), interpolation=cv2.INTER_LINEAR)
+                depth_prior = torch.from_numpy(depth_prior_np).float()
         
         datum.update({
             "fovx": fovx,
@@ -380,7 +403,10 @@ class NeumanDataset(torch.utils.data.Dataset):
             "smpl_scale": self.smpl_params["scale"][idx],
             "near": znear,
             "far": zfar,
+            "frame_idx": torch.tensor(idx).long(),
         })
+        if depth_prior is not None:
+            datum["depth_prior"] = depth_prior
         
         if self.split == 'anim':
             datum.update({

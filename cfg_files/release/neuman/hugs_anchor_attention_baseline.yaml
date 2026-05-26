@@ -1,7 +1,7 @@
 seed: 0
 mode: human_scene
 output_path: output
-exp_name: demo
+exp_name: anchor_attention_baseline
 dataset_path: ''
 detect_anomaly: false
 debug: false
@@ -120,3 +120,30 @@ scene:
   loss:
     ssim_w: 0.2
     l1_w: 0.8
+
+anchor_attention:
+  use_anchors: true
+  anchor_vertices_path: ''
+  count_per_anchor: 64
+  top_m: 2
+  lambda_lbs: 0.35
+  sigma_scale: 1.8
+  min_sigma: 0.035
+  use_anchor_token_encoder: true
+  use_scene_query: true
+  use_cross_attention: true
+  use_interaction_correction: false
+  correct_opacity: false
+  hidden_dim: 128
+  human_pooling: attention
+  scene_topk: 32
+  scene_opacity_threshold: 0.01
+  max_scene_candidates: 200000
+  correction_start_iter: 3000
+  gamma_mu: 0.02
+  gamma_opacity: 0.05
+  delta_loss_w: 0.001
+  lr: 0.0001
+  debug_interval: 1000
+  debug_dir: ''
+  ckpt: ''

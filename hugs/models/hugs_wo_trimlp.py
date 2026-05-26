@@ -209,6 +209,11 @@ class HUGS_WO_TRIMLP:
         
     def create_eps_offsets(self, eps_offsets, requires_grad=False):
         logger.info(f"NOT CREATED eps_offsets with shape: {eps_offsets.shape}, requires_grad: {requires_grad}")
+
+    def create_anchor_bindings(self, anchor_ids, anchor_weights):
+        self.anchor_ids = anchor_ids.detach().to(self.device).long()
+        self.anchor_weights = anchor_weights.detach().to(self.device).float()
+        logger.info(f"Created anchor bindings: {self.anchor_ids.shape}, {self.anchor_weights.shape}")
     
     def state_dict(self):
         save_dict = {
@@ -225,6 +230,9 @@ class HUGS_WO_TRIMLP:
             'optimizer': self.optimizer.state_dict(),
             'spatial_lr_scale': self.spatial_lr_scale,
         }
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            save_dict['anchor_ids'] = self.anchor_ids
+            save_dict['anchor_weights'] = self.anchor_weights
         return save_dict
     
     def restore(self, state_dict, cfg):
@@ -240,6 +248,8 @@ class HUGS_WO_TRIMLP:
         denom = state_dict['denom']
         opt_dict = state_dict['optimizer']
         self.spatial_lr_scale = state_dict['spatial_lr_scale']
+        self.anchor_ids = state_dict.get('anchor_ids', None)
+        self.anchor_weights = state_dict.get('anchor_weights', None)
         
         self.setup_optimizer(cfg)
         self.xyz_gradient_accum = xyz_gradient_accum
@@ -664,6 +674,9 @@ class HUGS_WO_TRIMLP:
         self._opacity = optimizable_tensors["opacity"]
         self._scaling = optimizable_tensors["scaling"]
         self._rotation = optimizable_tensors["rotation"]
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self.anchor_ids = self.anchor_ids[valid_points_mask]
+            self.anchor_weights = self.anchor_weights[valid_points_mask]
 
         self.xyz_gradient_accum = self.xyz_gradient_accum[valid_points_mask]
 
@@ -710,6 +723,11 @@ class HUGS_WO_TRIMLP:
         self._opacity = optimizable_tensors["opacity"]
         self._scaling = optimizable_tensors["scaling"]
         self._rotation = optimizable_tensors["rotation"]
+        if hasattr(self, '_pending_anchor_ids') and self._pending_anchor_ids is not None:
+            self.anchor_ids = torch.cat([self.anchor_ids, self._pending_anchor_ids], dim=0)
+            self.anchor_weights = torch.cat([self.anchor_weights, self._pending_anchor_weights], dim=0)
+            self._pending_anchor_ids = None
+            self._pending_anchor_weights = None
 
         self.xyz_gradient_accum = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
         self.denom = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
@@ -739,6 +757,9 @@ class HUGS_WO_TRIMLP:
         new_features_dc = self._features_dc[selected_pts_mask].repeat(N,1,1)
         new_features_rest = self._features_rest[selected_pts_mask].repeat(N,1,1)
         new_opacity = self._opacity[selected_pts_mask].repeat(N,1)
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self._pending_anchor_ids = self.anchor_ids[selected_pts_mask].repeat(N, 1)
+            self._pending_anchor_weights = self.anchor_weights[selected_pts_mask].repeat(N, 1)
 
         self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_opacity, new_scaling, new_rotation)
 
@@ -758,6 +779,9 @@ class HUGS_WO_TRIMLP:
         new_opacities = self._opacity[selected_pts_mask]
         new_scaling = self._scaling[selected_pts_mask]
         new_rotation = self._rotation[selected_pts_mask]
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self._pending_anchor_ids = self.anchor_ids[selected_pts_mask].clone()
+            self._pending_anchor_weights = self.anchor_weights[selected_pts_mask].clone()
 
         self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_opacities, new_scaling, new_rotation)
 

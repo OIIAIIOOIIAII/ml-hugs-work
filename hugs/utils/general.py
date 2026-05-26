@@ -17,8 +17,9 @@ import os
 import torch
 import random
 import itertools
-import subprocess
+import glob
 import numpy as np
+import cv2
 from loguru import logger
 from omegaconf import OmegaConf
 from PIL import Image, ImageDraw, ImageFont
@@ -85,11 +86,57 @@ def find_cfg_diff(default_cfg, cfg, delimiter='_'):
 
 def create_video(img_folder, output_fname, fps=20):
     os.makedirs(os.path.dirname(output_fname), exist_ok=True)
-    cmd = f"/usr/bin/ffmpeg -hide_banner -loglevel error -framerate {fps} -pattern_type glob -i '{img_folder}/*.png' \
-        -vf \"pad=ceil(iw/2)*2:ceil(ih/2)*2\" \
-            -c:v libx264 -pix_fmt yuv420p {output_fname} -y"
+    img_fnames = sorted(glob.glob(os.path.join(img_folder, "*.png")))
+    if len(img_fnames) == 0:
+        logger.warning(f"No PNG images found under {img_folder}; skipping video export")
+        return
+
+    first_frame = cv2.imread(img_fnames[0], cv2.IMREAD_COLOR)
+    if first_frame is None:
+        logger.warning(f"Could not read first video frame {img_fnames[0]}; skipping video export")
+        return
+
+    height, width = first_frame.shape[:2]
+    if width % 2 == 1 or height % 2 == 1:
+        width += width % 2
+        height += height % 2
+        first_frame = cv2.copyMakeBorder(
+            first_frame,
+            0,
+            height - first_frame.shape[0],
+            0,
+            width - first_frame.shape[1],
+            cv2.BORDER_CONSTANT,
+            value=(0, 0, 0),
+        )
+
+    ext = os.path.splitext(output_fname)[1].lower()
+    fourcc = cv2.VideoWriter_fourcc(*("mp4v" if ext == ".mp4" else "MJPG"))
+    writer = cv2.VideoWriter(output_fname, fourcc, fps, (width, height))
+
+    if not writer.isOpened() and ext == ".mp4":
+        fallback_fname = os.path.splitext(output_fname)[0] + ".avi"
+        logger.warning(f"Could not open MP4 writer for {output_fname}; falling back to {fallback_fname}")
+        output_fname = fallback_fname
+        fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+        writer = cv2.VideoWriter(output_fname, fourcc, fps, (width, height))
+
+    if not writer.isOpened():
+        logger.warning(f"Could not open video writer for {output_fname}; skipping video export")
+        return
+
+    writer.write(first_frame)
+    for img_fname in img_fnames[1:]:
+        frame = cv2.imread(img_fname, cv2.IMREAD_COLOR)
+        if frame is None:
+            logger.warning(f"Could not read video frame {img_fname}; skipping frame")
+            continue
+        if frame.shape[1] != width or frame.shape[0] != height:
+            frame = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
+        writer.write(frame)
+
+    writer.release()
     logger.info(f"Video is saved under {output_fname}")
-    subprocess.call(cmd, shell=True)
 
 
 def save_images(img, img_fname, txt_label=None):

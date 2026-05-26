@@ -1,7 +1,7 @@
 seed: 0
 mode: human_scene
 output_path: output
-exp_name: demo
+exp_name: global_aware_voxel_adc_15000_lab_20260524
 dataset_path: ''
 detect_anomaly: false
 debug: false
@@ -10,17 +10,17 @@ eval: false
 bg_color: white
 dataset:
   name: neuman
-  seq: ["lab", "citron", "seattle", "bike", "jogging", "parkinglot"]
+  seq: lab
 train:
   batch_size: 1
   num_workers: 0
   num_steps: 14998
   save_ckpt_interval: 15000
   val_interval: 1000
-  anim_interval: 15000
+  anim_interval: -1
   optim_scene: true
-  save_progress_images: false
-  progress_save_interval: 10
+  save_progress_images: true
+  progress_save_interval: 1000
 human:
   name: hugs_trimlp
   ckpt: null
@@ -120,3 +120,40 @@ scene:
   loss:
     ssim_w: 0.2
     l1_w: 0.8
+
+scene_sugar:
+  enabled: false
+
+scene_global_aware_adc:
+  enabled: true
+  apply_to_scene_only: true
+  scene_mode: global_aware_voxel_adc_scene
+  disable_for_human: true
+  disable_sugar_losses: true
+  start_iter: 500
+  densify_until_iter: 15000
+  densification_interval: 100
+  reset_opacity_interval: 20000
+  tau_pos: 0.0002
+  relative_blur_backend: gaussian_highpass_approx
+  blur_window_size: 11
+  highpass_cutoff_ratio: 0.5
+  blur_percentile: 95.0
+  weight_lower_bound: 0.5
+  weight_upper_bound: 1.0
+  accumulate_interval: 1
+  voxel_size: 0.005
+  selection_inside_voxel: importance_sampling
+  child_opacity_policy: half_parent_opacity
+  min_scene_gaussians: 1000
+  max_scene_gaussians: 2097152
+  log_blur_stats: true
+  log_voxel_stats: true
+  save_debug_maps: false
+
+anchor_attention:
+  use_anchors: false
+  use_anchor_token_encoder: false
+  use_scene_query: false
+  use_cross_attention: false
+  use_interaction_correction: false

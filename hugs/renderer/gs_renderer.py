@@ -141,7 +141,7 @@ def render(means3D, feats, opacity, scales, rotations, data, scaling_modifier=1.
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
         
     # Rasterize visible Gaussians to image, obtain their radii (on screen). 
-    rendered_image, radii = rasterizer(
+    raster_out = rasterizer(
         means3D=means3D,
         means2D=means2D,
         shs=shs,
@@ -150,6 +150,23 @@ def render(means3D, feats, opacity, scales, rotations, data, scaling_modifier=1.
         rotations=rotations,
         colors_precomp=rgb,
     )
+    if isinstance(raster_out, tuple):
+        rendered_image = None
+        radii = None
+        for out in raster_out:
+            if not torch.is_tensor(out):
+                continue
+            if rendered_image is None and out.dim() == 3 and out.shape[0] in (3, 4):
+                rendered_image = out
+            if radii is None and out.dim() == 1 and out.shape[0] == means3D.shape[0]:
+                radii = out
+        if rendered_image is None:
+            rendered_image = raster_out[0]
+        if radii is None:
+            radii = torch.ones(means3D.shape[0], dtype=torch.bool, device=means3D.device)
+    else:
+        rendered_image = raster_out
+        radii = torch.ones(means3D.shape[0], dtype=torch.bool, device=means3D.device)
     rendered_image = torch.clamp(rendered_image, 0.0, 1.0)
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.

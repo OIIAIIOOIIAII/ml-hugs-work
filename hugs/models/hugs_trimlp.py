@@ -144,6 +144,11 @@ class HUGS_TRIMLP:
         
     def create_eps_offsets(self, eps_offsets, requires_grad=False):
         logger.info(f"NOT CREATED eps_offsets with shape: {eps_offsets.shape}, requires_grad: {requires_grad}")
+
+    def create_anchor_bindings(self, anchor_ids, anchor_weights):
+        self.anchor_ids = anchor_ids.detach().to(self.device).long()
+        self.anchor_weights = anchor_weights.detach().to(self.device).float()
+        logger.info(f"Created anchor bindings: {self.anchor_ids.shape}, {self.anchor_weights.shape}")
     
     @property
     def get_xyz(self):
@@ -164,6 +169,9 @@ class HUGS_TRIMLP:
             'optimizer': self.optimizer.state_dict(),
             'spatial_lr_scale': self.spatial_lr_scale,
         }
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            save_dict['anchor_ids'] = self.anchor_ids
+            save_dict['anchor_weights'] = self.anchor_weights
         return save_dict
     
     def load_state_dict(self, state_dict, cfg=None):
@@ -180,6 +188,8 @@ class HUGS_TRIMLP:
         self.geometry_dec.load_state_dict(state_dict['geometry_dec'])
         self.deformation_dec.load_state_dict(state_dict['deformation_dec'])
         self.scaling_multiplier = state_dict['scaling_multiplier']
+        self.anchor_ids = state_dict.get('anchor_ids', None)
+        self.anchor_weights = state_dict.get('anchor_weights', None)
         
         if cfg is None:
             from hugs.cfg.config import cfg as default_cfg
@@ -760,6 +770,9 @@ class HUGS_TRIMLP:
         self.scales_tmp = self.scales_tmp[valid_points_mask]
         self.opacity_tmp = self.opacity_tmp[valid_points_mask]
         self.rotmat_tmp = self.rotmat_tmp[valid_points_mask]
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self.anchor_ids = self.anchor_ids[valid_points_mask]
+            self.anchor_weights = self.anchor_weights[valid_points_mask]
         
         self.xyz_gradient_accum = self.xyz_gradient_accum[valid_points_mask]
 
@@ -802,6 +815,11 @@ class HUGS_TRIMLP:
         self.opacity_tmp = torch.cat([self.opacity_tmp, new_opacity_tmp], dim=0)
         self.scales_tmp = torch.cat([self.scales_tmp, new_scales_tmp], dim=0)
         self.rotmat_tmp = torch.cat([self.rotmat_tmp, new_rotmat_tmp], dim=0)
+        if hasattr(self, '_pending_anchor_ids') and self._pending_anchor_ids is not None:
+            self.anchor_ids = torch.cat([self.anchor_ids, self._pending_anchor_ids], dim=0)
+            self.anchor_weights = torch.cat([self.anchor_weights, self._pending_anchor_weights], dim=0)
+            self._pending_anchor_ids = None
+            self._pending_anchor_weights = None
         
         self.xyz_gradient_accum = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
         self.denom = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
@@ -831,6 +849,9 @@ class HUGS_TRIMLP:
         new_opacity_tmp = self.opacity_tmp[selected_pts_mask].repeat(N,1)
         new_scales_tmp = self.scales_tmp[selected_pts_mask].repeat(N,1)
         new_rotmat_tmp = self.rotmat_tmp[selected_pts_mask].repeat(N,1,1)
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self._pending_anchor_ids = self.anchor_ids[selected_pts_mask].repeat(N, 1)
+            self._pending_anchor_weights = self.anchor_weights[selected_pts_mask].repeat(N, 1)
         
         self.densification_postfix(new_xyz, new_scaling_multiplier, new_opacity_tmp, new_scales_tmp, new_rotmat_tmp)
 
@@ -851,6 +872,9 @@ class HUGS_TRIMLP:
         new_opacity_tmp = self.opacity_tmp[selected_pts_mask]
         new_scales_tmp = self.scales_tmp[selected_pts_mask]
         new_rotmat_tmp = self.rotmat_tmp[selected_pts_mask]
+        if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
+            self._pending_anchor_ids = self.anchor_ids[selected_pts_mask].clone()
+            self._pending_anchor_weights = self.anchor_weights[selected_pts_mask].clone()
         
         self.densification_postfix(new_xyz, new_scaling_multiplier, new_opacity_tmp, new_scales_tmp, new_rotmat_tmp)
 

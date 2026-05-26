@@ -4,3 +4,4 @@
 #
 
 from .neuman import NeumanDataset
+from .human3r import Human3RDataset

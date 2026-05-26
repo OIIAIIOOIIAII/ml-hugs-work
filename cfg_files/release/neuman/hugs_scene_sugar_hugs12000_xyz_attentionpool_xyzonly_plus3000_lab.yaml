@@ -1,0 +1,206 @@
+seed: 0
+mode: human_scene
+output_path: output
+cfg_file: cfg_files/release/neuman/hugs_scene_sugar_hugs12000_xyz_attentionpool_xyzonly_plus3000_lab.yaml
+exp_name: scene_sugar_hugs12000_xyz_attentionpool_xyzonly_plus3000_20260522
+dataset_path: ''
+detect_anomaly: false
+debug: false
+wandb: false
+eval: false
+bg_color: white
+dataset:
+  name: neuman
+  seq: lab
+train:
+  batch_size: 1
+  num_workers: 0
+  num_steps: 2998
+  save_ckpt_interval: 3000
+  val_interval: 1000
+  anim_interval: -1
+  optim_scene: true
+  save_progress_images: true
+  progress_save_interval: 1000
+human:
+  name: hugs_trimlp
+  ckpt: output/human_scene/neuman/lab/hugs_trimlp/scene_sugar_hugs_12000_lab_20260521_rerun/2026-05-21_22-55-25/ckpt/human_final.pth
+  sh_degree: 0
+  n_subdivision: 2
+  only_rgb: false
+  use_surface: false
+  use_deformer: true
+  init_2d: false
+  disable_posedirs: true
+  res_offset: false
+  rotate_sh: false
+  isotropic: false
+  init_scale_multiplier: 0.5
+  run_init: false
+  skip_init_opt: true
+  estimate_delta: true
+  triplane_res: 256
+  optim_pose: true
+  optim_betas: false
+  optim_trans: true
+  optim_eps_offsets: false
+  activation: relu
+  canon_nframes: 60
+  canon_pose_type: da_pose
+  knn_n_hops: 3
+  lr:
+    wd: 0.0
+    position: 0.00016
+    position_init: 1.6e-06
+    position_final: 8.0e-07
+    position_delay_mult: 0.01
+    position_max_steps: 30000
+    opacity: 0.005
+    scaling: 0.0005
+    rotation: 0.0001
+    feature: 0.00025
+    smpl_spatial: 2.0
+    smpl_pose: 0.0001
+    smpl_betas: 0.0001
+    smpl_trans: 0.0001
+    smpl_eps_offset: 0.0001
+    lbs_weights: 0.0
+    posedirs: 0.0
+    percent_dense: 0.01
+    appearance: 0.0001
+    geometry: 0.0001
+    vembed: 0.001
+    deformation: 1.0e-05
+    scale_lr_w_npoints: false
+  loss:
+    ssim_w: 0.2
+    l1_w: 0.8
+    lpips_w: 1.0
+    lbs_w: 1000.0
+    humansep_w: 1.0
+    num_patches: 4
+    patch_size: 128
+    use_patches: 1
+  densification_interval: 600
+  opacity_reset_interval: 3000
+  densify_from_iter: 3000
+  densify_until_iter: 0
+  densify_grad_threshold: 0.0002
+  prune_min_opacity: 0.005
+  densify_extent: 1.0
+  max_n_gaussians: 524288
+  percent_dense: 0.01
+scene:
+  name: scene_gs
+  ckpt: output/human_scene/neuman/lab/hugs_trimlp/scene_sugar_hugs_12000_lab_20260521_rerun/2026-05-21_22-55-25/ckpt/scene_final.pth
+  sh_degree: 3
+  add_bg_points: false
+  num_bg_points: 204800
+  bg_sphere_dist: 5.0
+  clean_pcd: false
+  opt_start_iter: -1
+  lr:
+    percent_dense: 0.01
+    spatial_scale: 1.0
+    position_init: 1.6e-06
+    position_final: 8.0e-07
+    position_delay_mult: 0.01
+    position_max_steps: 30000
+    opacity: 0.005
+    scaling: 0.0005
+    rotation: 0.0001
+    feature: 0.00025
+  percent_dense: 0.01
+  densification_interval: 100
+  opacity_reset_interval: 20000
+  densify_from_iter: 500
+  densify_until_iter: 0
+  densify_grad_threshold: 0.0002
+  prune_min_opacity: 0.005
+  max_n_gaussians: 2097152
+  anchor_pcd_path: null
+  anchor_loss_w: 0.0
+  anchor_loss_sample_scene: 2048
+  anchor_loss_sample_prior: 8192
+  anchor_loss_trunc: 0.5
+  human_exclusion_w: 0.0
+  human_exclusion_radius: 0.12
+  human_exclusion_sample_scene: 2048
+  human_exclusion_sample_human: 8192
+  depth_prior_dir: null
+  depth_prior_w: 0.0
+  depth_prior_sample_scene: 4096
+  depth_prior_tolerance: 0.25
+  depth_prior_max_residual: 2.0
+  depth_prior_mask_human: true
+  depth_prune_interval: 0
+  depth_prune_from_iter: 0
+  depth_prune_until_iter: 1000000
+  depth_prune_abs_threshold: 2.0
+  depth_prune_abs_hard_threshold: 8.0
+  depth_prune_opacity_threshold: 0.03
+  depth_prune_max_frac: 0.05
+  depth_prune_mask_human: true
+  loss:
+    ssim_w: 0.2
+    l1_w: 0.8
+  init_pcd_path: null
+scene_sugar:
+  enabled: false
+  start_iter: 7000
+  opacity_entropy_start_iter: 7000
+  surface_reg_start_iter: 9000
+  prune_iter: 9000
+  prune_interval: 3000
+  stop_after_iter: -1
+  lambda_opacity_entropy: 0.0001
+  opacity_prune_threshold: 0.03
+  lambda_scale_volume: 1.0e-05
+  lambda_flatten: 0.0001
+  lambda_surface_alignment: 0.0
+  max_prune_frac: 0.25
+  min_remaining: 1000
+  eps: 1.0e-06
+  log_interval: 1000
+  ply_interval: 3000
+  debug_dir: ''
+  apply_to_scene_only: true
+  detach_human_branch: true
+  disable_mesh_extraction: true
+anchor_attention:
+  use_anchors: true
+  anchor_vertices_path: ''
+  count_per_anchor: 64
+  top_m: 2
+  lambda_lbs: 0.35
+  sigma_scale: 1.8
+  min_sigma: 0.035
+  use_anchor_token_encoder: true
+  use_scene_query: true
+  use_cross_attention: true
+  use_interaction_correction: true
+  correct_opacity: false
+  correct_scale: false
+  correct_feature_dc: false
+  hidden_dim: 128
+  human_pooling: attention
+  scene_topk: 32
+  scene_opacity_threshold: 0.01
+  max_scene_candidates: 200000
+  module_start_iter: 0
+  correction_start_iter: 0
+  correction_warmup_iters: 0
+  zero_init_delta: true
+  gamma_mu: 0.003
+  gamma_opacity: 0.01
+  gamma_scale: 0.01
+  gamma_feature_dc: 0.01
+  opacity_delta_clamp: 0.0
+  scale_delta_clamp: 0.05
+  feature_delta_clamp: 0.05
+  scale_max: 1.0
+  delta_loss_w: 0.002
+  lr: 5.0e-05
+  debug_interval: 1000
+  debug_dir: ''
+  ckpt: null

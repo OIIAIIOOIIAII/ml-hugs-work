@@ -1,7 +1,7 @@
 seed: 0
 mode: human_scene
 output_path: output
-exp_name: demo
+exp_name: human3r_adapter
 dataset_path: ''
 detect_anomaly: false
 debug: false
@@ -9,15 +9,15 @@ wandb: false
 eval: false
 bg_color: white
 dataset:
-  name: neuman
-  seq: ["lab", "citron", "seattle", "bike", "jogging", "parkinglot"]
+  name: human3r
+  seq: converted
 train:
   batch_size: 1
   num_workers: 0
   num_steps: 14998
   save_ckpt_interval: 15000
   val_interval: 1000
-  anim_interval: 15000
+  anim_interval: -1
   optim_scene: true
   save_progress_images: false
   progress_save_interval: 10
