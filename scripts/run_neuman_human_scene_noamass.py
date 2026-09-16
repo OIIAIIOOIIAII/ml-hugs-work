@@ -67,8 +67,8 @@ def build_cfg(args):
 
 
 def main(args):
-    os.environ.setdefault("TORCH_HOME", "/hdd/u202420081000003/torch_cache")
-    os.environ.setdefault("TMPDIR", "/hdd/u202420081000003/tmp")
+    os.environ.setdefault("TORCH_HOME", os.path.expanduser("~/.cache/torch"))
+    os.environ.setdefault("TMPDIR", "/tmp")
 
     # AMASS is only needed for novel-pose animation. The NeuMan training and
     # validation path can run without it.

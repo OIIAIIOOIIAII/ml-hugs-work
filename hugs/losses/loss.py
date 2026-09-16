@@ -13,6 +13,14 @@ from hugs.utils.sampler import PatchSampler
 from .utils import l1_loss, ssim
 
 
+def _pearson_corrcoef(x, y):
+    """Pearson correlation coefficient between two flattened tensors."""
+    xm = x - x.mean()
+    ym = y - y.mean()
+    denom = (xm.norm() * ym.norm()).clamp(min=1e-8)
+    return (xm * ym).sum() / denom
+
+
 class HumanSceneLoss(nn.Module):
     def __init__(
         self,
@@ -21,18 +29,20 @@ class HumanSceneLoss(nn.Module):
         l_lpips_w=0.0,
         l_lbs_w=0.0,
         l_humansep_w=0.0,
+        l_depth_w=0.0,
         num_patches=4,
         patch_size=32,
         use_patches=True,
         bg_color='white',
     ):
         super(HumanSceneLoss, self).__init__()
-        
+
         self.l_ssim_w = l_ssim_w
         self.l_l1_w = l_l1_w
         self.l_lpips_w = l_lpips_w
         self.l_lbs_w = l_lbs_w
         self.l_humansep_w = l_humansep_w
+        self.l_depth_w = l_depth_w
         self.use_patches = use_patches
         
         self.bg_color = bg_color
@@ -147,17 +157,28 @@ class HumanSceneLoss(nn.Module):
         if self.l_lbs_w > 0.0 and human_gs_out['lbs_weights'] is not None and not render_mode == "scene":
             if 'gt_lbs_weights' in human_gs_out.keys():
                 loss_lbs = F.mse_loss(
-                    human_gs_out['lbs_weights'], 
+                    human_gs_out['lbs_weights'],
                     human_gs_out['gt_lbs_weights'].detach()).mean()
             else:
                 loss_lbs = F.mse_loss(
-                    human_gs_out['lbs_weights'], 
+                    human_gs_out['lbs_weights'],
                     human_gs_init_values['lbs_weights']).mean()
             loss_dict['lbs'] = self.l_lbs_w * loss_lbs
-        
+
+        if self.l_depth_w > 0.0 and 'depth' in render_pkg and 'mono_depth' in data:
+            render_depth = render_pkg['depth'].reshape(-1)
+            mono_depth = data['mono_depth'].reshape(-1)
+            # Pearson correlation is scale/shift-invariant — handles mono depth ambiguity.
+            # Take min of two variants: negated depth (disparity-like) vs inverse depth.
+            depth_loss = torch.min(
+                1.0 - _pearson_corrcoef(-mono_depth, render_depth),
+                1.0 - _pearson_corrcoef(1.0 / (mono_depth + 200.0), render_depth),
+            )
+            loss_dict['depth'] = self.l_depth_w * depth_loss
+
         loss = 0.0
         for k, v in loss_dict.items():
             loss += v
-        
+
         return loss, loss_dict, extras_dict
     

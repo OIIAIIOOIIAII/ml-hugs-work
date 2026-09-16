@@ -254,8 +254,8 @@ def main():
     parser.add_argument('--fps', type=int, default=20)
     args, extras = parser.parse_known_args()
 
-    os.environ.setdefault('TORCH_HOME', '/hdd/u202420081000003/torch_cache')
-    os.environ.setdefault('TMPDIR', '/hdd/u202420081000003/tmp')
+    os.environ.setdefault('TORCH_HOME', os.path.expanduser('~/.cache/torch'))
+    os.environ.setdefault('TMPDIR', '/tmp')
     gst.get_anim_dataset = lambda cfg: None
 
     cfg, ckpts = configure_from_output(args.output_dir, extras)

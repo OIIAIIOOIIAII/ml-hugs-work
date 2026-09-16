@@ -1,0 +1,4 @@
+# Copy to paths.local.yaml (ignored), then edit or set these environment variables.
+# Relative paths resolve against this file, not the shell's current directory.
+data_root: ${HUGS_CONTACT_DATA_ROOT}
+run_root: ${HUGS_CONTACT_RUN_ROOT}

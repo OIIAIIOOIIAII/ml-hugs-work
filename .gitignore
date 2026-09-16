@@ -10,3 +10,60 @@ tensorboard_3d
 screenshots
 *.pth
 *.zip
+
+# Machine-local data, checkpoints and secrets are transferred separately.
+/datasets/
+/.tools/
+**/.ipynb_checkpoints/
+**/__pycache__/
+*.egg-info/
+.venv*/
+*.local.yaml
+.env
+.env.*
+!.env.example
+*.cookies.txt
+credentials.post
+*.part
+*.aria2
+*.pt
+*.ckpt
+*.safetensors
+/SMPLX_*.npz
+
+# External repositories are pinned in migration/dependencies.json. Local source
+# modifications are preserved as reviewed patches, not nested repository copies.
+/Human3R/
+/GUSH3R/
+/PROX/
+/JOSH/
+/baselines/
+/Dynamic-Avatar-Scene-Rendering-from-Human-centric-Context/
+/submodules/chumpy/
+/submodules/pytorch3d/
+
+# Generated experiments; keep source, configs, tests and written reports in Git.
+/forward_contact_pipeline/datasets/
+/forward_contact_pipeline/prepared/
+/forward_contact_pipeline/learning/
+/forward_contact_pipeline/labels/
+/forward_contact_pipeline/runs/
+/forward_contact_pipeline/experiments/
+/forward_contact_pipeline/diagnostics/
+/forward_contact_pipeline/evaluations/
+/forward_contact_pipeline/logs/
+/forward_contact_pipeline/visualizations/
+/forward_contact_pipeline/baseline/results/
+/forward_contact_pipeline/reports/*/
+/paper_figures/
+
+# Local measurement outputs and downloaded literature are not source code.
+/transmission_system/results/
+/eval_contact/
+/forward_contact_pipeline/research/
+/forward_contact_pipeline/references/
+/stm.pdf
+
+# Override the legacy global data/ rule for public, source-controlled configuration.
+!/forward_contact_pipeline/configs/data/
+!/forward_contact_pipeline/configs/data/*.json

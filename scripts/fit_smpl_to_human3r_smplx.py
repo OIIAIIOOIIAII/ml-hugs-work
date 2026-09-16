@@ -522,7 +522,7 @@ def parse_args():
     parser.add_argument("--out-dir", required=True, help="Output HUGS dataset directory with fitted SMPL params")
     parser.add_argument("--repo-root", default=".", help="ml-hugs repository root")
     parser.add_argument("--smpl-model-dir", default="data/smpl")
-    parser.add_argument("--smplx-model-dir", default="/hdd/u202420081000003/Human3R/src/models")
+    parser.add_argument("--smplx-model-dir", default="")
     parser.add_argument("--smplx2smpl-path", default=None)
     parser.add_argument("--person-index", type=int, default=0)
     parser.add_argument("--smpl-params-frame", choices=("camera", "world"), default="camera")

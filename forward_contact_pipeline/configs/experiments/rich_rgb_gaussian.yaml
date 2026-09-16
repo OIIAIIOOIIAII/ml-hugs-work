@@ -1,0 +1,11 @@
+extends: base.yaml
+name: rich_rgb_gaussian_v1
+model:
+  factory: contact_streaming.training.components:FusionModel
+  kwargs:
+    hidden: 96
+    # These are an example exporter contract, NOT verified GUSH3R dimensions.
+    # Set them to the audited cache's channel counts before real training.
+    rgb_dim: 768
+    gaussian_dim: 8
+    heads: 4

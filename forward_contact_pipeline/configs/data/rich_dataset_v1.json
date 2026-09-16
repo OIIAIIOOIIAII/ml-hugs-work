@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "rich_train_internal_parkinglot2_v1",
+  "source_split": "official_train",
+  "capture_splits": {
+    "BBQ": "train",
+    "LectureHall": "train",
+    "ParkingLot1": "train",
+    "ParkingLot2": "val",
+    "Pavallion": "train"
+  },
+  "label_space": "smplx_10475",
+  "require_official_camera": true,
+  "require_identity_exif": true,
+  "pilot_clips": [
+    {"split": "train", "sequence": "ParkingLot1_002_stretching1", "subject": "002", "camera_id": 0, "length": 16},
+    {"split": "val", "sequence": "ParkingLot2_016_stretching1", "subject": "016", "camera_id": 0, "length": 16}
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "scan_calibration",
+    "url": "https://download.is.tue.mpg.de/download.php?domain=rich&resume=1&sfile=scan_calibration.zip",
+    "relative_path": "common/scan_calibration.zip"
+  },
+  {
+    "name": "train_jpg",
+    "url": "https://download.is.tue.mpg.de/download.php?domain=rich&resume=1&sfile=JPG_images/train.tar.gz",
+    "relative_path": "train/train.tar.gz"
+  },
+  {
+    "name": "train_body",
+    "url": "https://download.is.tue.mpg.de/download.php?domain=rich&resume=1&sfile=train_body.zip",
+    "relative_path": "train/train_body.zip"
+  },
+  {
+    "name": "train_hsc",
+    "url": "https://download.is.tue.mpg.de/download.php?domain=rich&resume=1&sfile=train_hsc.zip",
+    "relative_path": "train/train_hsc.zip"
+  }
+]

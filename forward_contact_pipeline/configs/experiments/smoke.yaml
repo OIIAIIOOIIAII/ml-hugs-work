@@ -1,0 +1,13 @@
+extends: base.yaml
+name: software_smoke
+kind: smoke
+data:
+  kwargs:
+    index: index.json
+model:
+  kwargs:
+    hidden: 16
+trainer:
+  epochs: 2
+  batch_size: 4
+  torch_threads: 1

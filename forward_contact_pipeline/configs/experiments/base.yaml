@@ -1,0 +1,36 @@
+schema_version: 1
+name: rich_geometry_v1
+kind: experiment
+seed: 42
+data:
+  factory: contact_streaming.training.data:NumericCache
+  kwargs:
+    index: rich_v1/index.json
+    cache_shards: 1
+    max_frames_per_shard: 32
+model:
+  factory: contact_streaming.training.components:GeometryModel
+  kwargs:
+    hidden: 96
+objective:
+  factory: contact_streaming.training.components:ContactObjective
+  kwargs:
+    contact_weight: 1.0
+    proximity_weight: 0.0
+    positive_weight: 1.0
+    proximity_beta: 0.01
+optimizer:
+  lr: 0.0003
+  weight_decay: 0.0001
+metrics:
+  threshold: 0.5
+  bins: 1024
+  proximity: false
+trainer:
+  epochs: 30
+  batch_size: 16
+  num_workers: 0
+  device: cpu
+  torch_threads: 4
+  deterministic: true
+  grad_clip: 1.0

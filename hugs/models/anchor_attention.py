@@ -41,7 +41,7 @@ class AnchorSceneAttentionBaseline(nn.Module):
     corrections plus debug tensors.
     """
 
-    def __init__(self, cfg, num_anchors, top_m=2):
+    def __init__(self, cfg, num_anchors, top_m=2, num_frames=0):
         super().__init__()
         self.cfg = cfg
         self.num_anchors = int(num_anchors)
@@ -49,6 +49,7 @@ class AnchorSceneAttentionBaseline(nn.Module):
         self.hidden_dim = int(getattr(cfg, "hidden_dim", 128))
         self.human_feature_dim = 16
         self.scene_feature_dim = 11
+        self.num_frames = int(num_frames)
 
         self.anchor_embed = nn.Embedding(self.num_anchors, self.hidden_dim)
         self.human_encoder = MLP(self.human_feature_dim, self.hidden_dim, self.hidden_dim)
@@ -60,10 +61,55 @@ class AnchorSceneAttentionBaseline(nn.Module):
         self.context_norm = nn.LayerNorm(self.hidden_dim)
         zero_delta = bool(getattr(cfg, "zero_init_delta", True))
         self.delta_mu = MLP(self.human_feature_dim + self.hidden_dim, self.hidden_dim, 3, zero_init_last=zero_delta)
-        self.delta_transl = MLP(self.hidden_dim, self.hidden_dim, 3, zero_init_last=zero_delta)
+        # per-frame delta_transl: concat global context + frame embedding
+        transl_in = self.hidden_dim * 2 if self.num_frames > 0 else self.hidden_dim
+        self.delta_transl = MLP(transl_in, self.hidden_dim, 3, zero_init_last=zero_delta)
+        if self.num_frames > 0:
+            self.frame_embed = nn.Embedding(self.num_frames, self.hidden_dim)
         self.delta_opacity = MLP(1 + self.hidden_dim, max(self.hidden_dim // 2, 32), 1, zero_init_last=zero_delta)
         self.delta_scale = MLP(self.human_feature_dim + self.hidden_dim, self.hidden_dim, 3, zero_init_last=zero_delta)
         self.delta_feature_dc = MLP(self.human_feature_dim + self.hidden_dim, self.hidden_dim, 3, zero_init_last=zero_delta)
+
+        # Global scene gate: independent of local anchor attention.
+        # Scene GS global pooling → context → gate per human GS opacity.
+        # scene_feat = xyz(3) + opacity(1) + log_scale(3) = 7 dims
+        gate_h = int(getattr(cfg, "gate_hidden_dim", 64))
+        self.gate_scene_encoder = MLP(7, gate_h, gate_h)
+        self.gate_query = nn.Linear(gate_h, gate_h, bias=False)
+        self.gate_key = nn.Linear(gate_h, gate_h, bias=False)
+        # Input: human_feature(16) + global_scene_ctx(gate_h), output: gate delta scalar
+        self.gate_mlp = MLP(self.human_feature_dim + gate_h, gate_h, 1, zero_init_last=True)
+
+    def _gamma_transl_schedule(self, iteration, warm):
+        """Cosine decay schedule for gamma_transl.
+
+        Falls back to constant gamma_transl when curriculum params are absent.
+        Config keys (all optional):
+          gamma_transl_init       – value at decay_start (and before it)
+          gamma_transl_final      – value at decay_end (and after it)
+          gamma_transl_decay_start – iteration to begin decay
+          gamma_transl_decay_end   – iteration to finish decay
+        If only gamma_transl is set (legacy), uses that constant.
+        """
+        gamma_init_cfg = getattr(self.cfg, "gamma_transl_init", None)
+        gamma_final_cfg = getattr(self.cfg, "gamma_transl_final", None)
+        decay_start = int(getattr(self.cfg, "gamma_transl_decay_start", -1) or -1)
+        decay_end = int(getattr(self.cfg, "gamma_transl_decay_end", -1) or -1)
+
+        if gamma_init_cfg is not None and gamma_final_cfg is not None and decay_start > 0 and decay_end > decay_start:
+            gamma_init = float(gamma_init_cfg)
+            gamma_final = float(gamma_final_cfg)
+            if iteration <= decay_start:
+                gamma_base = gamma_init
+            elif iteration >= decay_end:
+                gamma_base = gamma_final
+            else:
+                t = (iteration - decay_start) / (decay_end - decay_start)
+                gamma_base = gamma_final + 0.5 * (gamma_init - gamma_final) * (1.0 + math.cos(math.pi * t))
+        else:
+            gamma_base = float(getattr(self.cfg, "gamma_transl", 0.005))
+
+        return gamma_base * warm
 
     @staticmethod
     def _safe_log_scale(scales):
@@ -122,11 +168,18 @@ class AnchorSceneAttentionBaseline(nn.Module):
         return torch.stack(tokens, dim=0)
 
     def _query_scene_tokens(self, scene_out, anchor_world):
-        scene_xyz = scene_out["xyz"]
-        scene_opacity = scene_out["opacity"].reshape(-1)
+        # Detach scene GS features so human rendering loss does not flow back
+        # into scene GS parameters through this attention path.  Scene GS should
+        # be optimised solely by their own rendering loss; AnchorAttention treats
+        # scene context as read-only input.
+        scene_xyz = scene_out["xyz"].detach()
+        scene_opacity = scene_out["opacity"].detach()
+        scene_scales = scene_out["scales"].detach()
+        scene_shs = scene_out["shs"].detach()
+
         min_opacity = float(getattr(self.cfg, "scene_opacity_threshold", 0.01))
         max_candidates = int(getattr(self.cfg, "max_scene_candidates", 200000))
-        valid = scene_opacity > min_opacity
+        valid = scene_opacity.reshape(-1) > min_opacity
         valid_idx = torch.nonzero(valid, as_tuple=False).reshape(-1)
         if valid_idx.numel() == 0:
             valid_idx = torch.arange(scene_xyz.shape[0], device=scene_xyz.device)
@@ -140,16 +193,45 @@ class AnchorSceneAttentionBaseline(nn.Module):
         knn_dist, local_idx = torch.topk(d, k=k, dim=1, largest=False)
         knn_idx = valid_idx[local_idx]
 
-        rel = scene_out["xyz"][knn_idx] - anchor_world[:, None, :]
-        opacity = scene_out["opacity"][knn_idx]
-        log_scale = self._safe_log_scale(scene_out["scales"][knn_idx])
-        shs = scene_out["shs"]
-        if shs.dim() == 3:
-            color = shs[knn_idx][:, :, 0, :]
+        rel = scene_xyz[knn_idx] - anchor_world[:, None, :]
+        opacity = scene_opacity[knn_idx]
+        log_scale = self._safe_log_scale(scene_scales[knn_idx])
+        if scene_shs.dim() == 3:
+            color = scene_shs[knn_idx][:, :, 0, :]
         else:
-            color = shs[knn_idx][..., :3]
+            color = scene_shs[knn_idx][..., :3]
         features = torch.cat([rel, knn_dist[..., None], opacity, log_scale, color], dim=-1)
         return features, knn_idx, knn_dist
+
+    def _global_scene_context(self, scene_out):
+        """Compute a single global context vector from all high-opacity scene GS.
+
+        Uses attention pooling so the network can learn to focus on the
+        most scene-relevant Gaussians (e.g. near the ground contact zone).
+        """
+        gate_topk = int(getattr(self.cfg, "gate_scene_topk", 512))
+        # Detach scene GS features (same reason as _query_scene_tokens).
+        scene_xyz = scene_out["xyz"].detach()
+        scene_opacity = scene_out["opacity"].reshape(-1).detach()
+        log_scale = self._safe_log_scale(scene_out["scales"].detach())  # [N, 3]
+
+        # Sample top-opacity scene GS
+        k = min(gate_topk, scene_xyz.shape[0])
+        _, top_idx = torch.topk(scene_opacity, k=k, largest=True)
+
+        xyz_s = scene_xyz[top_idx]                         # [k, 3]
+        opa_s = scene_opacity[top_idx].unsqueeze(-1)        # [k, 1]
+        lsc_s = log_scale[top_idx]                          # [k, 3]
+        feat = torch.cat([xyz_s, opa_s, lsc_s], dim=-1)    # [k, 7]
+
+        tokens = self.gate_scene_encoder(feat)              # [k, gate_h]
+        # Single-query attention pool: learnable query summarises scene
+        q = self.gate_query(tokens.mean(dim=0, keepdim=True))  # [1, gate_h]
+        k_proj = self.gate_key(tokens)                          # [k, gate_h]
+        logits = (q * k_proj).sum(dim=-1) / math.sqrt(q.shape[-1])  # [k]
+        weights = torch.softmax(logits, dim=0)
+        ctx = (weights[:, None] * tokens).sum(dim=0)       # [gate_h]
+        return ctx
 
     def _cross_attention(self, human_tokens, scene_features):
         scene_tokens = self.scene_encoder(scene_features)
@@ -167,7 +249,7 @@ class AnchorSceneAttentionBaseline(nn.Module):
         ctx = context[ids]
         return (ctx * weights[..., None]).sum(dim=1)
 
-    def forward(self, human_out, scene_out, anchor_ids, anchor_weights, iteration=0):
+    def forward(self, human_out, scene_out, anchor_ids, anchor_weights, iteration=0, frame_idx=None):
         enabled = bool(getattr(self.cfg, "use_cross_attention", True))
         module_start = int(getattr(self.cfg, "module_start_iter", getattr(self.cfg, "correction_start_iter", 3000)))
         if scene_out is None or not enabled or int(iteration) < module_start:
@@ -199,7 +281,14 @@ class AnchorSceneAttentionBaseline(nn.Module):
 
         ctx_g = self._context_per_gaussian(context, anchor_ids, anchor_weights)
         delta_mu = self.delta_mu(torch.cat([human_features, ctx_g], dim=-1))
-        delta_transl = self.delta_transl(context.mean(dim=0, keepdim=True)).reshape(3)
+        global_ctx = context.mean(dim=0)  # [hidden_dim]
+        if self.num_frames > 0 and frame_idx is not None:
+            f_idx = int(frame_idx) % self.num_frames
+            f_emb = self.frame_embed(torch.tensor(f_idx, device=global_ctx.device))
+            transl_in = torch.cat([global_ctx, f_emb], dim=-1)
+        else:
+            transl_in = global_ctx
+        delta_transl = self.delta_transl(transl_in.unsqueeze(0)).reshape(3)
         gamma_mu = float(getattr(self.cfg, "gamma_mu", 0.02))
         warmup_iters = int(getattr(self.cfg, "correction_warmup_iters", 0) or 0)
         if warmup_iters > 0:
@@ -216,7 +305,7 @@ class AnchorSceneAttentionBaseline(nn.Module):
             transl_delta_clamp = float(getattr(self.cfg, "transl_delta_clamp", 0.05) or 0.0)
             if transl_delta_clamp > 0.0:
                 delta_transl = torch.clamp(delta_transl, -transl_delta_clamp, transl_delta_clamp)
-            gamma_transl_eff = float(getattr(self.cfg, "gamma_transl", 0.005)) * warm
+            gamma_transl_eff = self._gamma_transl_schedule(iteration, warm)
             corrected["xyz"] = corrected["xyz"] + gamma_transl_eff * delta_transl.reshape(1, 3)
         else:
             gamma_transl_eff = 0.0
@@ -270,6 +359,21 @@ class AnchorSceneAttentionBaseline(nn.Module):
         stats["delta_opacity"] = delta_opacity.detach()
         stats["delta_scale"] = delta_scale.detach()
         stats["delta_feature_dc"] = delta_feature_dc.detach()
+        # Global scene gate: suppress opacity of misaligned human GS.
+        # Runs independently of local anchor attention corrections.
+        gate_delta = torch.zeros_like(human_out["opacity"])
+        if bool(getattr(self.cfg, "global_scene_gate", False)) and use_correction:
+            global_ctx = self._global_scene_context(scene_out)         # [gate_h]
+            gate_in = torch.cat([
+                human_features,                                          # [N_h, 16]
+                global_ctx.unsqueeze(0).expand(human_features.shape[0], -1),  # [N_h, gate_h]
+            ], dim=-1)
+            gate_delta = self.gate_mlp(gate_in)                         # [N_h, 1]
+            gamma_gate = float(getattr(self.cfg, "gamma_gate", 0.1)) * warm
+            gate = 1.0 + gamma_gate * gate_delta                        # identity init
+            corrected["opacity"] = torch.clamp(corrected["opacity"] * gate, 1e-4, 1.0 - 1e-4)
+        stats["gate_delta"] = gate_delta.detach()
+
         xyz_delta_loss = delta_mu.pow(2).mean() if bool(getattr(self.cfg, "correct_xyz", True)) else delta_mu.new_tensor(0.0)
         stats["delta_loss"] = (
             xyz_delta_loss
@@ -277,6 +381,7 @@ class AnchorSceneAttentionBaseline(nn.Module):
             + delta_opacity.pow(2).mean()
             + delta_scale.pow(2).mean()
             + delta_feature_dc.pow(2).mean()
+            + gate_delta.pow(2).mean()
         )
         return corrected, stats
 

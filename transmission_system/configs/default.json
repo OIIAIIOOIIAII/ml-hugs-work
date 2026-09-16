@@ -1,0 +1,15 @@
+{
+  "protocol_version": 1,
+  "host": "127.0.0.1",
+  "port": 18765,
+  "fps": 30,
+  "codec": {
+    "quantization": "int8_per_frame",
+    "temporal_mode": "causal_diff",
+    "entropy_coder": "zlib"
+  },
+  "renderer": {
+    "enabled": false,
+    "static_package": null
+  }
+}

@@ -1,0 +1,5 @@
+# CPU-tested versions on the source machine. Install the appropriate Torch CUDA
+# wheel separately on the target; backbone/renderer environments stay separate.
+numpy==1.24.4
+PyYAML==6.0.2
+torch==2.4.0

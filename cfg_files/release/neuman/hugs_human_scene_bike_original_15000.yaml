@@ -1,7 +1,7 @@
 seed: 0
 mode: human_scene
 output_path: output
-exp_name: exp0_hugs_original_15000_bike_20260521
+exp_name: exp0_hugs_original_15000_bike_20260601
 dataset_path: ''
 detect_anomaly: false
 debug: false

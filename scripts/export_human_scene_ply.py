@@ -27,7 +27,8 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-dir", type=Path, required=True, help="HUGS training output directory.")
-    parser.add_argument("--frame-idx", type=int, default=0, help="Frame used to pose the human splats.")
+    parser.add_argument("--frame-idx", type=int, default=0, help="Dataset index inside --split. For val images, this is the 000/007 suffix used by val/full_*_007.png.")
+    parser.add_argument("--split", choices=("all", "val", "train"), default="all", help="Dataset split used to resolve --frame-idx. Use val for val/full_*_007.png.")
     parser.add_argument("--out", type=Path, default=None, help="Output combined human+scene PLY path.")
     parser.add_argument(
         "--human-color-mode",
@@ -140,17 +141,26 @@ def derive_part_path(out_path: Path, part: str) -> Path:
 def forward_world_frame(
     trainer: GaussianTrainer,
     frame_idx: int,
+    split: str,
     apply_anchor_attention: bool,
     iteration: int | None,
 ) -> tuple[dict, dict, dict, dict]:
     if trainer.scene_gs is None or trainer.human_gs is None:
         raise RuntimeError("This exporter requires both human_gs and scene_gs.")
-    if trainer.all_dataset is None:
-        raise RuntimeError("This exporter requires an all split dataset.")
-    if frame_idx < 0 or frame_idx >= len(trainer.all_dataset):
-        raise IndexError(f"frame_idx={frame_idx} outside all_dataset length {len(trainer.all_dataset)}")
+    if split == "all":
+        dataset = trainer.all_dataset
+    elif split == "val":
+        dataset = trainer.val_dataset
+    elif split == "train":
+        dataset = getattr(trainer, "train_dataset", None)
+    else:
+        raise ValueError(f"Unknown split: {split}")
+    if dataset is None:
+        raise RuntimeError(f"Trainer does not provide split {split!r}.")
+    if frame_idx < 0 or frame_idx >= len(dataset):
+        raise IndexError(f"frame_idx={frame_idx} outside {split}_dataset length {len(dataset)}")
 
-    data = trainer.all_dataset[frame_idx]
+    data = dataset[frame_idx]
     human_out = trainer.human_gs.forward(
         global_orient=data["global_orient"],
         body_pose=data["body_pose"],
@@ -179,6 +189,7 @@ def forward_world_frame(
 def export_combined_ply(
     trainer: GaussianTrainer,
     frame_idx: int,
+    split: str,
     out_path: Path,
     human_color_mode: str,
     apply_anchor_attention: bool,
@@ -190,6 +201,7 @@ def export_combined_ply(
     data, human_out, scene_out, anchor_stats = forward_world_frame(
         trainer,
         frame_idx,
+        split,
         apply_anchor_attention,
         iteration,
     )
@@ -231,7 +243,9 @@ def export_combined_ply(
         torchvision.utils.save_image(render, render_path)
 
     meta = {
-        "frame_idx": int(frame_idx),
+        "split": split,
+        "dataset_index": int(frame_idx),
+        "source_frame_idx": int(data.get("frame_idx", torch.tensor(frame_idx)).detach().cpu().item()) if torch.is_tensor(data.get("frame_idx", None)) else int(frame_idx),
         "human_first": True,
         "num_human_splats": int(attrs_human.shape[0]),
         "num_scene_splats": int(attrs_scene.shape[0]),
@@ -323,7 +337,7 @@ def main() -> None:
 
     out = args.out
     if out is None:
-        out = run_dir / "meshes" / f"human_scene_final_frame_{args.frame_idx:05d}_{args.human_color_mode}_splat.ply"
+        out = run_dir / "meshes" / f"human_scene_final_{args.split}_{args.frame_idx:05d}_{args.human_color_mode}_splat.ply"
     out = out.resolve()
 
     from hugs.trainer import GaussianTrainer
@@ -339,6 +353,7 @@ def main() -> None:
     export_combined_ply(
         trainer,
         args.frame_idx,
+        args.split,
         out,
         args.human_color_mode,
         apply_anchor_attention,

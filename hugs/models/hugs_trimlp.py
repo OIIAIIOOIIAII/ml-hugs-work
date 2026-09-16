@@ -172,8 +172,10 @@ class HUGS_TRIMLP:
         if hasattr(self, 'anchor_ids') and self.anchor_ids is not None:
             save_dict['anchor_ids'] = self.anchor_ids
             save_dict['anchor_weights'] = self.anchor_weights
+        if hasattr(self, 'transl'):
+            save_dict['transl'] = self.transl.data
         return save_dict
-    
+
     def load_state_dict(self, state_dict, cfg=None):
         self.active_sh_degree = state_dict['active_sh_degree']
         self._xyz = state_dict['xyz']
@@ -182,7 +184,7 @@ class HUGS_TRIMLP:
         denom = state_dict['denom']
         opt_dict = state_dict['optimizer']
         self.spatial_lr_scale = state_dict['spatial_lr_scale']
-        
+
         self.triplane.load_state_dict(state_dict['triplane'])
         self.appearance_dec.load_state_dict(state_dict['appearance_dec'])
         self.geometry_dec.load_state_dict(state_dict['geometry_dec'])
@@ -190,6 +192,8 @@ class HUGS_TRIMLP:
         self.scaling_multiplier = state_dict['scaling_multiplier']
         self.anchor_ids = state_dict.get('anchor_ids', None)
         self.anchor_weights = state_dict.get('anchor_weights', None)
+        if 'transl' in state_dict and hasattr(self, 'transl'):
+            self.transl.data.copy_(state_dict['transl'])
         
         if cfg is None:
             from hugs.cfg.config import cfg as default_cfg
@@ -517,33 +521,37 @@ class HUGS_TRIMLP:
             gs_xyz_homo = torch.cat([gs_xyz, homogen_coord], dim=-1)
             deformed_xyz = torch.matmul(lbs_T, gs_xyz_homo.unsqueeze(-1))[..., :3, 0]
         
+        smpl_joints = smpl_output.joints[0]  # (J, 3) in SMPL local space
+
         if smpl_scale is not None:
             deformed_xyz = deformed_xyz * smpl_scale.unsqueeze(0)
             gs_scales = gs_scales * smpl_scale.unsqueeze(0)
-        
+            smpl_joints = smpl_joints * smpl_scale
+
         if transl is not None:
             deformed_xyz = deformed_xyz + transl.unsqueeze(0)
-        
+            smpl_joints = smpl_joints + transl
+
         deformed_gs_rotmat = lbs_T[:, :3, :3] @ gs_rotmat
         deformed_gs_rotq = matrix_to_quaternion(deformed_gs_rotmat)
-        
+
         if ext_tfs is not None:
             tr, rotmat, sc = ext_tfs
             deformed_xyz = (tr[..., None] + (sc[None] * (rotmat @ deformed_xyz[..., None]))).squeeze(-1)
             gs_scales = sc * gs_scales
-            
+
             rotq = matrix_to_quaternion(rotmat)
             deformed_gs_rotq = quaternion_multiply(rotq, deformed_gs_rotq)
             deformed_gs_rotmat = quaternion_to_matrix(deformed_gs_rotq)
-        
+
         self.normals = torch.zeros_like(gs_xyz)
         self.normals[:, 2] = 1.0
-        
+
         canon_normals = (gs_rotmat @ self.normals.unsqueeze(-1)).squeeze(-1)
         deformed_normals = (deformed_gs_rotmat @ self.normals.unsqueeze(-1)).squeeze(-1)
-        
+
         deformed_gs_shs = gs_shs.clone()
-        
+
         return {
             'xyz': deformed_xyz,
             'xyz_canon': gs_xyz,
@@ -563,6 +571,7 @@ class HUGS_TRIMLP:
             'lbs_weights': lbs_weights,
             'posedirs': posedirs,
             'gt_lbs_weights': gt_lbs_weights,
+            'smpl_joints_world': smpl_joints,
         }
 
     def oneupSHdegree(self):
@@ -697,7 +706,7 @@ class HUGS_TRIMLP:
         if hasattr(self, 'betas') and self.betas.requires_grad:
             params.append({'params': self.betas, 'lr': cfg.smpl_betas, 'name': 'betas'})
             
-        if hasattr(self, 'transl') and self.betas.requires_grad:
+        if hasattr(self, 'transl') and self.transl.requires_grad:
             params.append({'params': self.transl, 'lr': cfg.smpl_trans, 'name': 'transl'})
         
         self.non_densify_params_keys = [

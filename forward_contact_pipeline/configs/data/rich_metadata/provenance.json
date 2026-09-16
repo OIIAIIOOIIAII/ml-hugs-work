@@ -1,0 +1,30 @@
+{
+  "repository": "https://github.com/paulchhuang/rich_toolkit",
+  "revision": "3b6cf83b0f09e2551f5a20cb180073dea6132cfc",
+  "files": [
+    {
+      "file": "train.tsv",
+      "upstream_path": "resource/meta/train.txt",
+      "git_blob_sha1": "875c79e0d4cb60be778043e5a741ca32144b23c6",
+      "sha256": "5da01e940d8eeb200cecb8c0bb4dfb3ddcdc122915bd5fc8037738584a77c677"
+    },
+    {
+      "file": "gender.json",
+      "upstream_path": "resource/gender.json",
+      "git_blob_sha1": "f431d4c07820bd23094579bf5c0c3dbffba7057d",
+      "sha256": "fa5548ccf4c69506d9ea3ec7e88745ee1c3cfbb5c8ddf7bf1044a183c3ded5de"
+    },
+    {
+      "file": "original_image_extensions.json",
+      "upstream_path": "resource/imgext.json",
+      "git_blob_sha1": "c922c694b025ef586053c45ede2b4c70f14f847a",
+      "sha256": "6f0e07c88b849afe84e33be098b37f52ebcc0fcc3d6a806eb22e23aaf2873b53"
+    }
+  ],
+  "verified_examples": [
+    "hsc_params.py",
+    "multicam2world.py",
+    "utils.py",
+    "smplx2images.py"
+  ]
+}

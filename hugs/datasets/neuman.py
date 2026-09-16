@@ -182,29 +182,34 @@ def rendering_caps(scene_name, nframes, scene):
 
 class NeumanDataset(torch.utils.data.Dataset):
     def __init__(
-        self, seq, split, 
+        self, seq, split,
         render_mode='human_scene',
-        add_bg_points=False, 
+        add_bg_points=False,
         num_bg_points=204_800,
         bg_sphere_dist=5.0,
         clean_pcd=False,
         init_pcd_path=None,
         depth_prior_dir=None,
+        mono_depth_dir=None,
+        vitpose_kp_dir=None,
+        max_frames=None,
     ):
         dataset_path = f"{NEUMAN_PATH}/{seq}"
         self.dataset_path = dataset_path
         self.depth_prior_dir = depth_prior_dir
+        self.mono_depth_dir = mono_depth_dir
+        self.vitpose_kp_dir = vitpose_kp_dir
         scene = neuman_helper.NeuManReader.read_scene(
             dataset_path,
             tgt_size=None,
             normalize=False,
             smpl_type='optimized'
         )
-        
-        smpl_params_path = f'{dataset_path}/4d_humans/smpl_optimized_aligned_scale.npz'        
+
+        smpl_params_path = f'{dataset_path}/4d_humans/smpl_optimized_aligned_scale.npz'
         smpl_params = np.load(smpl_params_path)
         smpl_params = {f: smpl_params[f] for f in smpl_params.files}
-        
+
         if split == 'anim':
             motion_path, start_idx, end_idx, skip = mocap_path(seq)
             motions = np.load(motion_path)
@@ -218,7 +223,7 @@ class NeumanDataset(torch.utils.data.Dataset):
                 'scale': np.array([1.0] * poses.shape[0]),
                 'betas': betas[None].repeat(poses.shape[0], 0)[:, :10],
             }
-            
+
             manual_trans, manual_rot, manual_scale = alignment(seq)
             manual_rotmat = transformations.euler_matrix(*manual_rot)[:3, :3]
             self.manual_rotmat = torch.from_numpy(manual_rotmat).float().unsqueeze(0)
@@ -228,6 +233,8 @@ class NeumanDataset(torch.utils.data.Dataset):
             caps = rendering_caps(seq, nframes, scene)
             scene.captures = caps
         else:
+            if max_frames is not None:
+                scene.captures = scene.captures[:max_frames]
             self.train_split, _, self.val_split = get_data_splits(scene)
         
         self.scene = scene
@@ -384,7 +391,23 @@ class NeumanDataset(torch.utils.data.Dataset):
                 if depth_prior_np.shape != (height, width):
                     depth_prior_np = cv2.resize(depth_prior_np, (width, height), interpolation=cv2.INTER_LINEAR)
                 depth_prior = torch.from_numpy(depth_prior_np).float()
-        
+
+        mono_depth = None
+        if self.mono_depth_dir is not None and self.split in ['train', 'val']:
+            md_path = os.path.join(self.mono_depth_dir, f"{idx:05d}.png")
+            if os.path.exists(md_path):
+                md_np = cv2.imread(md_path, cv2.IMREAD_UNCHANGED).astype(np.float32) / 10000.0
+                if md_np.shape != (height, width):
+                    md_np = cv2.resize(md_np, (width, height), interpolation=cv2.INTER_NEAREST)
+                mono_depth = torch.from_numpy(md_np).float()
+
+        vitpose_kp = None
+        if self.vitpose_kp_dir is not None and self.split in ['train', 'val']:
+            kp_path = os.path.join(self.vitpose_kp_dir, f"{idx:05d}.png.npy")
+            if os.path.exists(kp_path):
+                kp_np = np.load(kp_path).astype(np.float32)  # (17, 3) [x, y, conf]
+                vitpose_kp = torch.from_numpy(kp_np).float()
+
         datum.update({
             "fovx": fovx,
             "fovy": fovy,
@@ -400,14 +423,18 @@ class NeumanDataset(torch.utils.data.Dataset):
             "global_orient": self.smpl_params["global_orient"][idx],
             "body_pose": self.smpl_params["body_pose"][idx],
             "transl": self.smpl_params["transl"][idx],
-            "smpl_scale": self.smpl_params["scale"][idx],
+            "smpl_scale": self.smpl_params["scale"][idx if len(self.smpl_params["scale"]) > 1 else 0],
             "near": znear,
             "far": zfar,
             "frame_idx": torch.tensor(idx).long(),
         })
         if depth_prior is not None:
             datum["depth_prior"] = depth_prior
-        
+        if mono_depth is not None:
+            datum["mono_depth"] = mono_depth
+        if vitpose_kp is not None:
+            datum["vitpose_kp"] = vitpose_kp
+
         if self.split == 'anim':
             datum.update({
                 "manual_rotmat": self.manual_rotmat,

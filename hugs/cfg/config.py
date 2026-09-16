@@ -37,6 +37,7 @@ cfg.train.anim_interval = 4000
 cfg.train.optim_scene = True
 cfg.train.save_progress_images = False
 cfg.train.progress_save_interval = 10
+cfg.train.render_fps = 10
 
 # human model configuration
 cfg.human = OmegaConf.create()
@@ -63,6 +64,7 @@ cfg.human.optim_pose = False
 cfg.human.optim_betas = False
 cfg.human.optim_trans = False
 cfg.human.optim_eps_offsets = False
+cfg.human.zero_transl_init = False  # if True, ignore GT transl from dataset and init to zeros
 cfg.human.activation = 'relu'
 
 cfg.human.canon_nframes = 60
@@ -104,9 +106,15 @@ cfg.human.loss.l1_w = 0.8
 cfg.human.loss.lpips_w = 1.0
 cfg.human.loss.lbs_w = 0.0
 cfg.human.loss.humansep_w = 0.0
+cfg.human.loss.depth_w = 0.0
+cfg.human.loss.vitpose_kp_w = 0.0
 cfg.human.loss.num_patches = 4
 cfg.human.loss.patch_size = 128
 cfg.human.loss.use_patches = 1
+
+# mono depth prior from pre-computed monocular depth estimation (e.g. Depth Anything)
+cfg.dataset.mono_depth_dir = None
+cfg.dataset.vitpose_kp_dir = None
 
 # human model densification configuration
 cfg.human.densification_interval = 100
@@ -175,10 +183,17 @@ cfg.scene.depth_prune_opacity_threshold = 0.03
 cfg.scene.depth_prune_max_frac = 0.05
 cfg.scene.depth_prune_mask_human = True
 
+# mask-aware scene training: suppress floaters projecting into human mask (scheme 1)
+cfg.scene.mask_aware_enabled = False
+cfg.scene.mask_aware_loss_w = 0.0      # weight for scene-only BG loss (0 = no extra render)
+cfg.scene.mask_aware_densify = True    # exclude human-mask region from densify grad stats
+
 # scene model loss coefficients
 cfg.scene.loss = OmegaConf.create()
 cfg.scene.loss.ssim_w = 0.2
 cfg.scene.loss.l1_w = 0.8
+cfg.scene.loss.scene_behind_human_depth_w = 0.0       # hinge loss: scene GS must be deeper than human GS in human mask
+cfg.scene.loss.scene_behind_human_depth_margin = 0.05  # tolerance in camera-space z (metres)
 
 # scene-only SuGaR-style background regularization
 cfg.scene_sugar = OmegaConf.create()
@@ -288,3 +303,12 @@ cfg.anchor_attention.lr = 0.0001
 cfg.anchor_attention.debug_interval = 1000
 cfg.anchor_attention.debug_dir = ''
 cfg.anchor_attention.ckpt = ''
+
+# Temporal extension for anchor-attention (opt-in; default disabled)
+cfg.anchor_attention.temporal = OmegaConf.create()
+cfg.anchor_attention.temporal.enabled = False          # set True to activate
+cfg.anchor_attention.temporal.memory_size = 100        # max frames kept in memory
+cfg.anchor_attention.temporal.decay = 0.85             # exponential decay over frame distance
+cfg.anchor_attention.temporal.temporal_window = 5      # neighbor search radius (frames)
+cfg.anchor_attention.temporal.smooth_loss_w = 0.01     # weight of temporal smoothness loss
+cfg.anchor_attention.temporal.temporal_bias_scale = 1.0  # scale of temporal bias on attention logits

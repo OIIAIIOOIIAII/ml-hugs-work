@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-source /home/u202420081000003/anaconda3/etc/profile.d/conda.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../../miniconda3/etc/profile.d/conda.sh"
 conda activate hugs
 
-cd /hdd/u202420081000003/ml-hugs
+cd "$SCRIPT_DIR/.."
 
 CUDA_VISIBLE_DEVICES=0 python scripts/run_neuman_human_scene_noamass.py \
   --seq lab_size1024_full_sammask_lcc \

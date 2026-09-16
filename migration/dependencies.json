@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "dependencies": [
+    {
+      "path": "Human3R",
+      "url": "https://github.com/fanegg/Human3R.git",
+      "revision": "402f2b2c7f20514e99cb42e4126c46b4ff75593f",
+      "role": "optional frozen frontend",
+      "modified_tracked_files": []
+    },
+    {
+      "path": "GUSH3R",
+      "url": "https://github.com/abkeito/GUSH3R.git",
+      "revision": "bac8d88405ff62453b033c5a2b5709f42fcf50be",
+      "role": "optional frozen frontend and Gaussian renderer",
+      "modified_tracked_files": [
+        "infer.py",
+        "src/dust3r/heads/human_gs/blocks/renderer.py",
+        "src/dust3r/inference.py",
+        "src/dust3r/model.py",
+        "src/mhmr/blocks/dinov2.py"
+      ],
+      "patch": "migration/patches/GUSH3R.patch",
+      "patch_sha256": "c21fb6582db6e9712a6b3546362c2854fe2702c01ae0128637b947676f5f79d7",
+      "patch_reconstruction_verified": true
+    },
+    {
+      "path": "submodules/diff-gaussian-rasterization",
+      "url": "https://github.com/graphdeco-inria/diff-gaussian-rasterization.git",
+      "revision": "59f5f77e3ddbac3ed9db93ec2cfe99ed6c5d121d",
+      "role": "HUGS CUDA extension",
+      "modified_tracked_files": []
+    },
+    {
+      "path": "submodules/simple-knn",
+      "url": "https://gitlab.inria.fr/bkerbl/simple-knn.git",
+      "revision": "f155ec04131cb579f53443a06879d37115f4612f",
+      "role": "HUGS CUDA extension",
+      "modified_tracked_files": []
+    }
+  ],
+  "notes": [
+    "Clone/check out these exact revisions; existing rasterizer and simple-knn remain Git submodules.",
+    "Apply a listed patch only to its recorded revision; never copy weights/caches into Git.",
+    "Frontends and legacy HUGS require their own CUDA/dependency environments; numeric training is independently installable."
+  ]
+}

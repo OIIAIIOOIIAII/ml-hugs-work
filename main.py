@@ -71,7 +71,7 @@ def main(cfg):
     
     # run evaluation
     trainer.validate()
-    trainer.render_full_sequence(keep_images=True)
+    trainer.render_full_sequence(keep_images=True, fps=cfg.train.render_fps)
     
     mode = 'eval' if cfg.eval else 'train'
     with open(os.path.join(cfg.logdir, f'results_{mode}.json'), 'w') as f:

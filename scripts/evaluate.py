@@ -90,10 +90,14 @@ if __name__=='__main__':
     
     cfg = OmegaConf.merge(default_cfg, cfg_file, OmegaConf.from_cli(extras))
     cfg.eval = True
-    
+
+    # Older released checkpoints used 'hugs_triplane' for the current TRIMLP model.
+    if str(getattr(cfg.human, 'name', '')) == 'hugs_triplane':
+        cfg.human.name = 'hugs_trimlp'
+
     if args.output_dir is not None:
         cfg.logdir = args.output_dir
         cfg.logdir_ckpt = args.output_dir
-    
+
     main(cfg)
             

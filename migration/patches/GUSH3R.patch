@@ -1,0 +1,778 @@
+diff --git a/infer.py b/infer.py
+index 3c16e13..a5bb144 100644
+--- a/infer.py
++++ b/infer.py
+@@ -2,7 +2,9 @@
+ """Run GUSH3R inference and render merged background+human Gaussians."""
+ 
+ import argparse
++import gc
+ import glob
++import json
+ import math
+ import os
+ import shutil
+@@ -37,6 +39,75 @@ def parse_args():
+     parser.add_argument("--bg_mask_dilation", type=int, default=3)
+     parser.add_argument("--bg_voxel_size", type=float, default=0.005)
+     parser.add_argument("--bg_gaussian_max", type=int, default=2_000_000)
++    parser.add_argument(
++        "--export_contact_state",
++        action="store_true",
++        help=(
++            "Export compact numerical per-frame Gaussian/SMPL evidence for the "
++            "HUGS contact layer. Does not change inference or rendering."
++        ),
++    )
++    parser.add_argument(
++        "--contact_state_max_gaussians",
++        type=int,
++        default=8192,
++        help="Maximum opacity-ranked scene/human Gaussians stored per frame by --export_contact_state.",
++    )
++    parser.add_argument("--bg-anchor-max", type=int, default=0,
++                        help="Carry this many highest-confidence background Gaussians between chunked windows.")
++    parser.add_argument(
++        "--bg-cap-policy",
++        choices=("random_legacy", "freeze_after_cap", "topk_full", "anchor_budget"),
++        default="random_legacy",
++        help=(
++            "Background-map behaviour once bg_gaussian_max is reached. "
++            "freeze_after_cap is a conservative diagnostic ablation; the "
++            "default preserves the released behaviour."
++        ),
++    )
++    parser.add_argument(
++        "--save_components",
++        action="store_true",
++        help="Also save background-only, human-only and model-native human render diagnostics.",
++    )
++    parser.add_argument(
++        "--background-render-mode",
++        choices=("final", "per-frame", "chunked"),
++        default="final",
++        help=(
++            "Render every frame with the final accumulated background, its own causal "
++            "background snapshot, or bounded independent chunks."
++        ),
++    )
++    parser.add_argument(
++        "--background-chunk-size",
++        type=int,
++        default=32,
++        help=(
++            "Frames per independent reconstruction when --background-render-mode=chunked. "
++            "32 is the validated GoodMornin1 setting."
++        ),
++    )
++    parser.add_argument(
++        "--background-chunk-overlap",
++        type=int,
++        default=0,
++        help=(
++            "Overlap between bounded reconstruction windows.  A positive value "
++            "uses linearly blended overlapping rendered frames as an offline seam "
++            "control; it adds look-ahead and is not an online renderer."
++        ),
++    )
++    parser.add_argument(
++        "--background-chunk-context",
++        type=int,
++        default=0,
++        help=(
++            "Past-frame context prepended to every independent chunk.  The "
++            "chunk emits only its new frames using per-frame causal background "
++            "snapshots; unlike overlap blending it never uses future frames."
++        ),
++    )
+     return parser.parse_args()
+ 
+ 
+@@ -115,11 +186,19 @@ def restore_sampling_cache(ckpt):
+     filename = assets.get("sampling_cache_filename")
+     if payload is None or filename is None:
+         return
+-    cache_dir = "src/dust3r/heads/human_gs/smplx_mesh/sampling_cache"
+-    os.makedirs(cache_dir, exist_ok=True)
+-    cache_path = os.path.join(cache_dir, filename)
+-    if not os.path.exists(cache_path):
+-        torch.save(payload, cache_path)
++    # The model config uses the runtime-relative `dust3r/...` path, while
++    # this repository also keeps source assets under `src/dust3r/...`.
++    # Populate both locations so startup never falls back to the expensive
++    # FPS + constrained-KMeans sampling path.
++    cache_dirs = [
++        "src/dust3r/heads/human_gs/smplx_mesh/sampling_cache",
++        "dust3r/heads/human_gs/smplx_mesh/sampling_cache",
++    ]
++    for cache_dir in cache_dirs:
++        os.makedirs(cache_dir, exist_ok=True)
++        cache_path = os.path.join(cache_dir, filename)
++        if not os.path.exists(cache_path):
++            torch.save(payload, cache_path)
+ 
+ 
+ def load_model(device, args):
+@@ -136,7 +215,50 @@ def load_model(device, args):
+     model.bg_mask_dilation = args.bg_mask_dilation
+     model.bg_voxel_size = args.bg_voxel_size
+     model.bg_gaussian_max = args.bg_gaussian_max
++    model.bg_cap_policy = args.bg_cap_policy
+     model.eval()
++    if os.environ.get("GUSH3R_PROFILE"):
++        def _profile_module(owner, attr, label):
++            original = getattr(owner, attr)
++            if getattr(original, "_gush3r_profile_wrapped", False):
++                return
++            def timed(*a, **kw):
++                if device == "cuda" and torch.cuda.is_available():
++                    torch.cuda.synchronize()
++                t0 = time.perf_counter()
++                out = original(*a, **kw)
++                if device == "cuda" and torch.cuda.is_available():
++                    torch.cuda.synchronize()
++                print(f"[GUSH3R_PROFILE] {label}: {time.perf_counter() - t0:.3f}s", flush=True)
++                return out
++            timed._gush3r_profile_wrapped = True
++            setattr(owner, attr, timed)
++
++        def _profile_forward(module, label):
++            def pre_hook(mod, _inputs):
++                if device == "cuda" and torch.cuda.is_available():
++                    torch.cuda.synchronize()
++                mod._gush3r_profile_t0 = time.perf_counter()
++            def post_hook(mod, _inputs, _output):
++                if device == "cuda" and torch.cuda.is_available():
++                    torch.cuda.synchronize()
++                print(f"[GUSH3R_PROFILE] {label}: {time.perf_counter() - mod._gush3r_profile_t0:.3f}s", flush=True)
++            module.register_forward_pre_hook(pre_hook)
++            module.register_forward_hook(post_hook)
++
++        for attr in ["_encode_image", "_recurrent_rollout", "_downstream_head",
++                     "_merge_gaussians", "_filter_background_gaussian_candidates"]:
++            if hasattr(model, attr):
++                _profile_module(model, attr, attr)
++        _profile_forward(model.backbone, "backbone/MHMR")
++        _profile_forward(model.human_gs_head, "human_gs_head")
++        for owner, attr, label in [
++            (model.pose_retriever, "inquire", "pose_retriever.inquire"),
++            (model.pose_retriever, "update_mem", "pose_retriever.update_mem"),
++        ]:
++            if hasattr(owner, attr):
++                _profile_module(owner, attr, label)
++        print("[GUSH3R_PROFILE] wrappers installed", flush=True)
+     return model
+ 
+ 
+@@ -175,6 +297,76 @@ def build_render_state(outputs):
+     }
+ 
+ 
++def _contact_gaussian_sample(gaussians, max_gaussians, kind):
++    """Compact numerical Gaussian evidence; never serializes renderer images."""
++    if gaussians is None:
++        return {}
++    if kind == "scene":
++        xyz = gaussians.means.view(-1, 3)
++        scales = gaussians.scales.view(-1, 3)
++        rotations = gaussians.rotations.view(-1, 4)
++        opacity = gaussians.opacities.view(-1)
++    else:
++        xyz = gaussians.xyz.view(-1, 3)
++        scales = gaussians.scaling.view(-1, 3)
++        rotations = gaussians.rotation.view(-1, 4)
++        opacity = gaussians.opacity.view(-1)
++    count = len(xyz)
++    if count == 0:
++        return {f"{kind}_count": np.asarray(0, np.int64)}
++    keep = min(int(max_gaussians), count)
++    indices = torch.topk(opacity, k=keep, sorted=False).indices
++    return {
++        f"{kind}_count": np.asarray(count, np.int64),
++        f"{kind}_xyz": xyz[indices].detach().float().cpu().numpy(),
++        f"{kind}_scales": scales[indices].detach().float().cpu().numpy(),
++        f"{kind}_rotations": rotations[indices].detach().float().cpu().numpy(),
++        f"{kind}_opacity": opacity[indices].detach().float().cpu().numpy(),
++    }
++
++
++def export_contact_state(outputs, output_dir, max_gaussians):
++    """Write a frozen-backbone evidence contract for causal contact research.
++
++    The export intentionally contains no RGB pixels and does not claim that
++    Gaussian centers are surfaces.  Downstream code must construct local
++    patches and use covariance/opacity as evidence and reliability only.
++    """
++    evidence_dir = os.path.join(output_dir, "contact_state")
++    os.makedirs(evidence_dir, exist_ok=False)
++    records = []
++    for frame_index, prediction in enumerate(outputs["pred"]):
++        payload = {}
++        payload.update(_contact_gaussian_sample(prediction.get("gaussians"), max_gaussians, "scene"))
++        payload.update(_contact_gaussian_sample(prediction.get("human_gaussians"), max_gaussians, "human"))
++        # These small tensors provide coarse pose/visual-contact evidence.  A
++        # large mask/image-shaped field is deliberately not exported here.
++        for key in ("smpl_shape", "smpl_rotmat", "smpl_transl", "smpl_expression", "smpl_scores", "smpl_loc", "camera_pose"):
++            value = prediction.get(key)
++            if torch.is_tensor(value) and value.numel() <= 100_000:
++                payload[key] = value.detach().float().cpu().numpy()
++        filename = f"{frame_index:06d}.npz"
++        np.savez_compressed(os.path.join(evidence_dir, filename), **payload)
++        records.append({
++            "frame": frame_index,
++            "file": filename,
++            "scene_count": int(payload.get("scene_count", 0)),
++            "human_count": int(payload.get("human_count", 0)),
++            "scene_saved": int(len(payload.get("scene_xyz", []))),
++            "human_saved": int(len(payload.get("human_xyz", []))),
++        })
++    manifest = {
++        "schema": "hugs.forward_contact.gush3r_evidence.v1",
++        "input": "frozen GUSH3R forward output",
++        "contact_rule": "Gaussian centers are not surfaces; use sampled attributes only as local relation/reliability evidence.",
++        "max_gaussians_per_kind": int(max_gaussians),
++        "frames": records,
++    }
++    with open(os.path.join(evidence_dir, "manifest.json"), "w", encoding="utf-8") as handle:
++        json.dump(manifest, handle, indent=2)
++    print(f"Saved numerical contact-state evidence: {evidence_dir}")
++
++
+ def select_background_gaussians(gaussians):
+     return next((g for g in reversed(gaussians) if g is not None), None)
+ 
+@@ -274,7 +466,7 @@ def render_frame(tensors, K, R, t, image_hw, device):
+         prefiltered=False,
+         debug=False,
+     )
+-    image, _, _, _ = GaussianRasterizer(settings)(
++    raster_output = GaussianRasterizer(settings)(
+         means3D=xyz.to(device).float().contiguous(),
+         means2D=torch.zeros_like(xyz, device=device, requires_grad=True).float().contiguous(),
+         shs=shs.to(device).float().contiguous(),
+@@ -284,15 +476,41 @@ def render_frame(tensors, K, R, t, image_hw, device):
+         rotations=rot.to(device).float().contiguous(),
+         cov3D_precomp=None,
+     )
++    image = raster_output[0]
+     return np.clip(image.permute(1, 2, 0).detach().cpu().numpy(), 0.0, 1.0)
+ 
+ 
+-def render_video(state, output_dir, fps, device):
++def _write_rgb(path, frame):
++    frame_u8 = (np.clip(frame, 0.0, 1.0) * 255).astype(np.uint8)
++    cv2.imwrite(path, cv2.cvtColor(frame_u8, cv2.COLOR_RGB2BGR))
++    return frame_u8
++
++
++def render_video(
++    state,
++    output_dir,
++    fps,
++    device,
++    preds=None,
++    save_components=False,
++    background_render_mode="final",
++    frame_offset=0,
++    write_video=True,
++):
+     frames_dir = os.path.join(output_dir, "merged_render")
+     os.makedirs(frames_dir, exist_ok=True)
+-    bg = select_background_gaussians(state["gaussians"])
+-    frames = []
++    components_dir = os.path.join(output_dir, "components")
++    if save_components:
++        for name in ("background", "human_external", "human_native"):
++            os.makedirs(os.path.join(components_dir, name), exist_ok=True)
++    final_bg = select_background_gaussians(state["gaussians"])
++    writer = None
++    if write_video:
++        video_path = os.path.join(output_dir, "render.mp4")
++        writer = imageio.get_writer(video_path, fps=fps)
+     for i, human in enumerate(state["human_gaussians"]):
++        output_index = frame_offset + i
++        bg = state["gaussians"][i] if background_render_mode == "per-frame" else final_bg
+         tensors = merged_tensors(bg, human)
+         if tensors is None:
+             height, width = state["image_hw"]
+@@ -306,12 +524,198 @@ def render_video(state, output_dir, fps, device):
+                 state["image_hw"],
+                 device,
+             )
+-        frame_u8 = (frame * 255).astype(np.uint8)
+-        cv2.imwrite(os.path.join(frames_dir, f"frame_{i:06d}.png"), cv2.cvtColor(frame_u8, cv2.COLOR_RGB2BGR))
+-        frames.append(frame_u8)
++        frame_u8 = _write_rgb(os.path.join(frames_dir, f"frame_{output_index:06d}.png"), frame)
++        if save_components:
++            if bg is not None:
++                background = render_frame(background_tensors(bg), state["intrinsics"][i], state["R"][i], state["t"][i], state["image_hw"], device)
++                _write_rgb(os.path.join(components_dir, "background", f"frame_{output_index:06d}.png"), background)
++            if human is not None:
++                human_external = render_frame(human_tensors(human, background_tensors(bg)[-1].shape[1] if bg is not None else 1), state["intrinsics"][i], state["R"][i], state["t"][i], state["image_hw"], device)
++                _write_rgb(os.path.join(components_dir, "human_external", f"frame_{output_index:06d}.png"), human_external)
++            if preds is not None and preds[i].get("human_rgb") is not None:
++                native = preds[i]["human_rgb"][0].detach().float().permute(1, 2, 0).cpu().numpy()
++                _write_rgb(os.path.join(components_dir, "human_native", f"frame_{output_index:06d}.png"), native)
++        if writer is not None:
++            writer.append_data(frame_u8)
++    if writer is not None:
++        writer.close()
++        print(f"Saved merged Gaussian render: {video_path}")
++
++
++def encode_rendered_frames(output_dir, fps, expected_frames):
++    """Encode globally indexed chunk renders without holding an entire video in RAM."""
++    frames_dir = os.path.join(output_dir, "merged_render")
+     video_path = os.path.join(output_dir, "render.mp4")
+-    imageio.mimsave(video_path, frames, fps=fps)
+-    print(f"Saved merged Gaussian render: {video_path}")
++    writer = imageio.get_writer(video_path, fps=fps)
++    try:
++        for frame_index in range(expected_frames):
++            frame_path = os.path.join(frames_dir, f"frame_{frame_index:06d}.png")
++            if not os.path.exists(frame_path):
++                raise RuntimeError(f"Missing chunked render frame: {frame_path}")
++            writer.append_data(imageio.imread(frame_path))
++    finally:
++        writer.close()
++    print(f"Saved chunked merged Gaussian render: {video_path}")
++
++
++def compose_overlapped_chunk_renders(window_records, output_dir, expected_frames):
++    """Linearly compose overlapping *rendered* windows into one indexed sequence.
++
++    This is deliberately a diagnostic seam control, not a map-fusion solution:
++    an overlap uses future frames from the next window and blending RGB can hide
++    rather than repair geometric disagreement.  It is useful to quantify how
++    much of the boundary jump is merely a hard render switch before implementing
++    an online anchor-map hand-off.
++    """
++    frames_dir = os.path.join(output_dir, "merged_render")
++    os.makedirs(frames_dir, exist_ok=True)
++    for frame_index in range(expected_frames):
++        accumulator = None
++        total_weight = 0.0
++        for record in window_records:
++            start, end = record["start"], record["end_exclusive"]
++            if not start <= frame_index < end:
++                continue
++            local_index = frame_index - start
++            overlap = record["overlap"]
++            weight = 1.0
++            if overlap > 0 and start > 0 and local_index < overlap:
++                weight *= (local_index + 1) / (overlap + 1)
++            if overlap > 0 and end < expected_frames and local_index >= (end - start - overlap):
++                weight *= (end - frame_index) / (overlap + 1)
++            frame_path = os.path.join(record["render_dir"], "merged_render", f"frame_{local_index:06d}.png")
++            frame = imageio.imread(frame_path).astype(np.float32)
++            accumulator = frame * weight if accumulator is None else accumulator + frame * weight
++            total_weight += weight
++        if accumulator is None or total_weight <= 0:
++            raise RuntimeError(f"No window render available for global frame {frame_index}")
++        composed = np.clip(np.rint(accumulator / total_weight), 0, 255).astype(np.uint8)
++        imageio.imwrite(os.path.join(frames_dir, f"frame_{frame_index:06d}.png"), composed)
++
++
++def run_chunked_inference(img_paths, model, args, device):
++    """Bound background fusion to short, independent temporal windows.
++
++    Each window invokes the recurrent inference entry point independently, so its
++    final background can only include frames from that window.  This prevents the
++    long-horizon final-background feedback proven by the quality diagnosis.
++    """
++    if args.background_chunk_size <= 0:
++        raise ValueError("--background-chunk-size must be positive")
++    if not 0 <= args.background_chunk_overlap < args.background_chunk_size:
++        raise ValueError("--background-chunk-overlap must be in [0, background_chunk_size)")
++    if args.background_chunk_context < 0:
++        raise ValueError("--background-chunk-context must be non-negative")
++    if args.background_chunk_context > 0 and args.background_chunk_overlap > 0:
++        raise ValueError("Use either --background-chunk-overlap or --background-chunk-context, not both")
++    if args.bg_anchor_max > 0 and (args.background_chunk_overlap > 0 or args.background_chunk_context > 0):
++        raise ValueError("Anchor hand-off is evaluated without overlap/context confounds")
++
++    from src.dust3r.inference import inference_recurrent_lighter
++
++    fps = max(1, 30 // args.subsample)
++    chunk_records = []
++    bg_anchor = None
++    stride = args.background_chunk_size - args.background_chunk_overlap
++    start_time = time.time()
++    for start in range(0, len(img_paths), stride):
++        end = min(len(img_paths), start + args.background_chunk_size)
++        context_start = max(0, start - args.background_chunk_context)
++        chunk_paths = img_paths[context_start:end]
++        print(
++            f"[chunked] reconstructing output {start}--{end - 1} "
++            f"from input {context_start}--{end - 1} ({len(chunk_paths)} frames)",
++            flush=True,
++        )
++        views = prepare_input(chunk_paths, size=args.size, img_res=getattr(model, "mhmr_img_res", None))
++        with torch.no_grad():
++            outputs, state_args = inference_recurrent_lighter(
++                views,
++                model,
++                device,
++                use_ttt3r=args.use_ttt3r,
++                save_all_bg_gaussians=args.background_chunk_context > 0,
++                initial_bg_anchor=bg_anchor,
++                bg_anchor_max=args.bg_anchor_max,
++            )
++        if args.bg_anchor_max > 0:
++            anchor_records = [entry for entry in state_args if isinstance(entry, dict) and "bg_anchor" in entry]
++            bg_anchor = anchor_records[-1]["bg_anchor"] if anchor_records else None
++            if bg_anchor is None:
++                raise RuntimeError("Requested background anchor export but inference returned none")
++        if args.background_chunk_overlap > 0:
++            window_output_dir = os.path.join(args.output_dir, "overlap_window_renders", f"start_{start:06d}")
++            frame_offset = 0
++        elif args.background_chunk_context > 0:
++            window_output_dir = os.path.join(args.output_dir, "causal_context_window_renders", f"start_{start:06d}")
++            frame_offset = 0
++        else:
++            window_output_dir = args.output_dir
++            frame_offset = start
++        render_video(
++            build_render_state(outputs),
++            window_output_dir,
++            fps,
++            device,
++            preds=outputs["pred"],
++            save_components=args.save_components,
++            background_render_mode="per-frame" if args.background_chunk_context > 0 else "final",
++            frame_offset=frame_offset,
++            write_video=False,
++        )
++        if args.background_chunk_context > 0:
++            merged_dir = os.path.join(args.output_dir, "merged_render")
++            os.makedirs(merged_dir, exist_ok=True)
++            local_start = start - context_start
++            for global_index in range(start, end):
++                local_index = local_start + global_index - start
++                source = os.path.join(window_output_dir, "merged_render", f"frame_{local_index:06d}.png")
++                destination = os.path.join(merged_dir, f"frame_{global_index:06d}.png")
++                shutil.copyfile(source, destination)
++        chunk_records.append({
++            "start": start,
++            "end_exclusive": end,
++            "num_frames": end - start,
++            "overlap": args.background_chunk_overlap,
++            "context_start": context_start,
++            "past_context": start - context_start,
++            "anchor_max": args.bg_anchor_max,
++            "render_dir": window_output_dir if args.background_chunk_overlap > 0 else args.output_dir,
++        })
++        # Per-frame background snapshots can be tens of GiB even for a bounded
++        # window.  Release the complete previous window before constructing the
++        # next one; otherwise Python keeps it live during the next forward pass.
++        del outputs, views
++        gc.collect()
++        if device == "cuda":
++            torch.cuda.empty_cache()
++
++    if args.background_chunk_overlap > 0:
++        compose_overlapped_chunk_renders(chunk_records, args.output_dir, len(img_paths))
++    encode_rendered_frames(args.output_dir, fps, len(img_paths))
++    manifest_path = os.path.join(args.output_dir, "chunked_render_manifest.json")
++    with open(manifest_path, "w", encoding="utf-8") as handle:
++        json.dump(
++            {
++                "background_render_mode": "chunked",
++                "chunk_size": args.background_chunk_size,
++                "chunk_overlap": args.background_chunk_overlap,
++                "chunk_past_context": args.background_chunk_context,
++                "temporal_composition": "linear_render_blend" if args.background_chunk_overlap > 0 else "none",
++                "causal_background_snapshots": args.background_chunk_context > 0,
++                "future_free_rendering": args.background_chunk_overlap == 0,
++                # This CLI re-runs a finite window and has not yet implemented
++                # recurrent-state serialization, so it is not a latency-proven
++                # streaming runtime even when its rendered frames are causal.
++                "online_compatible": False,
++                "num_frames": len(img_paths),
++                "chunks": [{key: value for key, value in record.items() if key != "render_dir"} for record in chunk_records],
++                "elapsed_seconds": time.time() - start_time,
++            },
++            handle,
++            indent=2,
++        )
++    print(f"Saved chunked render manifest: {manifest_path}")
+ 
+ 
+ def main():
+@@ -328,19 +732,38 @@ def main():
+         raise ValueError(f"No input frames found: {args.seq_path}")
+ 
+     model = load_model(device, args)
++    if args.background_render_mode == "chunked":
++        run_chunked_inference(img_paths, model, args, device)
++        if tmpdir is not None:
++            shutil.rmtree(tmpdir)
++        return
++
+     views = prepare_input(img_paths, size=args.size, img_res=getattr(model, "mhmr_img_res", None))
+ 
+     from src.dust3r.inference import inference_recurrent_lighter
+ 
+     start = time.time()
+     with torch.no_grad():
+-        outputs, _ = inference_recurrent_lighter(views, model, device, use_ttt3r=args.use_ttt3r)
++        outputs, _ = inference_recurrent_lighter(
++            views,
++            model,
++            device,
++            use_ttt3r=args.use_ttt3r,
++            save_all_bg_gaussians=args.background_render_mode == "per-frame",
++        )
+     print(f"Inference finished in {time.time() - start:.2f}s")
+ 
++    if args.export_contact_state:
++        export_contact_state(outputs, args.output_dir, args.contact_state_max_gaussians)
++
+     if tmpdir is not None:
+         shutil.rmtree(tmpdir)
+ 
+-    render_video(build_render_state(outputs), args.output_dir, max(1, 30 // args.subsample), device)
++    render_video(
++        build_render_state(outputs), args.output_dir, max(1, 30 // args.subsample), device,
++        preds=outputs["pred"], save_components=args.save_components,
++        background_render_mode=args.background_render_mode,
++    )
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/src/dust3r/heads/human_gs/blocks/renderer.py b/src/dust3r/heads/human_gs/blocks/renderer.py
+index bcfc65d..83efea6 100644
+--- a/src/dust3r/heads/human_gs/blocks/renderer.py
++++ b/src/dust3r/heads/human_gs/blocks/renderer.py
+@@ -186,7 +186,7 @@ class GaussianRenderer:
+ 
+             # ---- rasterize ----
+             # print(f"Rendering batch {b+1}/{B} with {means3D.shape[0]} Gaussians...")
+-            rendered_image, radii, rendered_depth, rendered_alpha = rasterizer(
++            raster_output = rasterizer(
+                 means3D=self._to_raster_dtype(means3D),
+                 means2D=self._to_raster_dtype(screenspace_points),
+                 shs=self._to_raster_dtype(shs),
+@@ -196,6 +196,15 @@ class GaussianRenderer:
+                 rotations=self._to_raster_dtype(rots),
+                 cov3D_precomp=None,
+             )
++            # The standard diff-gaussian-rasterization package returns
++            # (color, radii); custom forks may additionally return depth and
++            # alpha. Keep inference compatible with both APIs.
++            if len(raster_output) == 2:
++                rendered_image, radii = raster_output
++                rendered_depth = rendered_image.new_zeros(rendered_image.shape[1:])
++                rendered_alpha = rendered_image.new_ones(rendered_image.shape[1:])
++            else:
++                rendered_image, radii, rendered_depth, rendered_alpha = raster_output
+ 
+             # ---- 出力を [H,W,C] に整形（元コードと同じ）----
+             comp_rgb = rendered_image.permute(1, 2, 0)  # [H,W,3]
+diff --git a/src/dust3r/inference.py b/src/dust3r/inference.py
+index 645c5c5..d822e94 100755
+--- a/src/dust3r/inference.py
++++ b/src/dust3r/inference.py
+@@ -174,6 +174,8 @@ def inference_recurrent_lighter(
+     save_all_bg_gaussians=False,
+     output_callback=None,
+     keep_outputs=True,
++    initial_bg_anchor=None,
++    bg_anchor_max=0,
+ ):
+     if verbose:
+         print(f">> Inference with model on {len(groups)} image/raymaps")
+@@ -192,6 +194,8 @@ def inference_recurrent_lighter(
+                 save_all_bg_gaussians=save_all_bg_gaussians,
+                 output_callback=output_callback,
+                 keep_outputs=keep_outputs,
++                initial_bg_anchor=initial_bg_anchor,
++                bg_anchor_max=bg_anchor_max,
+             )
+         res = dict(views=batch, pred=preds)
+     return res, state_args
+diff --git a/src/dust3r/model.py b/src/dust3r/model.py
+index a35ef7e..8a96c8c 100644
+--- a/src/dust3r/model.py
++++ b/src/dust3r/model.py
+@@ -1745,6 +1745,65 @@ class ARCroco3DStereo(CroCoNet):
+                 unique_voxels, inverse_indices = torch.unique(v_indices, return_inverse=True, dim=0)
+                 num_voxels = unique_voxels.shape[0]
+ 
++                # A bounded online map must not randomly replace its entire
++                # content after reaching capacity.  In the released code the
++                # nominal "Top-K" branch below used a fresh randperm every
++                # frame, which caused visible background flicker.  The default
++                # causal policy fills the remaining slots once with the most
++                # confident current-frame candidates, then freezes this local
++                # window map.  It is deliberately conservative: later frames
++                # cannot overwrite established geometry, and a new chunk is a
++                # fresh opportunity to incorporate novel views.
++                # Preserve the released behaviour unless an experiment opts in
++                # to the conservative policy.  The freeze policy is useful as
++                # an ablation, but cannot be the default because later views
++                # are needed to fill regions initially occluded by people.
++                cap_policy = getattr(self, "bg_cap_policy", "random_legacy")
++                prior_valid = global_conf[b] > -1e9
++                prior_count = int(prior_valid.sum().item())
++                if cap_policy == "freeze_after_cap" and num_voxels > N_max:
++                    if prior_count >= N_max:
++                        out_pts.append(global_pts[b])
++                        out_feats.append(global_feats[b])
++                        out_conf.append(global_conf[b])
++                        print(
++                            "[BG voxel] "
++                            f"frame={frame_idx} batch={b} cap_policy=freeze "
++                            f"kept_prior={prior_count}/{N_max}",
++                            flush=True,
++                        )
++                        continue
++
++                    slots = N_max - prior_count
++                    candidate_valid = new_conf[b] > -1e9
++                    candidate_indices = torch.nonzero(candidate_valid, as_tuple=False).squeeze(1)
++                    if candidate_indices.numel() > slots:
++                        candidate_conf = new_conf[b][candidate_indices]
++                        candidate_indices = candidate_indices[
++                            torch.topk(candidate_conf, k=slots, largest=True, sorted=False).indices
++                        ]
++                    elif candidate_indices.numel() < slots:
++                        slots = int(candidate_indices.numel())
++
++                    v_pts = torch.cat([global_pts[b][prior_valid], new_pts[b][candidate_indices]], dim=0)
++                    v_feats = torch.cat([global_feats[b][prior_valid], new_feats[b][candidate_indices]], dim=0)
++                    v_conf = torch.cat([global_conf[b][prior_valid], new_conf[b][candidate_indices]], dim=0)
++                    pad_n = N_max - v_conf.shape[0]
++                    if pad_n > 0:
++                        v_pts = torch.cat([v_pts, torch.full((pad_n, 3), -1e4, device=global_pts.device, dtype=global_pts.dtype)], dim=0)
++                        v_feats = torch.cat([v_feats, torch.full((pad_n, global_feats.shape[2]), -1e10, device=global_feats.device, dtype=global_feats.dtype)], dim=0)
++                        v_conf = torch.cat([v_conf, torch.full((pad_n,), -1e10, device=global_conf.device, dtype=global_conf.dtype)], dim=0)
++                    out_pts.append(v_pts)
++                    out_feats.append(v_feats)
++                    out_conf.append(v_conf)
++                    print(
++                        "[BG voxel] "
++                        f"frame={frame_idx} batch={b} cap_policy=fill_then_freeze "
++                        f"prior={prior_count} added={slots} kept={int((v_conf > -1e9).sum().item())}/{N_max}",
++                        flush=True,
++                    )
++                    continue
++
+                 # --- ここが「置き換え」の核心 ---
+                 # 各voxel内で、combined_confが最大値をとる「元のインデックス」を取得する
+                 conf_voxel_max, voxel_argmax = scatter_max(combined_conf[b], inverse_indices, dim=0, dim_size=num_voxels) # [N_unique]
+@@ -1765,9 +1824,27 @@ class ARCroco3DStereo(CroCoNet):
+ 
+                 # 2. N_maxへのフィッティング (Top-K)
+                 if num_voxels > N_max:
+-                    # 自信度を確率分布に変換 (Softmaxなどで正規化)
+-                    # Tを大きくするとより一様(背景も拾う)になり、小さくするとTop-Kに近づく
+-                    keep_idx = torch.randperm(num_voxels, device=combined_conf.device)[:N_max]
++                    if cap_policy == "topk_full":
++                        # Deterministic but expensive diagnostic: it ranks the
++                        # complete map at every update and is not an online
++                        # default for multi-million-Gaussian maps.
++                        keep_idx = torch.topk(voxel_conf, k=N_max, largest=True, sorted=False).indices
++                    elif cap_policy == "anchor_budget":
++                        protected_slots = min(int(getattr(self, "_bg_anchor_protected_count", 0)), global_conf.shape[1])
++                        source_anchor = torch.zeros(combined_conf.shape[1], device=combined_conf.device, dtype=combined_conf.dtype)
++                        if protected_slots > 0:
++                            source_anchor[:protected_slots] = 1.0
++                        anchor_voxel, _ = scatter_max(source_anchor, inverse_indices, dim=0, dim_size=num_voxels)
++                        protected_idx = torch.nonzero(anchor_voxel > 0.5, as_tuple=False).squeeze(1)
++                        remaining = N_max - protected_idx.numel()
++                        candidate_idx = torch.nonzero(anchor_voxel <= 0.5, as_tuple=False).squeeze(1)
++                        if candidate_idx.numel() > remaining:
++                            candidate_idx = candidate_idx[torch.randperm(candidate_idx.numel(), device=combined_conf.device)[:remaining]]
++                        keep_idx = torch.cat([protected_idx, candidate_idx], dim=0)
++                    else:
++                        # Released behaviour.  This remains the default until
++                        # the bounded reliable-update replacement is validated.
++                        keep_idx = torch.randperm(num_voxels, device=combined_conf.device)[:N_max]
+                     
+                     v_pts = voxel_means[keep_idx]
+                     v_feats = voxel_feats[keep_idx]
+@@ -1927,6 +2004,8 @@ class ARCroco3DStereo(CroCoNet):
+         save_all_bg_gaussians=False,
+         output_callback=None,
+         keep_outputs=True,
++        initial_bg_anchor=None,
++        bg_anchor_max=0,
+     ):
+         ress = []
+         all_state_args = []
+@@ -1949,6 +2028,18 @@ class ARCroco3DStereo(CroCoNet):
+         global_conf = torch.full((B, init_cap), -1e10, device=device, dtype=views[0]["img"].dtype)
+         global_pts =  torch.full((B, init_cap, 3), -1e4, device=device, dtype=views[0]["img"].dtype)
+         global_feats = torch.full((B, init_cap, self.downstream_head.raw_gs_dim), -1e10, device=device, dtype=views[0]["img"].dtype)
++        if initial_bg_anchor is not None:
++            anchor_conf = initial_bg_anchor["conf"].to(device=device, dtype=global_conf.dtype)
++            anchor_pts = initial_bg_anchor["pts"].to(device=device, dtype=global_pts.dtype)
++            anchor_feats = initial_bg_anchor["feats"].to(device=device, dtype=global_feats.dtype)
++            count = min(anchor_conf.shape[1], N_max)
++            global_conf[:, :count] = anchor_conf[:, :count]
++            global_pts[:, :count] = anchor_pts[:, :count]
++            global_feats[:, :count] = anchor_feats[:, :count]
++            print(f"[BG anchor] initialized {count}/{N_max} carried Gaussians", flush=True)
++            self._bg_anchor_protected_count = count
++        else:
++            self._bg_anchor_protected_count = 0
+         for i, _view in enumerate(views):
+             view = to_gpu(_view, device)
+             batch_size = view["img"].shape[0]
+@@ -2450,6 +2541,21 @@ class ARCroco3DStereo(CroCoNet):
+                 )
+                 mem = init_mem * reset_mask + mem * (1 - reset_mask)
+            
++        if bg_anchor_max > 0:
++            valid = global_conf[0] > -1e9
++            valid_idx = torch.nonzero(valid, as_tuple=False).squeeze(1)
++            keep = min(int(valid_idx.numel()), int(bg_anchor_max))
++            if keep > 0:
++                scores = global_conf[0, valid_idx]
++                selected = valid_idx[torch.topk(scores, k=keep, largest=True, sorted=False).indices]
++                all_state_args.append({
++                    "bg_anchor": {
++                        "conf": global_conf[:, selected].detach(),
++                        "pts": global_pts[:, selected].detach(),
++                        "feats": global_feats[:, selected].detach(),
++                    }
++                })
++                print(f"[BG anchor] exported {keep} high-confidence Gaussians", flush=True)
+         if ret_state:
+             return ress, views, all_state_args
+         return ress, views
+diff --git a/src/mhmr/blocks/dinov2.py b/src/mhmr/blocks/dinov2.py
+index f5b06fa..9b4264f 100644
+--- a/src/mhmr/blocks/dinov2.py
++++ b/src/mhmr/blocks/dinov2.py
+@@ -2,6 +2,8 @@
+ # Copyright (c) 2024-present NAVER Corp.
+ # CC BY-NC-SA 4.0 license
+ 
++import os
++
+ import torch
+ from torch import nn
+ 
+@@ -9,7 +11,14 @@ class Dinov2Backbone(nn.Module):
+     def __init__(self, name='dinov2_vitb14', pretrained=False, *args, **kwargs):
+         super().__init__()
+         self.name = name
+-        self.encoder = torch.hub.load('facebookresearch/dinov2', self.name, pretrained=pretrained)
++        # Offline/reproducible experiments can supply an already-populated
++        # torch-hub checkout.  This avoids Hub's default-branch probe, which
++        # may attempt GitHub access even when the checkout is present locally.
++        local_repo = os.environ.get("GUSH3R_DINO_HUB_LOCAL_REPO")
++        if local_repo:
++            self.encoder = torch.hub.load(local_repo, self.name, source="local", pretrained=pretrained)
++        else:
++            self.encoder = torch.hub.load('facebookresearch/dinov2', self.name, pretrained=pretrained)
+         self.patch_size = self.encoder.patch_size
+         self.embed_dim = self.encoder.embed_dim
+ 
+@@ -24,4 +33,3 @@ class Dinov2Backbone(nn.Module):
+         assert len(x.shape) == 4
+         y = self.encoder.get_intermediate_layers(x)[0] # ViT-L+896x896: [bs,4096,1024] - [bs,nb_patches,emb]
+         return y
+-

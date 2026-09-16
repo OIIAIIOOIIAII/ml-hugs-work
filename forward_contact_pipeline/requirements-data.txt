@@ -1,0 +1,3 @@
+# Metadata preparation only; no CUDA/backbone dependencies.
+numpy==1.24.4
+Pillow==10.4.0

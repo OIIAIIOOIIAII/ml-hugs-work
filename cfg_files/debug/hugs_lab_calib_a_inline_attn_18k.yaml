@@ -1,0 +1,168 @@
+anchor_attention:
+  anchor_vertices_path: ''
+  ckpt: ''
+  correct_feature_dc: false
+  correct_opacity: false
+  correct_scale: false
+  correct_transl: true
+  correct_xyz: true
+  correction_start_iter: 2000
+  correction_warmup_iters: 500
+  count_per_anchor: 64
+  debug_dir: ''
+  debug_interval: 1000
+  delta_correction_smooth_w: 0.0
+  delta_loss_w: 0.001
+  gamma_mu: 0.005
+  gamma_opacity: 0.05
+  gamma_transl_decay_end: 15000
+  gamma_transl_decay_start: 2000
+  gamma_transl_final: 0.05
+  gamma_transl_init: 2.0
+  hidden_dim: 128
+  human_pooling: attention
+  lambda_lbs: 0.35
+  lr: 0.0001
+  max_scene_candidates: 200000
+  min_sigma: 0.035
+  module_start_iter: 2000
+  scene_opacity_threshold: 0.01
+  scene_topk: 32
+  sigma_scale: 1.8
+  top_m: 2
+  transl_delta_clamp: 0.5
+  use_anchor_token_encoder: true
+  use_anchors: true
+  use_cross_attention: true
+  use_interaction_correction: true
+  use_scene_query: true
+  zero_init_delta: true
+bg_color: white
+dataset:
+  mono_depth_dir: data/neuman/dataset/lab_calib_a/mono_depth
+  name: neuman
+  seq: lab_calib_a
+dataset_path: ''
+debug: false
+detect_anomaly: false
+eval: false
+exp_name: calib_a_inline_attn_18k
+human:
+  activation: relu
+  canon_nframes: 60
+  canon_pose_type: da_pose
+  ckpt: null
+  densification_interval: 600
+  densify_extent: 1.0
+  densify_from_iter: 3000
+  densify_grad_threshold: 0.0002
+  densify_until_iter: 15000
+  disable_posedirs: true
+  estimate_delta: true
+  init_2d: false
+  init_scale_multiplier: 0.5
+  isotropic: false
+  knn_n_hops: 3
+  loss:
+    depth_w: 0.05
+    humansep_w: 1.0
+    l1_w: 0.8
+    lbs_w: 1000.0
+    lpips_w: 1.0
+    num_patches: 4
+    patch_size: 128
+    ssim_w: 0.2
+    use_patches: 1
+  lr:
+    appearance: 0.001
+    deformation: 0.0001
+    feature: 0.0025
+    geometry: 0.001
+    lbs_weights: 0.0
+    opacity: 0.05
+    percent_dense: 0.01
+    posedirs: 0.0
+    position: 0.00016
+    position_delay_mult: 0.01
+    position_final: 1.6e-06
+    position_init: 0.00016
+    position_max_steps: 30000
+    rotation: 0.001
+    scale_lr_w_npoints: false
+    scaling: 0.005
+    smpl_betas: 0.0001
+    smpl_eps_offset: 0.0001
+    smpl_pose: 0.0001
+    smpl_spatial: 2.0
+    smpl_trans: 0.0005
+    vembed: 0.001
+    wd: 0.0
+  max_n_gaussians: 524288
+  n_subdivision: 2
+  name: hugs_trimlp
+  only_rgb: false
+  opacity_reset_interval: 3000
+  optim_betas: false
+  optim_eps_offsets: false
+  optim_pose: true
+  optim_trans: true
+  percent_dense: 0.01
+  prune_min_opacity: 0.005
+  res_offset: false
+  rotate_sh: false
+  run_init: false
+  sh_degree: 0
+  triplane_res: 256
+  use_deformer: true
+  use_surface: false
+mode: human_scene
+output_path: output
+scene:
+  add_bg_points: false
+  bg_sphere_dist: 5.0
+  ckpt: null
+  clean_pcd: false
+  densification_interval: 100
+  densify_from_iter: 500
+  densify_grad_threshold: 0.0002
+  densify_until_iter: 15000
+  init_pcd_path: null
+  loss:
+    l1_w: 0.8
+    ssim_w: 0.2
+  lr:
+    feature: 0.0025
+    opacity: 0.05
+    percent_dense: 0.01
+    position_delay_mult: 0.01
+    position_final: 1.6e-06
+    position_init: 0.00016
+    position_max_steps: 30000
+    rotation: 0.001
+    scaling: 0.005
+    spatial_scale: 1.0
+  max_n_gaussians: 2097152
+  name: scene_gs
+  num_bg_points: 204800
+  opacity_reset_interval: 20000
+  opt_start_iter: -1
+  percent_dense: 0.01
+  prune_min_opacity: 0.005
+  sh_degree: 3
+scene_global_aware_adc:
+  enabled: false
+scene_sugar:
+  enabled: false
+seed: 0
+train:
+  anim_interval: -1
+  batch_size: 1
+  debug_ply_interval: 1000
+  num_steps: 17998
+  num_workers: 0
+  optim_scene: true
+  progress_save_interval: 999999
+  save_ckpt_interval: 6000
+  save_progress_images: false
+  val_interval: 1000
+wandb: false

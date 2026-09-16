@@ -18,23 +18,33 @@ from hugs.utils.rotations import quaternion_to_matrix
 
 
 def render_human_scene(
-    data, 
+    data,
     human_gs_out,
     scene_gs_out,
-    bg_color, 
+    bg_color,
     human_bg_color=None,
-    scaling_modifier=1.0, 
+    scaling_modifier=1.0,
     render_mode='human_scene',
     render_human_separate=False,
+    fused_gs_out=None,
 ):
 
     feats = None
     if render_mode == 'human_scene':
-        feats = torch.cat([human_gs_out['shs'], scene_gs_out['shs']], dim=0)
-        means3D = torch.cat([human_gs_out['xyz'], scene_gs_out['xyz']], dim=0)
-        opacity = torch.cat([human_gs_out['opacity'], scene_gs_out['opacity']], dim=0)
-        scales = torch.cat([human_gs_out['scales'], scene_gs_out['scales']], dim=0)
-        rotations = torch.cat([human_gs_out['rotq'], scene_gs_out['rotq']], dim=0)
+        if fused_gs_out is not None:
+            # STM-style: fused_gs_out contains human+scene concatenated (N_human+N_scene points).
+            # Use fused output for all GS, matching STM's HumanSceneFuseDecoder design exactly.
+            feats = fused_gs_out['shs'].reshape(-1, 16, 3)
+            means3D = fused_gs_out['xyz']
+            opacity = fused_gs_out['opacity']
+            scales = fused_gs_out['scales']
+            rotations = fused_gs_out['rotq']
+        else:
+            feats = torch.cat([human_gs_out['shs'], scene_gs_out['shs']], dim=0)
+            means3D = torch.cat([human_gs_out['xyz'], scene_gs_out['xyz']], dim=0)
+            opacity = torch.cat([human_gs_out['opacity'], scene_gs_out['opacity']], dim=0)
+            scales = torch.cat([human_gs_out['scales'], scene_gs_out['scales']], dim=0)
+            rotations = torch.cat([human_gs_out['rotq'], scene_gs_out['rotq']], dim=0)
         active_sh_degree = human_gs_out['active_sh_degree']
     elif render_mode == 'human':
         feats = human_gs_out['shs']
@@ -100,6 +110,60 @@ def render_human_scene(
     return render_pkg
     
     
+def render_depth_map(means3D, opacity, scales, rotations, data):
+    """Render depth by alpha-compositing camera-space z values as precomputed colors.
+
+    Returns a (1, H, W) tensor of rendered depth (camera-space z).
+    Gradients flow back to means3D through both the projection (alpha weights)
+    and the precomputed depth values used as color channels.
+    """
+    # Camera-space z: p_cam = p_world @ world_view_transform (row-vector convention)
+    # world_view_transform = W2C.T, so column j of result = row j of world_view_transform
+    wvt = data['world_view_transform']
+    depth_vals = means3D @ wvt[:3, 2] + wvt[3, 2]  # (N,)
+    depth_3ch = depth_vals.unsqueeze(-1).expand(-1, 3).contiguous()  # (N, 3)
+
+    screenspace_points = torch.zeros_like(means3D, dtype=means3D.dtype,
+                                          requires_grad=True, device="cuda") + 0
+    try:
+        screenspace_points.retain_grad()
+    except Exception:
+        pass
+
+    bg_color_zero = torch.zeros(3, dtype=torch.float32, device="cuda")
+    tanfovx = math.tan(data['fovx'] * 0.5)
+    tanfovy = math.tan(data['fovy'] * 0.5)
+    raster_settings = GaussianRasterizationSettings(
+        image_height=int(data['image_height']),
+        image_width=int(data['image_width']),
+        tanfovx=tanfovx,
+        tanfovy=tanfovy,
+        bg=bg_color_zero,
+        scale_modifier=1.0,
+        viewmatrix=data['world_view_transform'],
+        projmatrix=data['full_proj_transform'],
+        sh_degree=0,
+        campos=data['camera_center'],
+        prefiltered=False,
+        debug=False,
+    )
+    rasterizer = GaussianRasterizer(raster_settings=raster_settings)
+    raster_out = rasterizer(
+        means3D=means3D,
+        means2D=screenspace_points,
+        shs=None,
+        colors_precomp=depth_3ch,
+        opacities=opacity,
+        scales=scales,
+        rotations=rotations,
+    )
+    if isinstance(raster_out, tuple):
+        rendered_depth = raster_out[0]
+    else:
+        rendered_depth = raster_out
+    return rendered_depth[0:1]  # (1, H, W)
+
+
 def render(means3D, feats, opacity, scales, rotations, data, scaling_modifier=1.0, bg_color=None, active_sh_degree=0):
     if bg_color is None:
         bg_color = torch.zeros(3, dtype=torch.float32, device="cuda")
