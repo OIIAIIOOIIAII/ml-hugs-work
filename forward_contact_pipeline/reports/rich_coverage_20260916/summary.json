@@ -1,0 +1,2912 @@
+{
+  "data": {
+    "budgets": {
+      "small": {
+        "samples": 528,
+        "body_frames": 417,
+        "sequences": [
+          "BBQ_001_juggle",
+          "LectureHall_018_wipingspray1",
+          "ParkingLot1_002_overfence1",
+          "ParkingLot1_002_overfence2",
+          "ParkingLot1_002_pushup1",
+          "ParkingLot1_004_burpeejump1",
+          "ParkingLot1_004_eating1",
+          "ParkingLot1_004_phonetalk1",
+          "Pavallion_000_phonesiteat",
+          "Pavallion_000_plankjack",
+          "Pavallion_000_yoga2",
+          "Pavallion_002_phonesiteat",
+          "Pavallion_002_plankjack"
+        ],
+        "subjects": [
+          "000",
+          "001",
+          "002",
+          "004",
+          "018"
+        ],
+        "cameras": [
+          0,
+          2,
+          3
+        ]
+      },
+      "expanded": {
+        "samples": 1360,
+        "body_frames": 1104,
+        "sequences": [
+          "BBQ_001_guitar",
+          "BBQ_001_juggle",
+          "LectureHall_018_wipingchairs1",
+          "LectureHall_018_wipingspray1",
+          "ParkingLot1_002_burpee3",
+          "ParkingLot1_002_overfence1",
+          "ParkingLot1_002_overfence2",
+          "ParkingLot1_002_pushup1",
+          "ParkingLot1_002_stretching1",
+          "ParkingLot1_004_burpeejump1",
+          "ParkingLot1_004_eating1",
+          "ParkingLot1_004_phonetalk1",
+          "ParkingLot1_004_pushup2",
+          "ParkingLot1_004_takingphotos1",
+          "ParkingLot1_005_burpeejump2",
+          "ParkingLot1_005_overfence1",
+          "ParkingLot1_005_pushup2",
+          "ParkingLot1_005_pushup3",
+          "ParkingLot1_007_eating1",
+          "ParkingLot1_007_eating2",
+          "ParkingLot1_007_overfence2",
+          "Pavallion_000_phonesiteat",
+          "Pavallion_000_plankjack",
+          "Pavallion_000_sidebalancerun",
+          "Pavallion_000_yoga2",
+          "Pavallion_002_phonesiteat",
+          "Pavallion_002_plankjack",
+          "Pavallion_006_plankjack",
+          "Pavallion_006_sidebalancerun",
+          "Pavallion_013_phonesiteat",
+          "Pavallion_013_plankjack",
+          "Pavallion_013_yoga2"
+        ],
+        "subjects": [
+          "000",
+          "001",
+          "002",
+          "004",
+          "005",
+          "006",
+          "007",
+          "013",
+          "018"
+        ],
+        "cameras": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    "tune_samples": 96,
+    "tune_subjects": [
+      "003",
+      "020"
+    ],
+    "tune_sequences": [
+      "LectureHall_020_wipingtable1",
+      "Pavallion_003_plankjack",
+      "Pavallion_003_sidebalancerun"
+    ],
+    "tune_camera": 4,
+    "new_cache_failures": [
+      {
+        "clip": 20,
+        "sequence": "ParkingLot1_002_burpee3",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 21,
+        "sequence": "ParkingLot1_002_burpee3",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 24,
+        "sequence": "ParkingLot1_002_overfence1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 25,
+        "sequence": "ParkingLot1_002_overfence1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 28,
+        "sequence": "ParkingLot1_002_overfence2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 29,
+        "sequence": "ParkingLot1_002_overfence2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 32,
+        "sequence": "ParkingLot1_002_pushup1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 33,
+        "sequence": "ParkingLot1_002_pushup1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 36,
+        "sequence": "ParkingLot1_002_stretching1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 37,
+        "sequence": "ParkingLot1_002_stretching1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 40,
+        "sequence": "ParkingLot1_004_burpeejump1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 41,
+        "sequence": "ParkingLot1_004_burpeejump1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 44,
+        "sequence": "ParkingLot1_004_eating1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 45,
+        "sequence": "ParkingLot1_004_eating1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 48,
+        "sequence": "ParkingLot1_004_phonetalk1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 49,
+        "sequence": "ParkingLot1_004_phonetalk1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 52,
+        "sequence": "ParkingLot1_004_pushup2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 53,
+        "sequence": "ParkingLot1_004_pushup2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 56,
+        "sequence": "ParkingLot1_004_takingphotos1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 57,
+        "sequence": "ParkingLot1_004_takingphotos1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 60,
+        "sequence": "ParkingLot1_005_burpeejump2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 61,
+        "sequence": "ParkingLot1_005_burpeejump2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 64,
+        "sequence": "ParkingLot1_005_overfence1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 65,
+        "sequence": "ParkingLot1_005_overfence1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 68,
+        "sequence": "ParkingLot1_005_pushup2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 69,
+        "sequence": "ParkingLot1_005_pushup2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 72,
+        "sequence": "ParkingLot1_005_pushup3",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 73,
+        "sequence": "ParkingLot1_005_pushup3",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 76,
+        "sequence": "ParkingLot1_007_eating1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 77,
+        "sequence": "ParkingLot1_007_eating1",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 80,
+        "sequence": "ParkingLot1_007_eating2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 81,
+        "sequence": "ParkingLot1_007_eating2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 84,
+        "sequence": "ParkingLot1_007_overfence2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 85,
+        "sequence": "ParkingLot1_007_overfence2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 86,
+        "sequence": "Pavallion_000_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 87,
+        "sequence": "Pavallion_000_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 88,
+        "sequence": "Pavallion_000_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 89,
+        "sequence": "Pavallion_000_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 90,
+        "sequence": "Pavallion_000_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 91,
+        "sequence": "Pavallion_000_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 92,
+        "sequence": "Pavallion_000_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 93,
+        "sequence": "Pavallion_000_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 96,
+        "sequence": "Pavallion_000_sidebalancerun",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 97,
+        "sequence": "Pavallion_000_sidebalancerun",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 102,
+        "sequence": "Pavallion_002_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 104,
+        "sequence": "Pavallion_002_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 105,
+        "sequence": "Pavallion_002_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 109,
+        "sequence": "Pavallion_002_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 110,
+        "sequence": "Pavallion_003_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 111,
+        "sequence": "Pavallion_003_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 116,
+        "sequence": "Pavallion_006_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 117,
+        "sequence": "Pavallion_006_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 118,
+        "sequence": "Pavallion_006_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 119,
+        "sequence": "Pavallion_006_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 120,
+        "sequence": "Pavallion_006_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 121,
+        "sequence": "Pavallion_006_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 124,
+        "sequence": "Pavallion_006_sidebalancerun",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 125,
+        "sequence": "Pavallion_006_sidebalancerun",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 127,
+        "sequence": "Pavallion_006_sidebalancerun",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 130,
+        "sequence": "Pavallion_013_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 131,
+        "sequence": "Pavallion_013_phonesiteat",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 134,
+        "sequence": "Pavallion_013_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 135,
+        "sequence": "Pavallion_013_plankjack",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 136,
+        "sequence": "Pavallion_013_yoga2",
+        "reason": "detection_count"
+      },
+      {
+        "clip": 137,
+        "sequence": "Pavallion_013_yoga2",
+        "reason": "detection_count"
+      }
+    ],
+    "duplicate_containing_clips_dropped": [
+      4,
+      5,
+      13,
+      15,
+      22,
+      23,
+      26,
+      27,
+      30,
+      31,
+      38,
+      39,
+      43,
+      47,
+      99,
+      103,
+      107
+    ]
+  },
+  "geometry": {
+    "released_zero_max_abs_m": 0.0,
+    "batched_training_max_abs_m": 0.003908634185791016,
+    "batched_vs_per_frame_fp32_max_abs_m": 9.5367431640625e-07,
+    "training_precision": "FP32; evaluation matches released TF32",
+    "finite_difference": [
+      {
+        "dimension": 0,
+        "autograd": 2.2285757064819336,
+        "finite_difference": 2.229451894760132
+      },
+      {
+        "dimension": 21,
+        "autograd": 0.052382659167051315,
+        "finite_difference": 0.05221366509795189
+      },
+      {
+        "dimension": 24,
+        "autograd": 0.025380410254001617,
+        "finite_difference": 0.025272367522120476
+      },
+      {
+        "dimension": 66,
+        "autograd": 0.09158787876367569,
+        "finite_difference": 0.09179114550352097
+      },
+      {
+        "dimension": 76,
+        "autograd": -0.37689635157585144,
+        "finite_difference": -0.3769397437572479
+      },
+      {
+        "dimension": 78,
+        "autograd": 6.459025859832764,
+        "finite_difference": 6.4589972496032715
+      }
+    ],
+    "zero_gradient_finite": true
+  },
+  "confirmation": {
+    "status": "complete",
+    "selected": "expanded_mlp_seed7",
+    "baseline": {
+      "clips": [
+        {
+          "clip": 0,
+          "sequence": "ParkingLot2_008_eating1",
+          "body_median_m": 0.03586996719241142,
+          "body_p95_m": 0.09095759131014333,
+          "sole_median_m": 0.043245505541563034,
+          "sole_p95_m": 0.06813075989484788,
+          "raw_body_median_m": 0.14726132154464722,
+          "raw_sole_median_m": 0.30284935235977173,
+          "scale": 0.9191488224761141,
+          "passes_2cm": false
+        },
+        {
+          "clip": 1,
+          "sequence": "ParkingLot2_014_overfence3",
+          "body_median_m": 0.05149899423122406,
+          "body_p95_m": 0.16652509421110145,
+          "sole_median_m": 0.21274334192276,
+          "sole_p95_m": 0.3443956673145294,
+          "raw_body_median_m": 0.2684764266014099,
+          "raw_sole_median_m": 0.14653152227401733,
+          "scale": 0.9633928501377303,
+          "passes_2cm": false
+        },
+        {
+          "clip": 2,
+          "sequence": "ParkingLot2_015_pushup1",
+          "body_median_m": 0.14953285455703735,
+          "body_p95_m": 0.44046053588390316,
+          "sole_median_m": 0.46880024671554565,
+          "sole_p95_m": 0.5551723420619965,
+          "raw_body_median_m": 0.5604822635650635,
+          "raw_sole_median_m": 0.9645336270332336,
+          "scale": 0.8204835366336231,
+          "passes_2cm": false
+        },
+        {
+          "clip": 3,
+          "sequence": "ParkingLot2_016_burpeejump2",
+          "body_median_m": 0.06684227287769318,
+          "body_p95_m": 0.23387005627155302,
+          "sole_median_m": 0.1041007936000824,
+          "sole_p95_m": 0.1773976057767868,
+          "raw_body_median_m": 0.5174106359481812,
+          "raw_sole_median_m": 0.6080834865570068,
+          "scale": 0.904482561624073,
+          "passes_2cm": false
+        }
+      ],
+      "mean": {
+        "raw_body_median_m": 0.37340766191482544,
+        "raw_sole_median_m": 0.5054994970560074,
+        "body_median_m": 0.0759360222145915,
+        "sole_median_m": 0.20722247194498777
+      },
+      "median": {
+        "raw_body_median_m": 0.39294353127479553,
+        "raw_sole_median_m": 0.4554664194583893,
+        "body_median_m": 0.05917063355445862,
+        "sole_median_m": 0.1584220677614212
+      },
+      "passes_2cm": 0
+    },
+    "runs": [
+      {
+        "name": "small_mlp_seed7",
+        "budget": "small",
+        "architecture": "mlp",
+        "seed": 7,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03833688795566559,
+              "body_p95_m": 0.10576517768204212,
+              "sole_median_m": 0.04715826362371445,
+              "sole_p95_m": 0.07271470613777636,
+              "raw_body_median_m": 0.3223867416381836,
+              "raw_sole_median_m": 0.3698351979255676,
+              "scale": 0.9543098378081083,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.04713333398103714,
+              "body_p95_m": 0.16258856430649749,
+              "sole_median_m": 0.19276466965675354,
+              "sole_p95_m": 0.291072116792202,
+              "raw_body_median_m": 0.16222769021987915,
+              "raw_sole_median_m": 0.09520518034696579,
+              "scale": 0.9799093112424399,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.13366705179214478,
+              "body_p95_m": 0.49013881385326385,
+              "sole_median_m": 0.5137115716934204,
+              "sole_p95_m": 0.587501174211502,
+              "raw_body_median_m": 0.6936179995536804,
+              "raw_sole_median_m": 1.0550627708435059,
+              "scale": 0.844691376056921,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.07966542989015579,
+              "body_p95_m": 0.23675877302885054,
+              "sole_median_m": 0.12014450877904892,
+              "sole_p95_m": 0.1481458269059658,
+              "raw_body_median_m": 0.6818203926086426,
+              "raw_sole_median_m": 0.8216026425361633,
+              "scale": 0.9142496808433588,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.46501320600509644,
+            "raw_sole_median_m": 0.5854264479130507,
+            "body_median_m": 0.07470067590475082,
+            "sole_median_m": 0.21844475343823433
+          },
+          "median": {
+            "raw_body_median_m": 0.5021035671234131,
+            "raw_sole_median_m": 0.5957189202308655,
+            "body_median_m": 0.06339938193559647,
+            "sole_median_m": 0.15645458921790123
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      },
+      {
+        "name": "small_mlp_seed19",
+        "budget": "small",
+        "architecture": "mlp",
+        "seed": 19,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03647374361753464,
+              "body_p95_m": 0.10517685636878006,
+              "sole_median_m": 0.06343817710876465,
+              "sole_p95_m": 0.08202027380466462,
+              "raw_body_median_m": 0.37374550104141235,
+              "raw_sole_median_m": 0.4087308347225189,
+              "scale": 0.9554037201024781,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.044545434415340424,
+              "body_p95_m": 0.1549566462635992,
+              "sole_median_m": 0.17885150015354156,
+              "sole_p95_m": 0.270042310655117,
+              "raw_body_median_m": 0.14352551102638245,
+              "raw_sole_median_m": 0.10031505674123764,
+              "scale": 0.9791370591468372,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.12028080224990845,
+              "body_p95_m": 0.5621608197689055,
+              "sole_median_m": 0.5888351202011108,
+              "sole_p95_m": 0.6473727554082871,
+              "raw_body_median_m": 0.7296136617660522,
+              "raw_sole_median_m": 1.1179966926574707,
+              "scale": 0.8246095129363533,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.08002342283725739,
+              "body_p95_m": 0.18309761881828307,
+              "sole_median_m": 0.0969017967581749,
+              "sole_p95_m": 0.13325278162956236,
+              "raw_body_median_m": 0.6573269367218018,
+              "raw_sole_median_m": 0.7707757949829102,
+              "scale": 0.9366199882300504,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.4760529026389122,
+            "raw_sole_median_m": 0.5994545947760344,
+            "body_median_m": 0.07033085078001022,
+            "sole_median_m": 0.232006648555398
+          },
+          "median": {
+            "raw_body_median_m": 0.5155362188816071,
+            "raw_sole_median_m": 0.5897533148527145,
+            "body_median_m": 0.062284428626298904,
+            "sole_median_m": 0.13787664845585823
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      },
+      {
+        "name": "small_kinematic_seed7",
+        "budget": "small",
+        "architecture": "kinematic",
+        "seed": 7,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.04879970848560333,
+              "body_p95_m": 0.10705222561955449,
+              "sole_median_m": 0.044241540133953094,
+              "sole_p95_m": 0.052901897765696045,
+              "raw_body_median_m": 0.22077229619026184,
+              "raw_sole_median_m": 0.3333698511123657,
+              "scale": 0.9489694958077752,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.037422820925712585,
+              "body_p95_m": 0.13816776573657982,
+              "sole_median_m": 0.18583887815475464,
+              "sole_p95_m": 0.2854458197951317,
+              "raw_body_median_m": 0.1605011373758316,
+              "raw_sole_median_m": 0.10837054252624512,
+              "scale": 0.9965769988126584,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.1368221938610077,
+              "body_p95_m": 0.46865455657243693,
+              "sole_median_m": 0.5025975704193115,
+              "sole_p95_m": 0.5419158607721328,
+              "raw_body_median_m": 0.8154892921447754,
+              "raw_sole_median_m": 1.1837279796600342,
+              "scale": 0.850314633006965,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.09652525186538696,
+              "body_p95_m": 0.21797296255826948,
+              "sole_median_m": 0.13986612856388092,
+              "sole_p95_m": 0.2076245196163654,
+              "raw_body_median_m": 0.7320290803909302,
+              "raw_sole_median_m": 0.8684930205345154,
+              "scale": 0.9180685702173117,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.48219795152544975,
+            "raw_sole_median_m": 0.6234903484582901,
+            "body_median_m": 0.07989249378442764,
+            "sole_median_m": 0.21813602931797504
+          },
+          "median": {
+            "raw_body_median_m": 0.476400688290596,
+            "raw_sole_median_m": 0.6009314358234406,
+            "body_median_m": 0.07266248017549515,
+            "sole_median_m": 0.16285250335931778
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      },
+      {
+        "name": "small_kinematic_seed19",
+        "budget": "small",
+        "architecture": "kinematic",
+        "seed": 19,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.04357629269361496,
+              "body_p95_m": 0.10308899767696857,
+              "sole_median_m": 0.03942585736513138,
+              "sole_p95_m": 0.053225313499569896,
+              "raw_body_median_m": 0.29112815856933594,
+              "raw_sole_median_m": 0.42614710330963135,
+              "scale": 0.9568075924904862,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.04207655042409897,
+              "body_p95_m": 0.15383199155330657,
+              "sole_median_m": 0.17453251779079437,
+              "sole_p95_m": 0.2601879358291626,
+              "raw_body_median_m": 0.13354560732841492,
+              "raw_sole_median_m": 0.11421891301870346,
+              "scale": 0.996211610064562,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.12360389530658722,
+              "body_p95_m": 0.49015524983406017,
+              "sole_median_m": 0.5248289108276367,
+              "sole_p95_m": 0.5604595601558685,
+              "raw_body_median_m": 0.7359996438026428,
+              "raw_sole_median_m": 1.049149513244629,
+              "scale": 0.8539945697684022,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.10008304566144943,
+              "body_p95_m": 0.2309245839715004,
+              "sole_median_m": 0.17921561002731323,
+              "sole_p95_m": 0.2792657434940338,
+              "raw_body_median_m": 0.9149302244186401,
+              "raw_sole_median_m": 0.9982333183288574,
+              "scale": 0.9092332497075634,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.5189009085297585,
+            "raw_sole_median_m": 0.6469372119754553,
+            "body_median_m": 0.07733494602143764,
+            "sole_median_m": 0.22950072400271893
+          },
+          "median": {
+            "raw_body_median_m": 0.5135639011859894,
+            "raw_sole_median_m": 0.7121902108192444,
+            "body_median_m": 0.0718296691775322,
+            "sole_median_m": 0.1768740639090538
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      },
+      {
+        "name": "expanded_mlp_seed7",
+        "budget": "expanded",
+        "architecture": "mlp",
+        "seed": 7,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.02170281484723091,
+              "body_p95_m": 0.09633145816624158,
+              "sole_median_m": 0.034820180386304855,
+              "sole_p95_m": 0.04888141509145498,
+              "raw_body_median_m": 0.11212780326604843,
+              "raw_sole_median_m": 0.2678428888320923,
+              "scale": 0.9487486184224906,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.13126489520072937,
+              "body_p95_m": 0.26071237921714774,
+              "sole_median_m": 0.2712584137916565,
+              "sole_p95_m": 0.3919364020228386,
+              "raw_body_median_m": 0.1062115877866745,
+              "raw_sole_median_m": 0.15098142623901367,
+              "scale": 0.9807924111711447,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.06097430735826492,
+              "body_p95_m": 0.5134486615657806,
+              "sole_median_m": 0.5637402534484863,
+              "sole_p95_m": 0.5983559787273407,
+              "raw_body_median_m": 0.29785358905792236,
+              "raw_sole_median_m": 0.6787344217300415,
+              "scale": 0.8497303660918761,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.13652510941028595,
+              "body_p95_m": 0.27020080238580696,
+              "sole_median_m": 0.15677134692668915,
+              "sole_p95_m": 0.20569613054394723,
+              "raw_body_median_m": 0.2817273736000061,
+              "raw_sole_median_m": 0.32848232984542847,
+              "scale": 0.9488442893969822,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.19948008842766285,
+            "raw_sole_median_m": 0.356510266661644,
+            "body_median_m": 0.08761678170412779,
+            "sole_median_m": 0.2566475486382842
+          },
+          "median": {
+            "raw_body_median_m": 0.19692758843302727,
+            "raw_sole_median_m": 0.2981626093387604,
+            "body_median_m": 0.09611960127949715,
+            "sole_median_m": 0.21401488035917282
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.02170281484723091,
+              "body_p95_m": 0.09633145816624158,
+              "sole_median_m": 0.034820180386304855,
+              "sole_p95_m": 0.04888141509145498,
+              "raw_body_median_m": 0.11212780326604843,
+              "raw_sole_median_m": 0.2678428888320923,
+              "scale": 0.9487486184224906,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.13126489520072937,
+              "body_p95_m": 0.26071237921714774,
+              "sole_median_m": 0.2712584137916565,
+              "sole_p95_m": 0.3919364020228386,
+              "raw_body_median_m": 0.1062115877866745,
+              "raw_sole_median_m": 0.15098142623901367,
+              "scale": 0.9807924111711447,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.06097430735826492,
+              "body_p95_m": 0.5134486615657806,
+              "sole_median_m": 0.5637402534484863,
+              "sole_p95_m": 0.5983559787273407,
+              "raw_body_median_m": 0.29785358905792236,
+              "raw_sole_median_m": 0.6787344217300415,
+              "scale": 0.8497303660918761,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.13652510941028595,
+              "body_p95_m": 0.27020080238580696,
+              "sole_median_m": 0.15677134692668915,
+              "sole_p95_m": 0.20569613054394723,
+              "raw_body_median_m": 0.2817273736000061,
+              "raw_sole_median_m": 0.32848232984542847,
+              "scale": 0.9488442893969822,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.19948008842766285,
+            "raw_sole_median_m": 0.356510266661644,
+            "body_median_m": 0.08761678170412779,
+            "sole_median_m": 0.2566475486382842
+          },
+          "median": {
+            "raw_body_median_m": 0.19692758843302727,
+            "raw_sole_median_m": 0.2981626093387604,
+            "body_median_m": 0.09611960127949715,
+            "sole_median_m": 0.21401488035917282
+          },
+          "passes_2cm": 0
+        },
+        "strength": 1.0
+      },
+      {
+        "name": "expanded_mlp_seed19",
+        "budget": "expanded",
+        "architecture": "mlp",
+        "seed": 19,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03544203191995621,
+              "body_p95_m": 0.10424493923783294,
+              "sole_median_m": 0.0398680716753006,
+              "sole_p95_m": 0.054923640750348564,
+              "raw_body_median_m": 0.19438710808753967,
+              "raw_sole_median_m": 0.3713338375091553,
+              "scale": 0.9557283166370009,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.049483008682727814,
+              "body_p95_m": 0.1514408290386199,
+              "sole_median_m": 0.19160103797912598,
+              "sole_p95_m": 0.2914481207728386,
+              "raw_body_median_m": 0.14859852194786072,
+              "raw_sole_median_m": 0.10259973257780075,
+              "scale": 0.9864966268733364,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.1332351565361023,
+              "body_p95_m": 0.5016542047262191,
+              "sole_median_m": 0.5283551216125488,
+              "sole_p95_m": 0.6099415093660354,
+              "raw_body_median_m": 0.6684448719024658,
+              "raw_sole_median_m": 1.0242249965667725,
+              "scale": 0.8429828490300928,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.07831372320652008,
+              "body_p95_m": 0.2543148204684257,
+              "sole_median_m": 0.12327291071414948,
+              "sole_p95_m": 0.1762940265238285,
+              "raw_body_median_m": 0.6008703708648682,
+              "raw_sole_median_m": 0.711638331413269,
+              "scale": 0.9267846167962048,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.4030752182006836,
+            "raw_sole_median_m": 0.5524492245167494,
+            "body_median_m": 0.0741184800863266,
+            "sole_median_m": 0.22077428549528122
+          },
+          "median": {
+            "raw_body_median_m": 0.3976287394762039,
+            "raw_sole_median_m": 0.5414860844612122,
+            "body_median_m": 0.06389836594462395,
+            "sole_median_m": 0.15743697434663773
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.035591647028923035,
+              "body_p95_m": 0.09540346153080462,
+              "sole_median_m": 0.040548019111156464,
+              "sole_p95_m": 0.054379787482321265,
+              "raw_body_median_m": 0.14324060082435608,
+              "raw_sole_median_m": 0.3300526440143585,
+              "scale": 0.9368660186905152,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05012372136116028,
+              "body_p95_m": 0.1590262867510316,
+              "sole_median_m": 0.202324777841568,
+              "sole_p95_m": 0.31924797147512435,
+              "raw_body_median_m": 0.20596714317798615,
+              "raw_sole_median_m": 0.11519092321395874,
+              "scale": 0.9754771023340774,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14016079902648926,
+              "body_p95_m": 0.472418768703937,
+              "sole_median_m": 0.5013594627380371,
+              "sole_p95_m": 0.5843336671590805,
+              "raw_body_median_m": 0.6082062721252441,
+              "raw_sole_median_m": 0.9889563322067261,
+              "scale": 0.8343945966635088,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.07215146720409393,
+              "body_p95_m": 0.2437181018292903,
+              "sole_median_m": 0.10524894297122955,
+              "sole_p95_m": 0.17097000330686568,
+              "raw_body_median_m": 0.5587921142578125,
+              "raw_sole_median_m": 0.6443039178848267,
+              "scale": 0.9156726178813772,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.3790515325963497,
+            "raw_sole_median_m": 0.5196259543299675,
+            "body_median_m": 0.07450690865516663,
+            "sole_median_m": 0.21237030066549778
+          },
+          "median": {
+            "raw_body_median_m": 0.3823796287178993,
+            "raw_sole_median_m": 0.4871782809495926,
+            "body_median_m": 0.061137594282627106,
+            "sole_median_m": 0.15378686040639877
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.5
+      },
+      {
+        "name": "expanded_kinematic_seed7",
+        "budget": "expanded",
+        "architecture": "kinematic",
+        "seed": 7,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.04118350148200989,
+              "body_p95_m": 0.09159700088202952,
+              "sole_median_m": 0.05536526441574097,
+              "sole_p95_m": 0.06745179332792758,
+              "raw_body_median_m": 0.3255413770675659,
+              "raw_sole_median_m": 0.470792293548584,
+              "scale": 0.9647950038454629,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.07240187376737595,
+              "body_p95_m": 0.12604753971099844,
+              "sole_median_m": 0.13076695799827576,
+              "sole_p95_m": 0.18349366709589957,
+              "raw_body_median_m": 0.0870860368013382,
+              "raw_sole_median_m": 0.16494044661521912,
+              "scale": 0.9807460551527265,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.12478496134281158,
+              "body_p95_m": 0.470851032435894,
+              "sole_median_m": 0.5053854584693909,
+              "sole_p95_m": 0.5785016179084778,
+              "raw_body_median_m": 0.8855999708175659,
+              "raw_sole_median_m": 1.2791156768798828,
+              "scale": 0.852855713923603,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.08688420802354813,
+              "body_p95_m": 0.2752786338329315,
+              "sole_median_m": 0.14616449177265167,
+              "sole_p95_m": 0.1855187453329563,
+              "raw_body_median_m": 1.063523530960083,
+              "raw_sole_median_m": 1.2420544624328613,
+              "scale": 0.9141298804022117,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.5904377289116383,
+            "raw_sole_median_m": 0.7892257198691368,
+            "body_median_m": 0.08131363615393639,
+            "sole_median_m": 0.20942054316401482
+          },
+          "median": {
+            "raw_body_median_m": 0.6055706739425659,
+            "raw_sole_median_m": 0.8564233779907227,
+            "body_median_m": 0.07964304089546204,
+            "sole_median_m": 0.13846572488546371
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      },
+      {
+        "name": "expanded_kinematic_seed19",
+        "budget": "expanded",
+        "architecture": "kinematic",
+        "seed": 19,
+        "full": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03670629858970642,
+              "body_p95_m": 0.08247030638158313,
+              "sole_median_m": 0.042224809527397156,
+              "sole_p95_m": 0.059079953096807,
+              "raw_body_median_m": 0.29715049266815186,
+              "raw_sole_median_m": 0.4812498688697815,
+              "scale": 0.9517430937908216,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.06425277888774872,
+              "body_p95_m": 0.11481698490679251,
+              "sole_median_m": 0.1323639452457428,
+              "sole_p95_m": 0.2022695831954479,
+              "raw_body_median_m": 0.09476804733276367,
+              "raw_sole_median_m": 0.186254620552063,
+              "scale": 0.9904641243038423,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.12670855224132538,
+              "body_p95_m": 0.5604578912258146,
+              "sole_median_m": 0.5956303477287292,
+              "sole_p95_m": 0.6555874824523926,
+              "raw_body_median_m": 0.7121414542198181,
+              "raw_sole_median_m": 1.1080968379974365,
+              "scale": 0.8307403902237842,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.09210064262151718,
+              "body_p95_m": 0.2783993214368819,
+              "sole_median_m": 0.12479428946971893,
+              "sole_p95_m": 0.17284368872642517,
+              "raw_body_median_m": 0.881769597530365,
+              "raw_sole_median_m": 0.9692726731300354,
+              "scale": 0.9112224712640401,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.49645739793777466,
+            "raw_sole_median_m": 0.6862185001373291,
+            "body_median_m": 0.07994206808507442,
+            "sole_median_m": 0.22375334799289703
+          },
+          "median": {
+            "raw_body_median_m": 0.504645973443985,
+            "raw_sole_median_m": 0.7252612709999084,
+            "body_median_m": 0.07817671075463295,
+            "sole_median_m": 0.12857911735773087
+          },
+          "passes_2cm": 0
+        },
+        "guarded": {
+          "clips": [
+            {
+              "clip": 0,
+              "sequence": "ParkingLot2_008_eating1",
+              "body_median_m": 0.03586996719241142,
+              "body_p95_m": 0.09095759131014333,
+              "sole_median_m": 0.043245505541563034,
+              "sole_p95_m": 0.06813075989484788,
+              "raw_body_median_m": 0.14726132154464722,
+              "raw_sole_median_m": 0.30284935235977173,
+              "scale": 0.9191488224761141,
+              "passes_2cm": false
+            },
+            {
+              "clip": 1,
+              "sequence": "ParkingLot2_014_overfence3",
+              "body_median_m": 0.05149899423122406,
+              "body_p95_m": 0.16652509421110145,
+              "sole_median_m": 0.21274334192276,
+              "sole_p95_m": 0.3443956673145294,
+              "raw_body_median_m": 0.2684764266014099,
+              "raw_sole_median_m": 0.14653152227401733,
+              "scale": 0.9633928501377303,
+              "passes_2cm": false
+            },
+            {
+              "clip": 2,
+              "sequence": "ParkingLot2_015_pushup1",
+              "body_median_m": 0.14953285455703735,
+              "body_p95_m": 0.44046053588390316,
+              "sole_median_m": 0.46880024671554565,
+              "sole_p95_m": 0.5551723420619965,
+              "raw_body_median_m": 0.5604822635650635,
+              "raw_sole_median_m": 0.9645336270332336,
+              "scale": 0.8204835366336231,
+              "passes_2cm": false
+            },
+            {
+              "clip": 3,
+              "sequence": "ParkingLot2_016_burpeejump2",
+              "body_median_m": 0.06684227287769318,
+              "body_p95_m": 0.23387005627155302,
+              "sole_median_m": 0.1041007936000824,
+              "sole_p95_m": 0.1773976057767868,
+              "raw_body_median_m": 0.5174106359481812,
+              "raw_sole_median_m": 0.6080834865570068,
+              "scale": 0.904482561624073,
+              "passes_2cm": false
+            }
+          ],
+          "mean": {
+            "raw_body_median_m": 0.37340766191482544,
+            "raw_sole_median_m": 0.5054994970560074,
+            "body_median_m": 0.0759360222145915,
+            "sole_median_m": 0.20722247194498777
+          },
+          "median": {
+            "raw_body_median_m": 0.39294353127479553,
+            "raw_sole_median_m": 0.4554664194583893,
+            "body_median_m": 0.05917063355445862,
+            "sole_median_m": 0.1584220677614212
+          },
+          "passes_2cm": 0
+        },
+        "strength": 0.0
+      }
+    ],
+    "declared_clips": 4,
+    "failures": [],
+    "samples": 64,
+    "selection_sha256": "b29254ecc6adcfd08b0ce59eb3c7359a2cc710a4d30cc100136fc3bbab5b3f56",
+    "confirmation_cache_sha256": "a32bb373a81229e203f0cb9f2965b4ca183581f1bac13282a8e2662a32e0ff0d",
+    "zero_max_abs_m": 0.0,
+    "training_ready": false
+  },
+  "sensor": {
+    "status": "complete",
+    "summary": {
+      "tune": {
+        "declared": 8,
+        "baseline": {
+          "measured": 6,
+          "passes_2cm": 0,
+          "median": {
+            "raw_body_median_m": 3.0066767805639145,
+            "raw_sole_median_m": 2.8557119328697578,
+            "body_median_m": 0.07297868174311545,
+            "sole_median_m": 0.2217971483970677
+          }
+        },
+        "sensor": {
+          "measured": 6,
+          "passes_2cm": 0,
+          "median": {
+            "raw_body_median_m": 3.0066767805639145,
+            "raw_sole_median_m": 2.8557119328697578,
+            "body_median_m": 0.07297868174311545,
+            "sole_median_m": 0.2217971483970677
+          }
+        },
+        "paired_clips": 6,
+        "paired_mean_delta_cm": {
+          "raw_body_median_m": 0.0,
+          "raw_sole_median_m": 0.0,
+          "body_median_m": 0.0,
+          "sole_median_m": 0.0
+        }
+      },
+      "confirm": {
+        "declared": 4,
+        "baseline": {
+          "measured": 4,
+          "passes_2cm": 0,
+          "median": {
+            "raw_body_median_m": 0.39294354246808605,
+            "raw_sole_median_m": 0.4554663900118414,
+            "body_median_m": 0.05917063222231735,
+            "sole_median_m": 0.15842206962127986
+          }
+        },
+        "sensor": {
+          "measured": 4,
+          "passes_2cm": 0,
+          "median": {
+            "raw_body_median_m": 0.39294354246808605,
+            "raw_sole_median_m": 0.4554663900118414,
+            "body_median_m": 0.05917063222231735,
+            "sole_median_m": 0.15842206962127986
+          }
+        },
+        "paired_clips": 4,
+        "paired_mean_delta_cm": {
+          "raw_body_median_m": 0.0,
+          "raw_sole_median_m": 0.0,
+          "body_median_m": 0.0,
+          "sole_median_m": 0.0
+        }
+      }
+    },
+    "clips": [
+      {
+        "clip": 0,
+        "sequence": "LectureHall_020_wipingtable1",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.16956385110505984,
+            "body_p95_m": 0.20564243955215242,
+            "sole_median_m": 0.1123113648491624,
+            "sole_p95_m": 0.21401789837003904,
+            "raw_body_median_m": 0.7449236312799903,
+            "raw_sole_median_m": 0.7605777247229291,
+            "scale": 1.0107693588782232,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.16956385110505984,
+            "body_p95_m": 0.20564243955215242,
+            "sole_median_m": 0.1123113648491624,
+            "sole_p95_m": 0.21401789837003904,
+            "raw_body_median_m": 0.7449236312799903,
+            "raw_sole_median_m": 0.7605777247229291,
+            "scale": 1.0107693588782232,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 1,
+        "sequence": "LectureHall_020_wipingtable1",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.07650722279870474,
+            "body_p95_m": 0.26092792688770294,
+            "sole_median_m": 0.22070336267019813,
+            "sole_p95_m": 0.3173408544193597,
+            "raw_body_median_m": 0.5160225335365974,
+            "raw_sole_median_m": 0.4407597071006254,
+            "scale": 0.9882201820154927,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.07650722279870474,
+            "body_p95_m": 0.26092792688770294,
+            "sole_median_m": 0.22070336267019813,
+            "sole_p95_m": 0.3173408544193597,
+            "raw_body_median_m": 0.5160225335365974,
+            "raw_sole_median_m": 0.4407597071006254,
+            "scale": 0.9882201820154927,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 2,
+        "sequence": "Pavallion_003_phonesiteat",
+        "role": "tune",
+        "baseline": {
+          "failure": "detection_count",
+          "metrics": null
+        },
+        "sensor": {
+          "failure": "detection_count",
+          "metrics": null
+        }
+      },
+      {
+        "clip": 3,
+        "sequence": "Pavallion_003_phonesiteat",
+        "role": "tune",
+        "baseline": {
+          "failure": "detection_count",
+          "metrics": null
+        },
+        "sensor": {
+          "failure": "detection_count",
+          "metrics": null
+        }
+      },
+      {
+        "clip": 4,
+        "sequence": "Pavallion_003_plankjack",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.0654929381977642,
+            "body_p95_m": 0.26629260397201227,
+            "sole_median_m": 0.27620031333818496,
+            "sole_p95_m": 0.3470455700779352,
+            "raw_body_median_m": 3.2503051056439816,
+            "raw_sole_median_m": 3.1141583779938102,
+            "scale": 0.8847759892397232,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.0654929381977642,
+            "body_p95_m": 0.26629260397201227,
+            "sole_median_m": 0.27620031333818496,
+            "sole_p95_m": 0.3470455700779352,
+            "raw_body_median_m": 3.2503051056439816,
+            "raw_sole_median_m": 3.1141583779938102,
+            "scale": 0.8847759892397232,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 5,
+        "sequence": "Pavallion_003_plankjack",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.09459184337978971,
+            "body_p95_m": 0.20621200112323476,
+            "sole_median_m": 0.17697299050418544,
+            "sole_p95_m": 0.3685787257190263,
+            "raw_body_median_m": 3.1429074159002997,
+            "raw_sole_median_m": 2.9434808174857063,
+            "scale": 0.9877933245141495,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.09459184337978971,
+            "body_p95_m": 0.20621200112323476,
+            "sole_median_m": 0.17697299050418544,
+            "sole_p95_m": 0.3685787257190263,
+            "raw_body_median_m": 3.1429074159002997,
+            "raw_sole_median_m": 2.9434808174857063,
+            "scale": 0.9877933245141495,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 6,
+        "sequence": "Pavallion_003_sidebalancerun",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.052483206544958694,
+            "body_p95_m": 0.46099295131130624,
+            "sole_median_m": 0.5542988994683662,
+            "sole_p95_m": 0.7731084167158427,
+            "raw_body_median_m": 2.870446145227529,
+            "raw_sole_median_m": 2.7679430482538088,
+            "scale": 1.0901708092749567,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.052483206544958694,
+            "body_p95_m": 0.46099295131130624,
+            "sole_median_m": 0.5542988994683662,
+            "sole_p95_m": 0.7731084167158427,
+            "raw_body_median_m": 2.870446145227529,
+            "raw_sole_median_m": 2.7679430482538088,
+            "scale": 1.0901708092749567,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 7,
+        "sequence": "Pavallion_003_sidebalancerun",
+        "role": "tune",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.06945014068752617,
+            "body_p95_m": 0.20323641892361352,
+            "sole_median_m": 0.2228909341239373,
+            "sole_p95_m": 0.4555624369674343,
+            "raw_body_median_m": 3.2204636485851186,
+            "raw_sole_median_m": 3.0902252332417013,
+            "scale": 0.9447967945055241,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.06945014068752617,
+            "body_p95_m": 0.20323641892361352,
+            "sole_median_m": 0.2228909341239373,
+            "sole_p95_m": 0.4555624369674343,
+            "raw_body_median_m": 3.2204636485851186,
+            "raw_sole_median_m": 3.0902252332417013,
+            "scale": 0.9447967945055241,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 8,
+        "sequence": "ParkingLot2_008_eating1",
+        "role": "confirm",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.03586996719797979,
+            "body_p95_m": 0.09095759194465464,
+            "sole_median_m": 0.043245507628693516,
+            "sole_p95_m": 0.06813076238628059,
+            "raw_body_median_m": 0.14726133236882127,
+            "raw_sole_median_m": 0.3028493395347988,
+            "scale": 0.9191488224761137,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.03586996719797979,
+            "body_p95_m": 0.09095759194465464,
+            "sole_median_m": 0.043245507628693516,
+            "sole_p95_m": 0.06813076238628059,
+            "raw_body_median_m": 0.14726133236882127,
+            "raw_sole_median_m": 0.3028493395347988,
+            "scale": 0.9191488224761137,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 9,
+        "sequence": "ParkingLot2_014_overfence3",
+        "role": "confirm",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.05149899458376456,
+            "body_p95_m": 0.16652510591131692,
+            "sole_median_m": 0.21274334518262886,
+            "sole_p95_m": 0.3443956623630154,
+            "raw_body_median_m": 0.26847641436988634,
+            "raw_sole_median_m": 0.1465315322399482,
+            "scale": 0.9633928501377306,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.05149899458376456,
+            "body_p95_m": 0.16652510591131692,
+            "sole_median_m": 0.21274334518262886,
+            "sole_p95_m": 0.3443956623630154,
+            "raw_body_median_m": 0.26847641436988634,
+            "raw_sole_median_m": 0.1465315322399482,
+            "scale": 0.9633928501377306,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 10,
+        "sequence": "ParkingLot2_015_pushup1",
+        "role": "confirm",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.14953285256812932,
+            "body_p95_m": 0.44046053768055865,
+            "sole_median_m": 0.4688002713875511,
+            "sole_p95_m": 0.5551723268437067,
+            "raw_body_median_m": 0.5604822755447958,
+            "raw_sole_median_m": 0.9645336548678025,
+            "scale": 0.8204835366336233,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.14953285256812932,
+            "body_p95_m": 0.44046053768055865,
+            "sole_median_m": 0.4688002713875511,
+            "sole_p95_m": 0.5551723268437067,
+            "raw_body_median_m": 0.5604822755447958,
+            "raw_sole_median_m": 0.9645336548678025,
+            "scale": 0.8204835366336233,
+            "passes_2cm": false
+          }
+        }
+      },
+      {
+        "clip": 11,
+        "sequence": "ParkingLot2_016_burpeejump2",
+        "role": "confirm",
+        "baseline": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.06684226986087015,
+            "body_p95_m": 0.23387005305718778,
+            "sole_median_m": 0.10410079405993085,
+            "sole_p95_m": 0.17739760851819397,
+            "raw_body_median_m": 0.5174106705662858,
+            "raw_sole_median_m": 0.608083440488884,
+            "scale": 0.904482561624073,
+            "passes_2cm": false
+          }
+        },
+        "sensor": {
+          "failure": null,
+          "metrics": {
+            "body_median_m": 0.06684226986087015,
+            "body_p95_m": 0.23387005305718778,
+            "sole_median_m": 0.10410079405993085,
+            "sole_p95_m": 0.17739760851819397,
+            "raw_body_median_m": 0.5174106705662858,
+            "raw_sole_median_m": 0.608083440488884,
+            "scale": 0.904482561624073,
+            "passes_2cm": false
+          }
+        }
+      }
+    ],
+    "plan_sha256": "77ad062e2e77a68780b375921a70c956faf9803e49f6f444017748139ff4fa42",
+    "sensor_manifest_sha256": "139f7a50addf4bea8b15cb191c5bf6b09d0440306a440c613ce4c60294a05912",
+    "baseline_manifest_sha256": {
+      "datasets/RICH/processed/geometry_experiments_v5/development/native896": "5c8e1cee693bd3f8da26266f88bcb34123ea728f2e6c577dc85df43d9dd754a7",
+      "datasets/RICH/processed/geometry_experiments_v5/confirmation/native896": "182e6ade7e81d740557896897d1d29adf282728e28ca8b0cc344c7e9d2642de1"
+    },
+    "training_ready": false,
+    "intervention_audit": {
+      "frames": 192,
+      "changed_K_frames": 192,
+      "shape_mismatches": 0,
+      "max_abs_by_field": {
+        "smpl_rotmat": 0.0,
+        "smpl_shape": 0.0,
+        "smpl_transl": 0.0,
+        "smpl_query": 0.0,
+        "vertices_camera": 0.0
+      }
+    },
+    "script_sha256": "1b8c84ffce8fa40edce76d4cd56314ea2a39f65a951ca52a3ab2fc46969f4763",
+    "note": "Supplemental frozen frontend intervention declared before primary confirmation; physical sensor K is extra deployment metadata, GT body/contact only used for evaluation."
+  },
+  "association_counts": {
+    "audited_frames": 420,
+    "single_frames": 240,
+    "single_head_inside_bbox": 240,
+    "non_single_frames": 180,
+    "multi_frames": 180,
+    "multi_exactly_one_head_inside_bbox": 180
+  },
+  "selection": {
+    "selected": "expanded_mlp_seed7",
+    "selected_strength": 1.0,
+    "small_cache_sha256": "a5a6faafe734e090cf6e802c3611cea100a819b51ee09bb086b0ac6da6cf931d",
+    "expanded_cache_sha256": "47d4b450df2e359c8e50a9228c53d14246f79bd3849126876c5559cefb068436",
+    "protocol_sha256": "162f075c0f6bcae83c8de097f4300a3c7c14fb02299f5e005ba2fca65f56c1d6",
+    "elapsed_s": 359.7869906425476,
+    "runs": [
+      {
+        "name": "small_mlp_seed7",
+        "best_step": 50,
+        "score": 1.0465084273595409,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "5ebc32edbe568ebfc85c1ef41da47e3e57120ad306d9da8f7536b45c9388abf0",
+        "parameters": 283471
+      },
+      {
+        "name": "small_mlp_seed19",
+        "best_step": 50,
+        "score": 1.0714049414344282,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "48de43b13c5bafa64f9cdbafaef9ea2e5ba2a175fba3092f7f8f9d39da3526ee",
+        "parameters": 283471
+      },
+      {
+        "name": "small_kinematic_seed7",
+        "best_step": 50,
+        "score": 0.9849802972279735,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "7132814baaf0cf89c74ae9084fd5f132c3ad08426583243d2ccfe8b8c271cba6",
+        "parameters": 290032
+      },
+      {
+        "name": "small_kinematic_seed19",
+        "best_step": 50,
+        "score": 1.0679248300619009,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "082b410971bde2bb94ba5394a20409f27d78ba92bfdee1dbc18b8301d9fb452c",
+        "parameters": 290032
+      },
+      {
+        "name": "expanded_mlp_seed7",
+        "best_step": 800,
+        "score": 0.914524007698798,
+        "guarded": {
+          "strength": 1.0,
+          "eligible": true,
+          "score": 0.914524007698798,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07586252689361572,
+                "body_p95_m": 0.15370969474315638,
+                "sole_median_m": 0.12800100445747375,
+                "sole_p95_m": 0.21014105305075645,
+                "raw_body_median_m": 0.592371940612793,
+                "raw_sole_median_m": 0.5564621686935425,
+                "scale": 1.0402567013538526,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.08410216867923737,
+                "body_p95_m": 0.2525279343128197,
+                "sole_median_m": 0.21544399857521057,
+                "sole_p95_m": 0.3378649294376373,
+                "raw_body_median_m": 0.38860422372817993,
+                "raw_sole_median_m": 0.43199631571769714,
+                "scale": 0.9535592129482267,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.11976341158151627,
+                "body_p95_m": 0.341869419813156,
+                "sole_median_m": 0.3746629059314728,
+                "sole_p95_m": 0.4658201724290848,
+                "raw_body_median_m": 2.830793857574463,
+                "raw_sole_median_m": 2.6678051948547363,
+                "scale": 0.8673579600205613,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.07642599195241928,
+                "body_p95_m": 0.19611848592758174,
+                "sole_median_m": 0.21084481477737427,
+                "sole_p95_m": 0.30310537070035937,
+                "raw_body_median_m": 2.6929268836975098,
+                "raw_sole_median_m": 2.494884490966797,
+                "scale": 0.9835030086694546,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.046261727809906006,
+                "body_p95_m": 0.3202196478843686,
+                "sole_median_m": 0.3548118472099304,
+                "sole_p95_m": 0.4390118792653084,
+                "raw_body_median_m": 2.4276225566864014,
+                "raw_sole_median_m": 2.377908706665039,
+                "scale": 1.0310405281716735,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.11926278471946716,
+                "body_p95_m": 0.2539744913578032,
+                "sole_median_m": 0.22431039810180664,
+                "sole_p95_m": 0.42737397998571397,
+                "raw_body_median_m": 2.8069069385528564,
+                "raw_sole_median_m": 2.6407113075256348,
+                "scale": 0.8956006291316302,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 1.9565377334753673,
+              "raw_sole_median_m": 1.861628030737241,
+              "body_median_m": 0.08694643527269363,
+              "sole_median_m": 0.25134582817554474
+            },
+            "median": {
+              "raw_body_median_m": 2.5602747201919556,
+              "raw_sole_median_m": 2.436396598815918,
+              "body_median_m": 0.08026408031582832,
+              "sole_median_m": 0.2198771983385086
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "b9628b44f6631b53dbdc5e97cc391d80af3447ec5c724d62eb472266d3149987",
+        "parameters": 283471
+      },
+      {
+        "name": "expanded_mlp_seed19",
+        "best_step": 50,
+        "score": 0.9458128473394862,
+        "guarded": {
+          "strength": 0.5,
+          "eligible": true,
+          "score": 0.9532603144501169,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.19028978049755096,
+                "body_p95_m": 0.22130839228630064,
+                "sole_median_m": 0.14760227501392365,
+                "sole_p95_m": 0.2469693586230278,
+                "raw_body_median_m": 0.6240118741989136,
+                "raw_sole_median_m": 0.6572377681732178,
+                "scale": 1.0191222492869259,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.05435510352253914,
+                "body_p95_m": 0.25368537008762354,
+                "sole_median_m": 0.20260877907276154,
+                "sole_p95_m": 0.2995831876993179,
+                "raw_body_median_m": 0.4364963173866272,
+                "raw_sole_median_m": 0.33988142013549805,
+                "scale": 0.9780693805331062,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.06603796780109406,
+                "body_p95_m": 0.22744954228401185,
+                "sole_median_m": 0.2332729697227478,
+                "sole_p95_m": 0.3086002692580223,
+                "raw_body_median_m": 3.172048330307007,
+                "raw_sole_median_m": 3.0214767456054688,
+                "scale": 0.9321208483044789,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.10082349181175232,
+                "body_p95_m": 0.2113626025617122,
+                "sole_median_m": 0.17682987451553345,
+                "sole_p95_m": 0.3855854913592338,
+                "raw_body_median_m": 3.054873466491699,
+                "raw_sole_median_m": 2.8504695892333984,
+                "scale": 0.9953390543959484,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.043216973543167114,
+                "body_p95_m": 0.37767730653285964,
+                "sole_median_m": 0.4355742931365967,
+                "sole_p95_m": 0.6166531622409821,
+                "raw_body_median_m": 2.738229274749756,
+                "raw_sole_median_m": 2.634965419769287,
+                "scale": 1.085853270220404,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.07392975687980652,
+                "body_p95_m": 0.17923426777124393,
+                "sole_median_m": 0.2135237157344818,
+                "sole_p95_m": 0.42537774741649625,
+                "raw_body_median_m": 3.1382579803466797,
+                "raw_sole_median_m": 2.993140697479248,
+                "scale": 0.9578351165866433,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.1939862072467804,
+              "raw_sole_median_m": 2.0828619400660195,
+              "body_median_m": 0.08810884567598502,
+              "sole_median_m": 0.23490198453267416
+            },
+            "median": {
+              "raw_body_median_m": 2.8965513706207275,
+              "raw_sole_median_m": 2.7427175045013428,
+              "body_median_m": 0.06998386234045029,
+              "sole_median_m": 0.20806624740362167
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "55919d62e9bb9e417fdf9b8a02aaec3e07aead580fad8e154054c4fbcd1d745d",
+        "parameters": 283471
+      },
+      {
+        "name": "expanded_kinematic_seed7",
+        "best_step": 50,
+        "score": 0.9443874540972623,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "aab2ce57d8f832a5eb164c73bef362d860cb676d5e7e85d5c15af2515ac1c29e",
+        "parameters": 290032
+      },
+      {
+        "name": "expanded_kinematic_seed19",
+        "best_step": 50,
+        "score": 0.9471579057339743,
+        "guarded": {
+          "strength": 0.0,
+          "eligible": true,
+          "score": 1.0,
+          "metrics": {
+            "clips": [
+              {
+                "clip": 16,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.16956357657909393,
+                "body_p95_m": 0.20564217641949653,
+                "sole_median_m": 0.11231166124343872,
+                "sole_p95_m": 0.21401804462075233,
+                "raw_body_median_m": 0.7449237108230591,
+                "raw_sole_median_m": 0.7605777382850647,
+                "scale": 1.0107693585137236,
+                "passes_2cm": false
+              },
+              {
+                "clip": 17,
+                "sequence": "LectureHall_020_wipingtable1",
+                "body_median_m": 0.07650745660066605,
+                "body_p95_m": 0.26092750728130304,
+                "sole_median_m": 0.2207033634185791,
+                "sole_p95_m": 0.3173419341444969,
+                "raw_body_median_m": 0.5160223245620728,
+                "raw_sole_median_m": 0.4407597780227661,
+                "scale": 0.9882201868382706,
+                "passes_2cm": false
+              },
+              {
+                "clip": 112,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0654926598072052,
+                "body_p95_m": 0.2662925750017165,
+                "sole_median_m": 0.2762003540992737,
+                "sole_p95_m": 0.34704557061195374,
+                "raw_body_median_m": 3.25030517578125,
+                "raw_sole_median_m": 3.1141586303710938,
+                "scale": 0.8847759931298669,
+                "passes_2cm": false
+              },
+              {
+                "clip": 113,
+                "sequence": "Pavallion_003_plankjack",
+                "body_median_m": 0.0945916473865509,
+                "body_p95_m": 0.20621185749769189,
+                "sole_median_m": 0.1769731193780899,
+                "sole_p95_m": 0.36857880204916,
+                "raw_body_median_m": 3.1429073810577393,
+                "raw_sole_median_m": 2.9434807300567627,
+                "scale": 0.9877933220475206,
+                "passes_2cm": false
+              },
+              {
+                "clip": 114,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.05248309671878815,
+                "body_p95_m": 0.46099282354116344,
+                "sole_median_m": 0.5542988181114197,
+                "sole_p95_m": 0.7731085151433945,
+                "raw_body_median_m": 2.87044620513916,
+                "raw_sole_median_m": 2.7679429054260254,
+                "scale": 1.0901708077260566,
+                "passes_2cm": false
+              },
+              {
+                "clip": 115,
+                "sequence": "Pavallion_003_sidebalancerun",
+                "body_median_m": 0.06944993138313293,
+                "body_p95_m": 0.20323624461889217,
+                "sole_median_m": 0.22289080917835236,
+                "sole_p95_m": 0.45556270480155947,
+                "raw_body_median_m": 3.220463514328003,
+                "raw_sole_median_m": 3.0902252197265625,
+                "scale": 0.9447967962477858,
+                "passes_2cm": false
+              }
+            ],
+            "mean": {
+              "raw_body_median_m": 2.290844718615214,
+              "raw_sole_median_m": 2.186190833648046,
+              "body_median_m": 0.08801472807923953,
+              "sole_median_m": 0.2605630209048589
+            },
+            "median": {
+              "raw_body_median_m": 3.0066767930984497,
+              "raw_sole_median_m": 2.855711817741394,
+              "body_median_m": 0.07297869399189949,
+              "sole_median_m": 0.22179708629846573
+            },
+            "passes_2cm": 0
+          }
+        },
+        "weight_sha256": "4f8e9f9ee8c6b086cbb41d7b01820765e6bdf518963ae0798e3a580e889c31b1",
+        "parameters": 290032
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "purpose": "Physical camera K as frontend input, native RGB unchanged; additional sensor requirement explicit",
+  "planned_clips": 12,
+  "plan_sha256": "77ad062e2e77a68780b375921a70c956faf9803e49f6f444017748139ff4fa42",
+  "selection": "No hyperparameter search; evaluate all predeclared tune and confirmation clips, keep ambiguous detections.",
+  "training_ready": false
+}

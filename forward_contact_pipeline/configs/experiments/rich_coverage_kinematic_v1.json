@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "purpose": "Factorial data coverage and kinematic architecture study",
+  "architectures": [
+    "mlp",
+    "kinematic"
+  ],
+  "budgets": [
+    "small",
+    "expanded"
+  ],
+  "seeds": [
+    7,
+    19
+  ],
+  "steps": 1200,
+  "batch_size": 32,
+  "lr": 0.001,
+  "weight_decay": 0.001,
+  "hidden": 128,
+  "dropout": 0.1,
+  "checkpoints": [
+    50,
+    200,
+    400,
+    800,
+    1200
+  ],
+  "sampling": "Sequence-balanced with replacement, same total updates for every model",
+  "small": "Existing v4 train_cache excluding subjects003/020 and camera4",
+  "expanded": "Exact small subset union new fit complete clips; new clips containing any duplicate sample IDs are excluded",
+  "tune": "Only new subjects003/020 camera4, entire subjects/camera absent from both fit budgets",
+  "loss": "Same FP32 head-relative body+3xsole geometry, normalized head and .01 parameter loss as neural-v1",
+  "bounds": {
+    "rotation_rad": 1.2,
+    "beta": 3,
+    "translation_depth_fraction": 0.25
+  },
+  "selection": "Train-only choose best nonzero checkpoint by normalized mean raw+aligned body+sole; then choose strength0/.25/.5/1 with all four mean errors <=1.01 baseline; identity fallback",
+  "stop_rule": "If expansion and kinematic model do not stably improve heldout soles across seeds, stop this global-query residual family; do not widen the gate",
+  "development_plan_sha256": "40646f953f5d3ab2051a341fb045919f1b426309e643053fe80cca0b0ce909f4",
+  "confirmation_plan_sha256": "d596555d36c83eed998d89c2df04bbe4b6ee0f9d89c2c961097a4aaf175b89d5",
+  "training_ready": false
+}
