@@ -5,7 +5,8 @@
 通过Git迁移代码可行，而且应当作为后续持续迭代的主方式。当前origin为
 `https://github.com/OIIAIIOOIIAII/ml-hugs-work.git`，既有远端为公开仓库，默认分支`main`。
 本次源码快照收录本地HUGS改动、接触训练与RICH处理模块、配置、测试、方案说明和第三方补丁。
-GitHub认证尚未配置成功，远端同步须等仓库端授权后执行；本地提交不等于远端已更新。
+仓库端已授权title为`deploy`的部署密钥，源码提交`8ba0dcf`已推送至`origin/main`。
+后续继续通过此仓库的SSH push配置同步；同步结束以本地HEAD和远端main哈希一致验收。
 本次没有改变远端可见性，也没有将数据或模型上传。
 
 验证：主工作区45项CPU软件测试通过；从暂存内容导出的干净副本44项通过、
@@ -58,7 +59,8 @@ git diff --cached
 
 ## 本机推送认证
 
-HTTPS非交互推送返回未配置用户名/认证；既有SSH密钥被GitHub拒绝。
+已完成认证：仓库管理员已添加title为`deploy`的专用公钥并授予写入权限，SSH推送成功。
+此前HTTPS没有配置认证、旧SSH密钥未获授权，这些已不再阻塞当前仓库推送。
 本机已准备独立的仓库部署密钥，公钥位于`.tools/git-sync/github_deploy_ed25519.pub`，
 私钥位于同目录且被Git忽略。GitHub主机公钥从其官方HTTPS API获取并严格校验。
 仓库管理员在`Settings → Deploy keys`添加公钥并开启`Allow write access`后，
