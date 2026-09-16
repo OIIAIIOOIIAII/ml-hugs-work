@@ -1,5 +1,13 @@
 # 前馈接触修正：活实验计划
 
+## 2026-09-16 非线性视觉几何校正（本轮完成，精度未通过）
+
+最终结果见[`reports/rich_neural_refinement_20260916.md`](reports/rich_neural_refinement_20260916.md)。6组训练及新序列确认完成，选中模型在训练样本上脚底原相机2.70cm，但6新camera0片段的对齐脚底10.02→22.47cm，0/6通过。camera3原有5/6片段多人，不满足单人匹配规则；统一补测camera0保留原失败，合计7/12视角可测，全部声明视角0/12通过。解析K平移只改善整体位置，未解决局部脚底。GT未写入输入，正式contact门槛保持。以下是已执行的冻结方案。
+
+- 复用17序列缓存，沿用13/4序列训练/内部选择划分；比较pose参数损失、完整1792维视觉query参数损失、视觉query+可微顶点/脚底几何损失。hidden128、seed7/19、60epoch、batch32；粗几何范围旋转1.2rad/beta3/深度25%，不改变最终2cm门槛。
+- 新确认集6个未用序列×32帧，计划SHA256 `3ab9b5fde6bd4c01d34ec4565325fcb3b08a1b0343a14056dba1a6858ff1aad1`。选参不访问其标签；所有训练配置与零修正回退保留，最终一次评估。参与者与训练互斥，但出现在过去验证中，不称全新参与者或官方test。
+- 先验证可微SMPL-X梯度与实际HumanGS零修正复现；实验完成前不宣布改善。协议`reports/rich_geometry_neural_20260916/protocol.json`。
+
 ## 2026-09-16 几何精度修复研究（本轮实验完成，2cm仍未解决）
 
 本轮最终结果见[`reports/rich_geometry_calibration_20260916.md`](reports/rich_geometry_calibration_20260916.md)。

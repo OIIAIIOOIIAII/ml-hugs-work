@@ -1,5 +1,12 @@
 # 可持续迭代的接触实验工程
 
+2026-09-16更新：RICH全量监督已完成，但真实前端几何仍未达到2cm要求，正式Stage-A/contact训练未就绪。
+独立的粗几何研究已实现非线性残差MLP、可微SMPL-X损失、训练内选模与分阶段新序列评价，
+配置为`configs/experiments/rich_geometry_refinement_v1.json`，入口为`scripts/train_rich_neural_refiner.py`。
+它需要含`roma/smplx/pytorch3d`的GUSH3R环境，不能只装`requirements-data.txt`；
+它不是下文的正式接触训练cache或可部署校正器，研究脚本尚无中途epoch续训。结果与命令见
+[真实几何校正报告](reports/rich_neural_refinement_20260916.md)。
+
 当前版本提供**能执行并可续训的 Stage-A 数值缓存训练层**。旧 GRU/TCN、Stage-B
 rollout 和诊断脚本保留原入口。2026-09-15 已完成 RICH 原始归档的 GT 标注整理，
 全量 37669 人体帧的顶点/面对应核验通过，生成 1206 个数值分片，见 [RICH_PREPARATION.md](RICH_PREPARATION.md)。
