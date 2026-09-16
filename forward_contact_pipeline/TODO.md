@@ -11,7 +11,9 @@
 - [x] **A5.21 Git源码同步**：本轮整理HUGS及完整contact/RICH源码快照，审计506个源码/配置/文档候选（约4.2MB），补齐元数据TSV/数据依赖/导出入口/方案文档，第三方revision与GUSH3R补丁匹配。数据、权重、认证与生成产物排除；本地提交纳入387个改动文件；主工作区45项通过，干净副本44项通过/1项因缺aria2跳过。title为deploy的仓库专用Deploy Key已获授权，源码提交8ba0dcf已推送至origin/main。见根`MIGRATION.md`。
 - [x] **A5.19 本批RICH train下载/归档处理完成**：JPG于02:15下载完，04:42整包gzip CRC/SHA256通过并发布`extracted/train`。261429图片/62序列、559.593GB；GT37669帧/1206片、公共包均已完成。10:25核验图片索引无重复、总字节一致；全部37669个contact帧均有至少一个metadata允许相机图片，无缺失，抽查3个文件hash通过。报告`reports/rich_processing_20260916/image_completion_audit.json`。下方下载ETA与运行PID全部为历史状态。
 - [x] **A5.20a RICH监督候选清单准备**：`processed/dataset_v1`已正式发布。261429图片头/尺寸/EXIF全量检查（全部identity），1206片SHA256/数值复核通过；train39序列/167710候选样本，内部val23序列/75084候选样本，有效人体帧37585。全样本图片/帧/相机/分片行号独立核对、重复与泄漏检查、产物hash复核和10项回归通过。见`RICH_DATASET.md`及`reports/rich_processing_20260916/dataset_completion_audit.json`。
-- [ ] **A5.20b 真实训练输入准备**：先核验逐帧可见性（1290个数值投影抽查中17个无顶点在图像内、38个少于半数，尚不能直接断言标定错误），再接通RICH raw→resize/crop/pad变换及保留真实帧号的纯数值冻结因果前端exporter，生成local geometry/RGB/Gaussian缓存并独立测量几何误差，通过后才训练。当前GUSH3R使用默认K，既有export缺RGB tokens/局部邻域/完整LBS；官方val/test仍需另行补齐，training_ready=false。
+- [x] **A5.22 全量脚底监督/画面范围处理**：v2完成1206片、242794候选视角的标签/掩码/投影/真实帧号/哈希独立回读；保留train165920、内部val74264样本，排除2610出画视角，全部37585有效人体帧仍覆盖。ROI左右脚各64固定顶点，不依赖标签值；正负分布有效。见`RICH_DATASET.md`。
+- [x] **A5.23 真实冻结前端数值pilot与门槛复测**：32帧完成；原默认K、纯因果逐帧map、真实RGB tokens/SMPL-X/point map/Gaussian证据，头部平移约定核对，未渲染或训练。12帧fit/4帧held-out的全身median3.39/4.62cm、脚底5.69/2.66cm，2cm门槛失败，证据已保留。
+- [ ] **A5.20b 全量真实训练输入准备（几何门槛阻塞）**：下载及GT处理已完成；先解决真实前端几何精度或明确变更实验协议，再生成local geometry/RGB/Gaussian训练缓存并独立审计。不得将GT补入inputs或把pilot称为全量缓存。`training_ready=false`；官方val/test未下载。
 
 > **23:53下载与处理快照**：JPG97.6302%（546.162/559.419GB），余13.257GB；近5分钟0.4485MB/s、14连接，按此约8.2小时（9月16日08:06），覆盖旧1–2点ETA。流式处理正常等待第160.413GB处未完成piece，已暂存73599图片/160.446GB、涉及20序列；gzip不能跳过缺口，整包CRC尚未通过。GT37669帧/1206片已完成；两个controller均存活，无新任务修改。快照`datasets/RICH/processing_logs/joint_status_latest.json`。
 

@@ -1,5 +1,16 @@
 # RICH 监督样本准备
 
+**2026-09-16 全量监督处理完成，真实前端几何门槛未通过。**
+
+- `datasets/RICH/processed/supervision_v2/`：固定 SMPL-X 左/右脚底各64顶点，官方逐顶点接触标签与缺失掩码、可选无符号距离、全量原图/512裁剪画面范围掩码、相机变换、筛选清单和哈希。GT只进入监督或审计，不充当前端输入。
+- train保留165920个图像-人体样本，内部val保留74264个；2610个视角双脚均在裁剪外。全部37585个有效人体帧仍至少有一个合格视角。84个无SMPL-X颜色标注帧仍保留invalid，10个body-only帧保持排除接触监督，camera10的14987张图保持缺标定排除。
+- 全部1206片及242794候选视角经独立投影/帧号/标签/掩码/哈希回读通过。脚底标签positive比例train55.07%、val69.93%；不是全正标签。画面范围不等于遮挡可见性。
+- 冻结GUSH3R纯数值推理完成两个16帧片段，保存真实RGB decoder tokens、SMPL-X、point map及Gaussian诊断；没有渲染、训练或使用未来帧。修正了导出中必须遵循的头部位置平移约定，未修改第三方推理模型。原默认FOV先验K保留，RICH K只用于独立审计。
+- 每片段前12帧拟合一个诊断Sim(3)、后4帧留出：全身误差中位数3.39/4.62cm，脚底5.69/2.66cm，均不满足既定2cm门槛。诊断对齐未写回inputs；全量真实特征缓存没有生成，`training_ready=false`。当前阻塞是前端几何精度，下载/GT处理已无后台等待。
+- 完成状态：`reports/rich_processing_20260916/data_status.json`；全量审计和几何证据同目录；可迁移说明见`RICH_DATASET.md`。
+
+以下v1记录用于追溯候选清单的生成；可见性筛选进度以上述v2结果为准。
+
 这一层把已解压图片、官方标定与 GT 分片关联起来，产出可迁移的监督样本清单。
 它不生成冻结前端特征、不启动训练，也不把 GT 人体或场景作为部署输入。
 
@@ -120,3 +131,54 @@ python -m unittest discover -s forward_contact_pipeline/tests -p test_rich_datas
 
 覆盖跨人物泄漏拒绝、非连续真实帧关联、SMPL/SMPL-X 有效 mask 区分、相机缺失过滤、
 不解码像素的 EXIF 读取、竖幅投影、失败不发布、路径边界与跨目录迁移后的清单哈希核验。
+
+## 全量脚底监督和画面范围掩码 v2
+
+从仓库根运行（同一输出目录不能并发写入）：
+
+```bash
+OPENBLAS_NUM_THREADS=1 python forward_contact_pipeline/scripts/prepare_rich_supervision.py \
+  --rich-root datasets/RICH --output datasets/RICH/processed/supervision_v2 \
+  --template Human3R/src/models/smplx/SMPLX_NEUTRAL.npz --workers 4
+OPENBLAS_NUM_THREADS=1 python forward_contact_pipeline/scripts/audit_rich_supervision.py \
+  --rich-root datasets/RICH --supervision datasets/RICH/processed/supervision_v2 \
+  --output forward_contact_pipeline/reports/rich_processing_20260916/supervision_completion_audit.json
+```
+
+`targets/<sequence>/<subject>/<offset>.npz`保留原分片的真实`frame_ids`，
+含`contact/contact_valid [T,2,64]`、固定`vertex_ids [2,64]`。
+`unsigned_surface_distance`为官方`s2m_dist_id`位移向量的范数，单位米；不能重命名成signed proximity。
+`frustum/`按候选相机/帧保存`sample_ids`、原annotation行号、脚底原图/裁剪mask、
+裁剪像素坐标及全身入画顶点数。`contact_supervision_mask = contact_valid & sole_crop_frustum`；
+不做遮挡判定，不把出画顶点的标签改为0。筛选清单的`target.path/frustum.path`相对于v2目录，
+其他image/annotation路径仍相对于RICH根目录。只要任一有效脚底顶点在裁剪内就保留该候选样本。
+
+ROI只依赖neutral模板的skinning joints 7/10、8/11及法向、模板高度，随后确定性FPS；
+不按GT接触值挑选。版本/源文件/实现哈希改变必须使用新输出目录。续跑逐片检查源和已写输出哈希；
+`report.json`完成状态与独立审计同时有效才算验收，不仅凭文件夹存在判断。
+
+## 冻结前端数值诊断
+
+需要已安装GUSH3R的CUDA环境、原检查点、SMPL-X资产和本地DINOv2代码，不能用仅numpy环境运行。
+以下路径变量由目标机器设置，不把本机conda路径写进实验配置：
+
+```bash
+python forward_contact_pipeline/scripts/export_rich_gush3r_pilot.py \
+  --repo GUSH3R --rich-root datasets/RICH \
+  --output datasets/RICH/processed/frontend_pilot_v1 --dino-repo /path/to/local/dinov2
+python forward_contact_pipeline/scripts/audit_rich_gush3r_pilot.py \
+  --rich-root datasets/RICH --frontend datasets/RICH/processed/frontend_pilot_v1 \
+  --output forward_contact_pipeline/reports/rich_processing_20260916/frontend_geometry_audit.json
+```
+
+exporter调用`keep_outputs=False`、逐帧callback与`skip_inference_render_outputs=True`，不调用普通CLI末尾的render。
+每个片段独立重置因果状态；没有宣称跨片段连续记忆。记录原图→resize/crop→MHMR pad矩阵，
+区分模型默认K与真实标定K。HumanGS的`trans`为头部位置，导出mesh采用
+`SMPL-X vertices + trans - posed_head`；中性性别/flat-hand-mean与HumanGS内部层一致。
+`binding.npz`保留原sample vertex IDs、LBS weights和拓扑；这仍不是完整的低维修正/LBS部署闭环。
+scene只保存当前累计地图中最多8192个高opacity Gaussian用于诊断，不能当作完整局部surface或接触标签。
+
+此轮两个clip各16帧；78.96秒包括加载/校验/推理/落盘，不是全量吞吐保证。
+出现检测/身份异常会使审计失败。短片段通过也不代表全量就绪，须扩展多序列测量并实际生成
+local relation缓存后才可运行真实训练。本轮未过门槛，后续先诊断/改进前端或明确变更实验协议，
+不能修改audit pass标记绕过门槛。
