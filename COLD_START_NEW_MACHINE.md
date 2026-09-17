@@ -22,12 +22,13 @@
 ```bash
 git clone --recurse-submodules git@github.com:OIIAIIOOIIAII/ml-hugs-work.git
 cd ml-hugs-work
-git checkout e2ecef3
+git checkout main
+git pull --ff-only origin main
 git submodule update --init --recursive
 git status --short
 ```
 
-此时工作树应为空。需要更新代码时，先阅读提交历史与 `AGENT_HANDOFF.md`，再显式 checkout 确认的 commit；不可混用未提交源码与旧 feature cache。
+此时工作树应为空。记录此刻 `git rev-parse HEAD` 的输出，作为本次新机器训练的代码版本。需要更新代码时，先阅读提交历史与 `AGENT_HANDOFF.md`，再显式 checkout 确认的 commit；不可混用未提交源码与旧 feature cache。
 
 ## 2. 重建 GUSH3R 和权重
 
@@ -49,6 +50,8 @@ conda activate gush3r
 pip install torch==2.2.0 torchvision==0.17.0 --index-url https://download.pytorch.org/whl/cu121
 pip install -r GUSH3R/requirements.txt
 pip install -r forward_contact_pipeline/requirements-data.txt
+pip install --no-build-isolation git+https://github.com/facebookresearch/pytorch3d.git@2d4d345b6fd2720580bff5f63dcbd3b230b43996
+pip install --no-build-isolation git+https://github.com/ashawkey/diff-gaussian-rasterization.git
 python -c "import torch; print(torch.__version__, torch.cuda.is_available()); assert torch.cuda.is_available()"
 ```
 
@@ -64,7 +67,16 @@ sha256sum checkpoints/gush3r.pth
 cd ..
 ```
 
-按 `GUSH3R/README.md` 的 **SMPL and SMPL-X Related Body Models** 小节运行其官方下载脚本，并在交互时录入自己的 SMPL/SMPL-X 凭据。完成后检查 `GUSH3R/src/models/` 中的 `body_models/smpl/`、`body_models/smplx/`、`smplx2smpl.pkl` 与 `smplx2smpl_joints.npy`。它们都不进 Git。
+按 `GUSH3R/README.md` 的 **SMPL and SMPL-X Related Body Models** 小节运行其官方下载脚本，并在交互时录入自己的 SMPL/SMPL-X 凭据：
+
+```bash
+cd GUSH3R
+pip install gdown
+bash scripts/fetch_body_models.sh
+cd ..
+```
+
+完成后检查 `GUSH3R/src/models/` 中的 `body_models/smpl/`、`body_models/smplx/`、`smplx2smpl.pkl` 与 `smplx2smpl_joints.npy`。它们都不进 Git。
 
 若 DINOv2 torch hub 下载受网络限制，可先让 PyTorch 在新机器正常下载，或设置 `GUSH3R_DINO_HUB_LOCAL_REPO` 指向新机器的本地 DINO 源码目录。
 
