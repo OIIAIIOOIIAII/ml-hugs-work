@@ -1,5 +1,21 @@
 # Claude 协作记录
 
+## 2026-09-18（项目迁移与 agent 交接）
+
+- 用户要求后续不再在本机开发，先同步 Git，并将本机 agent 的可执行记忆带到新机器。新增受版本控制的`AGENT_HANDOFF.md`：规定开场阅读顺序、中文协作/会话日志/GPU/不读图约束、当前 RICH Stage-A v2 输入边界、v1 崩溃与 v2 修复、指标口径、resume 契约和禁止强行恢复的条件。完整历史仍保留本文件，实时状态以 run 的`progress.json`/`history.json`为准。
+- 更新`MIGRATION.md`：RICH 原数据、冻结特征 cache、v2 `last.pt`/`best.pt`、GUSH3R checkpoints、SMPL-X/DINO 作为受许可约束的独立资产；优先同 NAS 挂载，否则使用可断点校验的 rsync，最终收尾同步后比较 contract 与 checkpoint SHA256。不得把数据、权重、凭据或缓存提交 Git，且两台机器不能同时写同一 run/cache。
+
+## 2026-09-17（RICH 全量 Stage-A 实验已持续运行）
+
+- 用户确认今夜继续推进实验。`rich_full_contact_v1_seed42` 已从两分片恢复检查接续为不限分片的真实全量训练；冻结 GUSH3R，只训练新的 Stage-A 局部接触分类器。启动前 GPU 空闲，使用单张 RTX4090；任务 PID、命令、可恢复检查点和运行日志分别记录在 `datasets/RICH/processing_logs/full_contact_launch.json`、`forward_contact_pipeline/runs/rich_full_contact_v1_seed42/last.pt` 与 `datasets/RICH/processing_logs/full_contact_train.log`。
+- 00:19 现场核验：epoch 1 训练分片 2381/5099，已处理 77543 个候选人物—图像样本，其中 73595 个唯一匹配并进入优化；累计 2435 个优化步，训练损失 0.4219，显存约 7.3GB、GPU 利用率 100%。已生成 2383 个冻结输入分片（约12GB）。这是首轮缓存构建过程，尚未完成一次全量 validation，不能当作最终指标或部署结论。
+- 全量范围固定为 train 165920 人物—图像样本/158428 唯一图片，内部 ParkingLot2 validation 74264 样本；共30 epoch。GT 仅用于联系标签与目标关联，绝不进入预测器输入；官方 val/test 尚未下载，内部 validation 仅用于开发选择。
+
+## 2026-09-16（用户要求推进全量数据训练）
+
+- 用户追问为何不能直接全量训练；按其意图推进全量合格RICH训练数据，不再以最终2cm几何指标阻止训练实验。保持独立验证、不以GT充输入，冻结GUSH3R训练新增模块；训练授权与最终部署/论文验收分开记录。先补齐全量人物匹配、可续跑冻结特征、分片训练和真实验证，不能把启动缓存说成已经完成全量训练。
+- 现有基线：下载/GT/索引完整，train165920图像-人体样本、内部val74264；只完成小规模冻结特征和几何修正训练。GPU初查空闲，单卡RTX4090。保留其他任务INTERVIEW文档修改及子模块缓存；本轮源码/方案沿既有授权Git同步。
+
 ## 2026-09-16（扩大覆盖、分离数据量与结构瓶颈）
 
 - 本轮完成2240新冻结帧及8组训练：small528样本/417人体时刻/13序列/5人物，expanded1360/1104/32/9；内部选择96帧、4新确认序列64帧。两架构各2预算×2种子，每组1200更新×batch32，约6分钟训练。选中expanded MLP seed7/step800/strength1；新集原全身39.29→19.69cm，但对齐脚底15.84→21.40cm，所有模型0/4通过。图网络部分局部指标改善却伴随原相机误差恶化，不能采用。
@@ -4983,3 +4999,42 @@ anchor_attention:
 - GPU 检查时 RTX 4090 已被其他工作负载占满（100%），本轮没有启动或干扰新的 GPU 重建。详细数值和结论已追加至 `forward_contact_pipeline/reports/gush3r_quality_diagnosis_20260804.md`。
 - 用户授权持续 autoresearch：不等待人工逐步确认，按“提出可证伪方案 → 单变量实现/运行 → 无可视化数值验收 → 迭代”的顺序自动推进；GPU 忙时等待/轮询，不抢占其他任务。当前优先方案为重叠窗口交接的弱对照（量化其能否消除 seam，但明确它含未来上下文、不是在线最终方案），然后再实现可在线的可靠 anchor map hand-off。
 - 用户要求持续实验直到可用；已完成 hard chunk / overlap / causal-RGB-context 三种对照，确认只有离线 overlap 能消 seam，未来无关的 RGB context 仍有 2.31x 边界跳变。现开始实现真正的可靠背景 anchor-map hand-off：跨窗口传递有限高置信背景 Gaussian，而非重置 map 或使用未来帧；将先做短序列 smoke、再做完整 229 帧无可视化数值验收。
+## 会话恢复（2026-09-17）
+
+### 本次开场：恢复 A5.29 RICH 全量 Stage-A 接触训练
+
+**当前日期**：2026-09-17
+
+- 状态：A5.29 训练在 epoch 1 validation 阶段中断（progress.json 显示 running 但进程已不在），completed_chunks_in_phase=1002/2426，global_steps=5205。
+- cache 已落盘 29GB/12203 个文件，plan index 位于 datasets/RICH/processed/full_contact_v1/plan/index.json。
+- GPU 当前空闲（RTX 4090，0% util，4MiB 占用）。
+- 下一步：使用 gush3r conda 环境和 --resume 从 last.pt 续训。
+
+
+### A5.29 修复与重启（2026-09-17）
+
+- 旧 run `rich_full_contact_v1_seed42` 在 epoch 1 val 处理 clip 7044（ParkingLot2_016_burpeejump2, cam3）时崩溃：
+  `ValueError: Degenerate predicted sole normal`（`rich_full_frontend.py:99`）。
+- 修复：`contact_streaming/rich_full_frontend.py` 的 `features()` 现在跳过脚底法向退化或非有限输入的预测人物，而不是 raise；同步过滤返回的 heads/ids。
+- 旧 run 因 source_sha256 变化无法 resume；已将 cache/contract.json 重命名为 `.old_run`，创建新 run `rich_full_contact_v1_seed42_v2` 复用 29GB cache。
+- 新 run 已启动：tmux 会话 `rich_full_contact_v2`，PID 1536646，RTX 4090 占 796MiB。
+- 约 4 分钟后进度：epoch 1 train 2178/5099 chunks，global_steps=2229，train_loss=0.4276，运行稳定。
+- 待验证：epoch 1 val 阶段是否能正常通过 clip 7044 并完成首个完整 validation。
+
+
+### A5.29 新 run 实时监控（2026-09-17）
+
+- epoch 1 train 约 7.5 分钟完成 5099 chunks，loss 从 0.428 降至 0.372。
+- epoch 1 val 阶段于 19:44:10 开始，已稳定处理包括 clip 7044 在内的多个 clips，未再崩溃；修复确认有效。
+- 当前 val 速度约 7 chunks/分钟（大量 val clips 未在 cache 中，需实时 GUSH3R 推理），剩余约 1329 chunks，预计还需 3 小时以上完成首个 validation。
+- GPU 显存占用稳定在 ~800MiB，利用率 2–4%；瓶颈在冻结前端特征提取与 NAS cache I/O。
+- 训练在 tmux 会话 `rich_full_contact_v2` 中后台运行，可安全断开。
+
+
+### 时间估算更新（2026-09-17 20:16）
+
+- 当前 epoch 1 val 1221/2426；已完成部分全部为 cache 命中（1224/2426 ≈ 50.4%）。
+- 剩余 1202 个 val chunks 均未缓存，按未缓存速度约 7 chunks/分钟估算，epoch 1 val 还需约 2.9 小时。
+- 完成 epoch 1 总计约 3.5 小时。
+- epoch 2–30 复用 cache 后，每 epoch 预计 15–20 分钟；全部 30 epoch 乐观约 12 小时，保守约 15–16 小时。
+- 训练在 tmux 后台运行，可离线完成。

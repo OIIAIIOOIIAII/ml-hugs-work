@@ -4,6 +4,8 @@
 
 > **实现状态补充（2026-09-15）**：Stage-A已经有可执行的几何基线与RGB/Gaussian可选融合基线、统一数值训练入口。实装结构是共享point MLP→按有效mask平均汇聚→拼接vertex位置/法向→vertex MLP；融合版追加RGB cross-attention，默认hidden=96、heads=4。图网络/Point Transformer属于候选扩展，当前并未实现。当前统一损失已接contact，proximity头存在但默认权重为0；几何原型的reliability头尚未在统一训练层建立监督/校准，融合版尚无可靠性头。RICH GT整理已完成，真实前端特征export/审计与Stage-B/LBS完整绑定仍未接通。下文“最终网络”是目标契约，不能据此宣称所有输出已经训练可用。
 
+> **全量训练状态补充（2026-09-17）**：`rich_full_contact_v1` 已开始真实全量 RICH Stage-A 训练。它使用冻结 GUSH3R 的每人预测、64 个脚底 vertex、每 vertex 的16个预测 point-map 邻居、25个局部与16个全局 DINO RGB token、pose/query/物理相机条件；输出仅为每脚底 vertex 的 contact logit。首轮边生成并持久化这些非GT输入边训练，随后 epoch 复用缓存。GT body/contact 只用于将预测目标互斥地关联到标签及计算损失；没有作为模型输入。该运行不包含 Stage-B、修正量、LBS 回写或官方 test，因此首轮结果只能作为 Stage-A 内部开发证据。
+
 ## 1. 工作目标
 
 给定流式视频的当前 RGB 帧 `I_t`，以及到 `t-1` 为止模型自身的接触控制状态，系统以一个**冻结的前馈人体—场景 Gaussian backbone** 为基础，在线输出当前帧的接触估计与低维修正量。

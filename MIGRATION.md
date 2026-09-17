@@ -1,13 +1,15 @@
 # HUGS代码与双机迁移
 
-## 当前同步（2026-09-16）
+## 当前同步（2026-09-18）
 
 通过Git迁移代码可行，而且应当作为后续持续迭代的主方式。当前origin为
 `https://github.com/OIIAIIOOIIAII/ml-hugs-work.git`，既有远端为公开仓库，默认分支`main`。
 本次源码快照收录本地HUGS改动、接触训练与RICH处理模块、配置、测试、方案说明和第三方补丁。
 仓库端已授权title为`deploy`的部署密钥，源码提交`8ba0dcf`已推送至`origin/main`。
 后续继续通过此仓库的SSH push配置同步；同步结束以本地HEAD和远端main哈希一致验收。
-本次没有改变远端可见性，也没有将数据或模型上传。
+本次没有改变远端可见性，也没有将数据或模型上传。为使新机器上的 agent 能无缝接手，
+仓库根目录的`AGENT_HANDOFF.md`与`CLAUDE_SESSION_LOG.md`同步当前实验边界、失败原因、
+恢复规则和工作偏好；新 agent 应先读二者，再以运行中的`progress.json`验证实时状态。
 
 验证：主工作区45项CPU软件测试通过；从暂存内容导出的干净副本44项通过、
 1项aria2相关测试因副本环境未安装该工具跳过。源码语法与敏感信息模式检查通过，
@@ -106,3 +108,36 @@ patch只应应用一次，先核对patch SHA256和base revision。未来对第�
 每次改变模型或数据语义：新增命名配置、更新feature_version/index、记录Git commit。
 避免覆盖旧结果；科学配置改变开新run，保持同配置的机器迁移才使用resume。
 优先上传已测试的小步代码，不把一次性结果目录与临时第三方源码同步进主仓库。
+
+## 当前 RICH Stage-A v2 的可续训迁移
+
+目前有效运行目录为`forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2`。要在新机器
+继续同一个实验，必须在停止源任务或确保源/目标不同时写同一 run 后，成组复制如下资产：
+
+| 资产 | 用途 | 迁移要求 |
+|---|---|---|
+| `datasets/RICH/` | 原图、标注、scan、计划 | 许可受限；优先同一受控 NAS 挂载，不公开上传 |
+| `datasets/RICH/processed/full_contact_v1/cache/` | 35GB 左右冻结特征与契约 | 与源码/config/checkpoint hash 必须匹配 |
+| `forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2/` | `last.pt`、`best.pt`、状态和历史 | 复制时保留原子 checkpoint 文件，不要只复制 `progress.json` |
+| `GUSH3R/checkpoints/`、SMPL-X、DINO hub cache | 冻结前端依赖 | 受各自许可约束；目标机本地配置，不进 Git |
+
+如果目标机能通过 NAS 访问同一绝对路径，最稳妥的方式是仅 clone 代码、重建环境，并复用
+同一数据目录；无需复制约 560GB 的 RICH JPG。若必须通过 SSH 复制，源任务运行时可先
+反复同步只增不删的数据与缓存，最终停任务后做一次收尾同步：
+
+```bash
+# 在目标机执行；将 SOURCE_HOST 和源目录替换为实际值。
+rsync -aHAX --partial --append-verify --info=progress2 \
+  SOURCE_HOST:/workspace/nas_auto_backup/yuzilang/ml-hugs-work/datasets/RICH/ \
+  /data/RICH/
+rsync -aHAX --partial --append-verify --info=progress2 \
+  SOURCE_HOST:/workspace/nas_auto_backup/yuzilang/ml-hugs-work/forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2/ \
+  forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2/
+rsync -aHAX --partial --append-verify --info=progress2 \
+  SOURCE_HOST:/workspace/nas_auto_backup/yuzilang/ml-hugs-work/datasets/RICH/processed/full_contact_v1/cache/ \
+  /data/RICH/processed/full_contact_v1/cache/
+```
+
+迁移后先比较源/目标 run 的`contract.json`、`last.pt` SHA256 和 cache 中`contract.json`；再
+确认目标机可读取 RICH 与 GUSH3R checkpoint，最后才带`--resume`启动。不要两个机器同时
+写同一个 cache 或 run 目录。
