@@ -4,6 +4,7 @@
 
 - 用户要求后续不再在本机开发，先同步 Git，并将本机 agent 的可执行记忆带到新机器。新增受版本控制的`AGENT_HANDOFF.md`：规定开场阅读顺序、中文协作/会话日志/GPU/不读图约束、当前 RICH Stage-A v2 输入边界、v1 崩溃与 v2 修复、指标口径、resume 契约和禁止强行恢复的条件。完整历史仍保留本文件，实时状态以 run 的`progress.json`/`history.json`为准。
 - 更新`MIGRATION.md`：RICH 原数据、冻结特征 cache、v2 `last.pt`/`best.pt`、GUSH3R checkpoints、SMPL-X/DINO 作为受许可约束的独立资产；优先同 NAS 挂载，否则使用可断点校验的 rsync，最终收尾同步后比较 contract 与 checkpoint SHA256。不得把数据、权重、凭据或缓存提交 Git，且两台机器不能同时写同一 run/cache。
+- 用户说明基本无法传递权重与数据，要求给新机器重下/重跑的详细指引并同步 Git。新增`COLD_START_NEW_MACHINE.md`，覆盖容量与许可证、固定代码/GUSH3R patch、全新CUDA环境、HF权重和官方SMPL/SMPL-X获取、RICH认证下载与处理、全量计划/cache重建、从零训练、resume限制、验收指标和故障处理。冷启动必须新建 run，绝不能拿旧 run 强行`--resume`。
 
 ## 2026-09-17（RICH 全量 Stage-A 实验已持续运行）
 

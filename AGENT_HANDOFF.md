@@ -4,6 +4,10 @@
 `MIGRATION.md` 和 `forward_contact_pipeline/TODO.md` 顶部。旧记录只作背景；当前
 进程、Git 提交、run 的 `progress.json` 与 `history.json` 才是运行状态的依据。
 
+若新机器没有任何本地数据、权重、cache 或 checkpoint，按
+`COLD_START_NEW_MACHINE.md` 从授权下载、数据处理和新的 run 开始；禁止把冷启动当作
+对旧 run 的 `--resume`。
+
 ## 当前工作目录与规则
 
 - 项目根目录：`ml-hugs-work`。

@@ -141,3 +141,7 @@ rsync -aHAX --partial --append-verify --info=progress2 \
 迁移后先比较源/目标 run 的`contract.json`、`last.pt` SHA256 和 cache 中`contract.json`；再
 确认目标机可读取 RICH 与 GUSH3R checkpoint，最后才带`--resume`启动。不要两个机器同时
 写同一个 cache 或 run 目录。
+
+如果无法传递任何 RICH、权重、cache 或 checkpoint，则不使用本节的 resume 流程。新机器应按
+[`COLD_START_NEW_MACHINE.md`](COLD_START_NEW_MACHINE.md) 从本地授权下载、归档处理、计划/cache
+重建和新的命名 run 开始；该文档也包含环境、验证和结果口径。
