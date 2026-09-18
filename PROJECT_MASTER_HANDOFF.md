@@ -12,7 +12,9 @@ Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模
 
 冻结 epoch-5 checkpoint 已完成一次全量细粒度内部复评：2,426 个缓存分片、74,264 candidates、9,505,792 有效顶点，与训练历史逐项复现。7,667 个未唯一关联候选占有效顶点 10.32%，其正例率 74.87%，是 all-candidate recall 低于 matched-only recall 的主要原因。先读 [`forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md`](forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md) 再开始关联失败分桶或消融；其中阈值和校准均为内部开发统计，不能继续拿来调参后宣称独立评测。
 
-唯一可用于该结论的数值证据是本机受忽略 run 的 `history.json`、`contract.json`、`best.pt` 与 `last.pt`；Git 只保存重建代码与文档，绝不保存 RICH、权重、cache、checkpoint 或凭据。
+唯一可用于该结论的数值证据是本机 run 的 `history.json`、`contract.json`、`best.pt` 与 `last.pt`。Git 保存重建代码、文档与用户明确选定的 `model_weights/` 小型自研模块；不保存 RICH、cache、上游权重、按场景 Gaussian checkpoint 或凭据。
+
+用户已明确授权将本项目小型最佳模块权重同步到 Git：`model_weights/` 保存研究点一六个 Anchor Attention state dict 与研究点二的 RICH Stage-A epoch-5 best checkpoint。它们不替代 RICH、cache、GUSH3R/SMPL-X 或按场景生成的 human/scene Gaussian checkpoint；完整文件映射和 SHA256 见 [model_weights/README.md](model_weights/README.md)。
 
 ## 新 agent 的阅读顺序
 
@@ -46,7 +48,7 @@ Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模
 - ParkingLot2 是从官方 train 划分出的内部开发集，不称官方 validation/test。
 - 不能将 GUSH3R/PROX 的 2cm 几何门槛失败、oracle 接触结果或合成 drift controller 结果描述为真实可部署改善。
 - 不强行 resume source/config/plan/cache hash 不一致的 run；语义变化一律新建版本化 run。
-- 不提交数据、权重、cache、checkpoint、cookie、token、私钥或本机环境。
+- 不提交数据、cache、上游权重、按场景 Gaussian checkpoint、cookie、token、私钥或本机环境。唯一权重例外是用户明确维护的 `model_weights/` 小型自研模块，文件和 SHA256 须登记在其 README。
 
 ## 非本次主线但需保留的工作
 

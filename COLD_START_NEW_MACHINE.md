@@ -15,7 +15,7 @@
 | SMPL/SMPL-X | 在官方页面接受各自许可 |
 | GitHub | 首次只读 clone 可用 HTTPS；需要推送时，在新机器创建自己的 SSH key 或 credential，绝不复制旧机器 deploy 私钥 |
 
-不要把 RICH、SMPL/SMPL-X、模型权重或任何 token 上传到公开 Git、Hugging Face 或网盘。
+不要把 RICH、SMPL/SMPL-X、上游模型权重或任何 token 上传到公开 Git、Hugging Face 或网盘。仓库中 `model_weights/` 是用户明确选择同步的小型自研模块例外；它不包含这些受限资产。
 
 ## 1. 克隆固定代码
 
