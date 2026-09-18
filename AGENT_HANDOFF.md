@@ -1,8 +1,8 @@
 # HUGS Agent Handoff
 
-新机器上的 agent 开始工作时，先阅读本文件、`CLAUDE_SESSION_LOG.md` 顶部、
-`MIGRATION.md` 和 `forward_contact_pipeline/TODO.md` 顶部。旧记录只作背景；当前
-进程、Git 提交、run 的 `progress.json` 与 `history.json` 才是运行状态的依据。
+新机器上的 agent 必须先阅读根目录`PROJECT_MASTER_HANDOFF.md`；它给出唯一阅读顺序、
+当前任务优先级和不可违反的研究边界。本文件补充具体工作约束和 run 契约。旧记录只作背景；
+当前进程、Git 提交、run 的 `progress.json` 与 `history.json` 才是运行状态的依据。
 
 若新机器没有任何本地数据、权重、cache 或 checkpoint，按
 `COLD_START_NEW_MACHINE.md` 从授权下载、数据处理和新的 run 开始；禁止把冷启动当作
@@ -16,15 +16,15 @@
 - 不读取或展示 RICH 原图来做人工判断；数值特征提取和数值评估可以执行。
 - Git 只放源码、配置、测试、文档和小型清单。数据、模型权重、cookie/私钥、缓存、检查点和渲染产物都不能提交。
 
-## 进行中的实验：RICH Stage-A v2
+## 已完成实验：RICH Stage-A v2
 
-`forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2` 是唯一有效的全量运行。
+`forward_contact_pipeline/runs/rich_full_contact_v1_seed42_v2` 是唯一有效的全量训练运行，已经完成30/30 epoch。完整结果、hash、限制和下一步在`forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md`；不要从此处的简略说明替代报告。
 
 - 任务：冻结 GUSH3R，训练新的 RGB--mesh--point Stage-A 脚底逐顶点接触分类头；不训练 GUSH3R，不训练旧几何残差模型。
 - 范围：165,920 train 人物--图像样本、74,264 ParkingLot2 内部 validation 样本，共 30 epoch。官方 val/test 尚未下载，内部 validation 不能作为正式 test。
 - 输入：冻结预测的 SMPL-X/scene point map、局部及全局 DINO token、pose/query、物理相机条件。GT body/contact 仅用于唯一目标关联和监督，绝不进入模型输入。
 - v1 在 epoch 1 validation 的退化预测脚底法向处崩溃，因源码哈希改变不可续跑；v2 对退化法向或非有限的冻结输入跳过该预测人体，并把对应目标作为未匹配项在全候选验证中计负，避免伪造样本或隐藏失败。
-- v2 的完整指标以 `history.json` 为准，最佳 checkpoint 以全候选 histogram AP 选择。运行时状态、可续训模型和特征契约分别在 `progress.json`、`last.pt`、`contract.json`。
+- v2 的完整指标以 `history.json` 为准，最佳 checkpoint 为 epoch 5（all-candidate AP=.94421、F1=.86902），按全候选 histogram AP 选择。运行时状态、最后模型、最佳模型和特征契约分别在 `progress.json`、`last.pt`、`best.pt`、`contract.json`。
 - 缓存契约与源码绑定。要继续同一 run，必须迁移相同的 `datasets/RICH/processed/full_contact_v1/cache`、run 目录、GUSH3R revision/patch、DINO cache 和 RICH 数据根；如改变源码、模型、配置或数据语义，建立新版本 run，不能覆盖 resume。
 
 ## 当前科学边界

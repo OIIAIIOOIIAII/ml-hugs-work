@@ -24,9 +24,11 @@
 >
 > 唯一架构定义：`CONTACT_ESTIMATOR_ARCHITECTURE.md`；唯一活实验协议：`CONTACT_CORRECTION_EXPERIMENT_PLAN.md`；路线图：`OVERALL_EXECUTION_ROADMAP_20260909.md`。下方 2026-07 历史条目只用于追溯，不能覆盖本页顶部的当前任务。
 
-## 当前任务与唯一主线（更新2026-09-16）
+## 当前任务与唯一主线（更新2026-09-18）
 
-- [~] **A5.29 RICH 全量 Stage-A 接触训练（2026-09-18 运行中）**：v1 在 epoch 1 val 的 clip 7044 因预测脚底法向退化崩溃，作废；v2 将退化法向/非有限冻结输入的预测人体视作未匹配而非使任务崩溃，并在全候选验证中计为负预测。`rich_full_contact_v1_seed42_v2` 已完成 6/30 epoch，正在 epoch 7；cache 7525 个分片约35GB 已完整，后续 epoch 复用。第5轮当前最佳全候选 AP=.9442、F1=.8690；第6轮 AP=.9431、F1=.8676、匹配覆盖=.8968，matched AP=.9732、F1=.9202。该数据是 ParkingLot2 内部开发验证，尚非官方 test，也不代表可部署的几何修正。运行入口：`scripts/train_rich_full_contact.py`；配置：`configs/experiments/rich_full_contact_v1.json`；交接见根目录`AGENT_HANDOFF.md`。
+> 新 agent 先读根目录`PROJECT_MASTER_HANDOFF.md`，再读`reports/rich_full_contact_v1_v2_20260918.md`。本页旧的下载/进行中快照仅作追溯，不能覆盖下面的完成状态。
+
+- [x] **A5.29 RICH 全量 Stage-A 接触训练（2026-09-18 完成）**：v1 在 epoch 1 val 的 clip 7044 因预测脚底法向退化崩溃，作废；v2 将退化法向/非有限冻结输入的预测人体视作未匹配而非使任务崩溃，并在全候选验证中计负。`rich_full_contact_v1_seed42_v2` 完成30/30 epoch、156150 optimizer steps、7525 cache shards约35GB。epoch5按预注册全候选 AP 规则选为best：AP=.94421、F1=.86902、precision=.90091、recall=.83932、matched AP=.97444/F1=.92168、coverage=.89676；epoch30 AP=.93940/F1=.85196。内部ParkingLot2开发验证优于all-positive基线AP=.70045/F1=.82384，但非official test且不代表可部署修正。报告`reports/rich_full_contact_v1_v2_20260918.md`；运行资产/哈希见其表格。下一项为冻结best后的错误分析、受控消融、官方评测数据与可靠性，不再继续同配置调epoch。
 
 - [x] **A5.24 几何问题诊断与前端对照**：完成5组开发输入/记忆实验和12个新片段上的4组确认（共58个16帧输出片段，另有因果上下文）。原始网格与优化后的geometry-only exporter逐元素一致；所有1631个共有GUSH3R/Human3R权重张量相同。原始/原生896人体输入的确认集脚底median-of-clip-medians为8.52/8.19cm，0/12通过2cm门槛；增加上下文无稳定收益，已保留标定重采样的检测失败。见`reports/rich_geometry_20260916/`。
 - [x] **A5.25 数据量与真实监督几何校正实验完成（未解决精度）**：832样本/553不同人体帧/17序列/7参与者，8组超参、9组数据预算/种子、24组分量候选和8组oracle完成，TF32一致后零修正max-abs=0。12片段脚底8.83→13.72cm，0/12通过；4/8/17序列效果非单调，不能简单认定数据不足或已足够。真值无界修正12/12通过、有限幅4/12，仅为诊断。见`reports/rich_geometry_calibration_20260916.md`。

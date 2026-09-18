@@ -1,6 +1,6 @@
 # 可持续迭代的接触实验工程
 
-2026-09-16更新：RICH全量监督已完成，但真实前端几何仍未达到2cm要求，正式Stage-A/contact训练未就绪。
+2026-09-18更新：RICH全量监督与冻结前端 Stage-A contact v2 已完成30 epoch内部开发训练；最佳epoch5的all-candidate AP=.94421、F1=.86902。完整实验事实与限制以`reports/rich_full_contact_v1_v2_20260918.md`为准。GUSH3R前端的2cm几何门槛、official test、Stage-B、修正与LBS仍未解决，不能将该分类结果写成端到端部署结论。
 独立的粗几何研究已实现非线性残差MLP、可微SMPL-X损失、训练内选模与分阶段新序列评价，
 配置为`configs/experiments/rich_geometry_refinement_v1.json`，入口为`scripts/train_rich_neural_refiner.py`。
 它需要含`roma/smplx/pytorch3d`的GUSH3R环境，不能只装`requirements-data.txt`；
