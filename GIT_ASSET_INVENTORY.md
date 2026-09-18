@@ -38,7 +38,7 @@
 | `datasets/RICH/processed/full_contact_v1/cache/` | 35GB | 可再生冻结特征，且与 contract 严格绑定 | 新机器首轮训练自动生成，或受控 rsync/NAS | 可重建；不必迁移 |
 | `forward_contact_pipeline/runs/` | 约63MB | checkpoints、原始日志、旧 run 产物不进入源码历史 | best/last 可受控迁移；冷启动则新建 run | 仅续训需要 |
 | `model_weights/` | 约12MB | 用户明确指定的本项目小型最佳模块权重：研究点一六个 Anchor Attention state dict 和研究点二 RICH Stage-A best checkpoint | Git 已跟踪，SHA256和加载边界见 `model_weights/README.md` | 直接复评/加载自研模块需要 |
-| 研究点一 NeuMan v4 六场景最终结果 | 9.3GB / 24 assets | 不能进普通 Git（单个 scene checkpoint 约1.5--1.6GB）；用户授权发布到 GitHub Release | 发布清单、SHA256和上传脚本在 `releases/research_point_1_v4_final_results/`；等待 GitHub API 写权限后上传 | 完整场景加载需要 |
+| 研究点一 NeuMan 完整最终结果 | VIMO final 9.3GB/24 + peak约1.6GB/3；GT 9.3GB/24 | 不能进普通 Git（单个scene checkpoint约1.5--1.6GB）；用户授权发布到 GitHub Release | [VIMO Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results)与[GT Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results)均已发布；对应清单中所有资产的远端SHA256/大小已校验 | 按路线完整加载需要 |
 | `runs/rich_full_contact_v1_seed42_v2/best.pt` | 6.3MB | 原 run 内 checkpoint；相同内容的可迁移副本在 `model_weights/research_point_2/` | SHA256 `645ef6e02c075a4da5578bffd61bea0561f26cf5cb46f613cd76568dc5b87406` | 复用最佳模型需要 |
 | `runs/rich_full_contact_v1_seed42_v2/last.pt` | 6.3MB | 同上 | 当前 SHA256 `391c3068581acbff89d132c7ca851821c6441603dea315c84c3c32629e9ad698` | 续训需要；本 run 已完成 |
 | `GUSH3R/checkpoints/gush3r.pth` | 4.9GB | 上游模型权重，不属于本仓库 | 从官方 `abkeito/GUSH3R` 下载；run contract checkpoint SHA256=`1e390dcf65f440dea4527378af1ef6bd7859b74465ab1925e58534c9e9208fe1` | 必须获取 |
@@ -51,7 +51,7 @@
 
 `forward_contact_pipeline/reports/` 本机有约221个文件，而 Git 追踪24个结论报告。未追踪部分主要是下载检索网页缓存、搜索响应、JSON 中间统计、处理过程日志和大型实验原始输出。它们不影响重建主流程；追踪的 Markdown/摘要 JSON 已保存可复核结论。若未来要发表或复审某个历史实验，应在受控存储保留其对应原始目录，再把必要的小型摘要加入 Git。
 
-传统 HUGS/NeuMan 的 output、渲染图、scene/human Gaussian checkpoint 和历史 run 不进 Git。用户已额外授权将 NeuMan v4 六场景的最终可加载 checkpoint 集作为 GitHub Release 发布；发布前的清单和SHA256已同步到 Git，但9.3GB Release assets 仍待 GitHub API 写权限。六个 Anchor Attention state dict 已作为 `model_weights/research_point_1/` 保存。
+传统 HUGS/NeuMan 的 output、渲染图、scene/human Gaussian checkpoint 和历史 run 不进 Git。用户已额外授权发布两条可加载路线：VIMO v4 final及parkinglot 11k peak在[VIMO Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results)，GT对齐最佳终态在[GT Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results)。两份发布均完成远端digest/大小核验。小型 Anchor Attention state dict 也已分别保存在`model_weights/research_point_1/`、`model_weights/research_point_1_gt/`和`model_weights/research_point_1_vimo_v4_peak/`。
 
 ## 未提交但不是迁移缺口的本机修改
 

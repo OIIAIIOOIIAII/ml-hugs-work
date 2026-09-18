@@ -3,7 +3,7 @@
 ## 2026-09-18（GitHub 登录确认与研究点一终态 Release 上传跟踪）
 
 - 用户已完成 GitHub CLI 登录；现场确认账户`OIIAIIOOIIAII`处于 active 状态，令牌具备`repo`与`workflow`权限，目标仓库为`OIIAIIOOIIAII/ml-hugs-work`。
-- 已发布的`research-point-1-v4-final-results`经审计仅对应 **VIMO v4 粗对齐** 路线的六场景18k final（24个资产），而不是两条路线的全集。用户指出两种路线后，已核对`BEST_PIPELINE.md`与所有本地结果：GT对齐最佳路线为`depth_sup12k + AnchorAttention_6k`（6场景final平均HUMAN_PSNR=19.6174），其完整24资产已生成独立清单和上传脚本；VIMO v4中parkinglot的11k峰值HUMAN_PSNR=16.7302，高于18k final=15.2645，已准备额外的scene/human/anchor三件套。
+- 已完成两条路线的发布和逐项验证。VIMO v4 粗对齐 Release：[https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results)，包含六场景18k final 24资产及parkinglot step-11k峰值三件套；其final 24/24和peak 3/3的远端SHA256/大小均匹配本地。GT对齐最佳路线`depth_sup12k + AnchorAttention_6k`（六场景final平均HUMAN_PSNR=19.6174）发布于[https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results)，远端24/24 SHA256/大小均匹配本地。GT六个和VIMO parkinglot peak的轻量Anchor Attention state dict也已推送Git。
 
 ## 2026-09-18（双研究点完整复刻资产边界）
 

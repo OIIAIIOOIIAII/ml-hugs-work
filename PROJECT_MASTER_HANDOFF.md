@@ -18,7 +18,7 @@ Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模
 
 用户已明确授权将本项目小型最佳模块权重同步到 Git：`model_weights/` 保存研究点一六个 Anchor Attention state dict 与研究点二的 RICH Stage-A epoch-5 best checkpoint。它们不替代 RICH、cache、GUSH3R/SMPL-X 或按场景生成的 human/scene Gaussian checkpoint；完整文件映射和 SHA256 见 [model_weights/README.md](model_weights/README.md)。
 
-研究点一 NeuMan v4 六场景的完整最终可加载结果（scene/human Gaussian、Anchor Attention、config）已按 24 assets、约9.3GB 准备为 GitHub Release，清单和校验在 [`releases/research_point_1_v4_final_results/`](releases/research_point_1_v4_final_results/)。普通 Git 不承载这些大文件；上传需要 GitHub API 写权限，准备脚本会在上传前复核全部 SHA256。
+研究点一有两套不能混用的完整结果：VIMO v4 粗对齐六场景18k final 已发布至 [Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results)（24个final资产，另含 parkinglot 11k峰值三件套）；GT 对齐 `depth_sup12k + AnchorAttention_6k` 六场景最佳终态已发布至 [Release](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results)（24个资产）。两份 Release 都已逐项核验远端 SHA256 与大小；下载清单和恢复路径见 `releases/research_point_1_v4_final_results/`、`releases/research_point_1_v4_peak_assets/`、`releases/research_point_1_gt_best_results/`。
 
 ## 新 agent 的阅读顺序
 

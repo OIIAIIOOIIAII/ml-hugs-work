@@ -7,11 +7,13 @@
 | 层级 | 必需资产 | 交付方式 | 状态 |
 |---|---|---|---|
 | 代码与配置 | HUGS/Anchor Attention 源码、submodule、六场景配置 | Git | 已同步 |
-| 最终可加载结果 | 6×`scene_final.pth`、6×`human_final.pth`、6×`anchor_attention_final.pth`、6×`config_train.yaml`，24 files / 约9.3GB | GitHub Release `research-point-1-v4-final-results` | 清单/校验已同步，待 GitHub 登录后上传 |
+| VIMO v4 粗对齐终态 | 六场景18k final：24个 scene/human/anchor/config assets，约9.3GB | [GitHub Release `research-point-1-v4-final-results`](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results) | 已发布；24/24 final assets、另加 parkinglot 11k 峰值三件套均逐项校验 |
+| GT 对齐最佳终态 | `depth_sup12k + AnchorAttention_6k` 六场景final：24个 scene/human/anchor/config assets，约9.3GB | [GitHub Release `research-point-1-gt-alignment-best-results`](https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results) | 已发布；24/24 assets 的 SHA256 与大小逐项校验 |
+| VIMO v4 parkinglot 最佳 | step 11k 的 scene/human/anchor 三件套（HUMAN_PSNR=16.7302，final=15.2645） | 上述 VIMO Release 的额外3 assets | 已发布并校验；加载该场景最佳结果必须使用这一套 |
 | 完整运行目录 | 中间 checkpoint、日志、debug、render 产物，约19GB | 可选受控 NAS/rsync | 不影响加载最终结果；继续历史训练时才需要 |
 | 原始场景数据与评测输入 | 对应 NeuMan 数据、相机/图像/标注及运行环境 | 原始数据来源或受控迁移 | 重新训练、重新评测必须具备 |
 
-最终 Release 资产用 [`releases/research_point_1_v4_final_results/SHA256SUMS`](releases/research_point_1_v4_final_results/SHA256SUMS) 校验。`model_weights/research_point_1/` 的六个 Anchor Attention 文件只是 Release 的小型重复副本，不能替代 scene/human Gaussian。
+VIMO final、VIMO parkinglot峰值与GT对齐最佳分别用 [`releases/research_point_1_v4_final_results/SHA256SUMS`](releases/research_point_1_v4_final_results/SHA256SUMS)、[`releases/research_point_1_v4_peak_assets/SHA256SUMS`](releases/research_point_1_v4_peak_assets/SHA256SUMS) 和 [`releases/research_point_1_gt_best_results/SHA256SUMS`](releases/research_point_1_gt_best_results/SHA256SUMS) 校验。`model_weights/` 中的 Anchor Attention 只是小型模块副本，不能替代 scene/human Gaussian。
 
 ## 研究点二：RICH Stage-A Contact
 
@@ -29,6 +31,6 @@
 新机器完成以下检查后，才可称两个研究点均可承接：
 
 1. `git rev-parse HEAD` 与交接记录的 commit 一致，`git submodule update --init --recursive` 成功。
-2. 研究点一：下载 Release 后，按 SHA256 清单校验 24/24 assets；将文件放回相对路径并加载六个最终 scene/human/anchor state。
+2. 研究点一：按目标实验条件下载 GT 或 VIMO Release，并按对应 SHA256 清单校验24/24；如需 VIMO parkinglot最佳结果，额外使用其11k三件套。
 3. 研究点二：比较 `best.pt`、plan 和 cache contract 的 SHA256；运行 `evaluate_rich_full_contact.py` 并复现记录的内部指标。
 4. 若需要重训而非只加载结果，按每项数据许可证从官方来源或受控 NAS 获取原始资产；不能用不同数据/缓存强行 resume。

@@ -2,7 +2,7 @@
 
 Release tag：`research-point-1-v4-final-results`。
 
-本发布包含 **VIMO v4 粗对齐** 条件下 bike、seattle、jogging、lab、parkinglot、citron 六个 NeuMan 场景的最终可加载结果：每场景的 `scene_final.pth`、`human_final.pth`、`anchor_attention_final.pth` 和 `config_train.yaml`，共 24 个文件、约 9.3GB。它不包含中间 checkpoint、渲染图片、debug、训练日志或数据集。GT 对齐路线是独立实验，见 `releases/research_point_1_gt_best_results/`。parkinglot 的11k峰值权重（高于final）见 `releases/research_point_1_v4_peak_assets/`。
+本发布包含 **VIMO v4 粗对齐** 条件下 bike、seattle、jogging、lab、parkinglot、citron 六个 NeuMan 场景的最终可加载结果：每场景的 `scene_final.pth`、`human_final.pth`、`anchor_attention_final.pth` 和 `config_train.yaml`，共 24 个文件、约 9.3GB。它不包含中间 checkpoint、渲染图片、debug、训练日志或数据集。GT 对齐路线是独立实验，见 `releases/research_point_1_gt_best_results/`。parkinglot 的11k峰值权重（高于final）已作为本 Release 的额外资产 `scene_011000.pth`、`human_011000.pth`、`anchor_attention_011000.pth` 发布；对应SHA256和来源见 `releases/research_point_1_v4_peak_assets/`。
 
 每个文件均小于 GitHub Release 的 2GB 单资产限制。下载后在仓库根目录执行：
 
