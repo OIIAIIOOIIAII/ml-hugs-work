@@ -48,6 +48,12 @@ v1 在 epoch 1 validation 的 `ParkingLot2_016_burpeejump2` camera 3（clip 7044
 
 第 5 轮后 AP 进入平台并略有回落，后期 precision 升高而 recall 下降。选择第 5 轮不是 cherry-pick：它遵循训练开始前写入代码的全候选 AP 选择规则，且 `best.pt` 在后来 epoch 未超过该数值时未更新。
 
+## 冻结 checkpoint 的细粒度内部复评（2026-09-18）
+
+已用新增的 `scripts/evaluate_rich_full_contact.py` 对冻结 epoch-5 `best.pt` 完整重评 2,426 个 ParkingLot2 internal-validation cache shards（74,264 candidates、9,505,792 valid vertices），并逐片校验计划、缓存和 checkpoint contract。结果与训练历史复现一致：all-candidate AP=0.944209、F1@0.5=0.869023；matched-only AP=0.974443、F1@0.5=0.921677；coverage=0.896760。数值差异仅由浮点累计顺序造成，均小于 2e-6。
+
+细粒度证据、左右脚/主体/序列分解、阈值曲线、概率分箱和可复现命令见 [`../reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md`](../reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md) 及同目录机器可读 JSON。该复评仍是从 official train 划分的内部开发验证，绝非 official val/test。其最明确的工程发现是：7,667 个未唯一关联候选占有效顶点 10.32%，正例率 74.87%，使 matched recall 0.943429 降至 all-candidate 0.839319；关联覆盖是下一步独立于分类 head 的主瓶颈。
+
 ## 已知限制与严禁外推
 
 1. 这是内部 train split，不是 official val/test；不能报告为最终泛化。

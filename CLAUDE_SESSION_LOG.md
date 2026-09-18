@@ -1,5 +1,12 @@
 # Claude 协作记录
 
+## 2026-09-18（冻结 Stage-A checkpoint 的细粒度内部验证）
+
+- 用户要求做详细测试集 validation。官方 RICH val/test 尚未下载，因而没有将 ParkingLot2 说成 official test；改为对从 official train 划出的 ParkingLot2 内部开发集做冻结 checkpoint 的完整独立复评。
+- 新增`forward_contact_pipeline/scripts/evaluate_rich_full_contact.py`。它只将缓存中的`input_*`冻结预测特征送入模型；GT 只用于既有目标关联与评测标签。每个 cache shard 均复核计划哈希、数据哈希和 checkpoint/cache contract，并输出 all-candidate、matched-only、未关联固定零预测、左右脚、23序列、4主体、阈值曲线和10-bin calibration。
+- `best.pt`（epoch 5）已实际跑完2,426个验证分片：74,264 candidates、66,597 matched、9,505,792有效顶点、coverage=.896760。复评 all-candidate AP=.94420879/F1=.86902278，matched AP=.97444340/F1=.92167717，和训练 history 的同轮指标偏差小于2e-6。7,667个未唯一关联候选占有效顶点10.32%，其中正例率74.87%，导致 all-candidate recall=.839319 低于 matched recall=.943429；关联覆盖是下一步的独立瓶颈。
+- 细节和可复现命令写入`forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md`与同目录JSON，并更新全量报告、总交接和TODO。阈值0.45与0.50的all-candidate F1仅差.000163，未据此改部署阈值或继续在开发集调参；概率分箱显示未关联零预测混入低置信bin，后续需在独立calibration split分离关联/分类可靠性。官方val/test到位后才允许一次冻结外部评测。
+
 ## 2026-09-18（总交接、技术路线和全量实验归档）
 
 - 用户要求把当前所有任务、技术路线、实验结果完整写入相关文档，并提供最高层阅读入口，保证新机器无缝承接。新增根目录`PROJECT_MASTER_HANDOFF.md`作为唯一最高层阅读地图：给出当前结论、优先级、阅读顺序、迁移/冷启动分流、非主线工作以及不可违反的GT/指标/许可/版本边界。
