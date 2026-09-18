@@ -1,5 +1,9 @@
 # Claude 协作记录
 
+## 2026-09-18（删除本机前的最终迁移验收）
+
+- 用户准备删除本机 `ml-hugs-work`，要求最后核验 Git 同步和交接文档。验收范围包括：本地HEAD与origin/main一致、工作树中非用户修改是否为空、两个研究点的代码/小型权重/Release/文档可从新机器取得，以及仍只能通过授权重下或受控迁移的资产。删除前不得将用户的未提交文档修改、数据、凭据或构建产物误写入Git。
+
 ## 2026-09-18（GitHub 登录确认与研究点一终态 Release 上传跟踪）
 
 - 用户已完成 GitHub CLI 登录；现场确认账户`OIIAIIOOIIAII`处于 active 状态，令牌具备`repo`与`workflow`权限，目标仓库为`OIIAIIOOIIAII/ml-hugs-work`。
