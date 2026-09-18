@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "full_rich_contact_research",
+  "seed": 42,
+  "epochs": 30,
+  "batch_size": 64,
+  "batch_unit": "foot ROI (two per matched person-image sample)",
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "torch_threads": 4,
+  "preprocess_workers": 4,
+  "save_every_chunks": 10,
+  "model": {
+    "hidden": 128,
+    "heads": 4,
+    "dropout": 0.1
+  },
+  "scope": "All eligible train images/targets, all internal validation; frozen GUSH3R; train Stage-A contact head, no geometry-error sample filter",
+  "input": "Frozen all-person prediction; 5x5 wide local DINO patches plus 4x4 global context, pose/query, physical K, and masked predicted point-map neighborhoods",
+  "matching": "Mutually unique predicted head inside 5%-padded GT body bbox; GT only labels/detection association, never predictor inputs",
+  "validation": "Full ParkingLot2 internal validation each epoch; report matched metrics, missed targets as negative predictions, coverage, and all-positive baseline",
+  "training_authorized": true,
+  "deployment_ready": false
+}

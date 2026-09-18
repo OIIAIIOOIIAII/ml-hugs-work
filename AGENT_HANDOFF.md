@@ -8,6 +8,10 @@
 `COLD_START_NEW_MACHINE.md` 从授权下载、数据处理和新的 run 开始；禁止把冷启动当作
 对旧 run 的 `--resume`。
 
+Git 中已包含全量 run 的 config、contract、30-epoch history 与完成状态，路径为
+`forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/`；checkpoint 本体和
+数据资产仍在 Git 外，完整清单见`GIT_ASSET_INVENTORY.md`。
+
 ## 当前工作目录与规则
 
 - 项目根目录：`ml-hugs-work`。

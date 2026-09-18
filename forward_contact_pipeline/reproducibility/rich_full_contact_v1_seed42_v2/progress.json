@@ -1,0 +1,24 @@
+{
+  "status": "complete",
+  "epoch": 31,
+  "completed_epochs": 30,
+  "phase": "train",
+  "completed_chunks_in_phase": 0,
+  "total_chunks_in_phase": 5099,
+  "global_steps": 156150,
+  "candidates_seen_in_phase": 0,
+  "matched_samples_in_phase": 0,
+  "full_plan_samples": {
+    "train": 165920,
+    "val": 74264
+  },
+  "full_plan_unique_images": {
+    "train": 158428,
+    "val": 74264
+  },
+  "train_loss": 0.0,
+  "updated": 1789676336.3073516,
+  "session_elapsed_s": 31408.33171439171,
+  "training_authorized": true,
+  "deployment_ready": false
+}

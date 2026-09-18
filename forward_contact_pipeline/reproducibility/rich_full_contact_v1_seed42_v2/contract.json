@@ -1,0 +1,15 @@
+{
+  "plan_sha256": "8da5750b3decac182b24521d80a6422d8d66f38eaa587bb99a340691b5dfa141",
+  "config_sha256": "2af2415a36accc7f4b16b210be7af30225f2fa82152788054458ef3a46b35053",
+  "source_sha256": {
+    "train_rich_full_contact.py": "59e2a26f3bf93a3592cb821c609e28b18e00bbdc286223a4e3267baf7727df2b",
+    "rich_full.py": "c61f59015d206166f5d0615eba8af9892e469bbc1e1174405adffdbc4ef13337",
+    "rich_full_frontend.py": "1b2d32ac12fe20adbfe24442982f5f2331e540ab39233a4e9b66899d06b4fcf3",
+    "rich_geometry.py": "28e69e395a5433fd95fef6862673600a8a7617d724d39979966af58b975f97af",
+    "rich_supervision.py": "ee8369543cb106fbe7eb2c6809a1ed826b8c7079ec5f59c9870be4c3e5b85057",
+    "rich_sensor_intrinsics.py": "bc879ca24af9539a23152c8b348842fab1ee8a82032c010081bd0a298b50cc36",
+    "components.py": "1c9a24101557aa10d4803fe6ec7bcfb2e66c3351e8a4096685f3a495a1eca6d6"
+  },
+  "frontend_source_sha256": "25dc6a35e971572b6fc58d077794a4858d9c1eb8b7527de03c3b7ad0c372efa1",
+  "checkpoint_sha256": "1e390dcf65f440dea4527378af1ef6bd7859b74465ab1925e58534c9e9208fe1"
+}

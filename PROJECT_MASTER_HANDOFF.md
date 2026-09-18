@@ -23,6 +23,7 @@
 | 7 | [MIGRATION.md](MIGRATION.md) | 有数据/权重/cache 时的受控迁移或续训 |
 | 8 | [COLD_START_NEW_MACHINE.md](COLD_START_NEW_MACHINE.md) | 无任何资产时的重新下载、处理与新 run |
 | 9 | [CLAUDE_SESSION_LOG.md](CLAUDE_SESSION_LOG.md) 顶部及关键词搜索 | 决策时间线；不应替代上述状态文档 |
+| 10 | [GIT_ASSET_INVENTORY.md](GIT_ASSET_INVENTORY.md) | 已上传/未上传资产、大小、许可边界及重建方式 |
 
 ## 当前任务优先级
 

@@ -5,6 +5,7 @@
 - 用户要求把当前所有任务、技术路线、实验结果完整写入相关文档，并提供最高层阅读入口，保证新机器无缝承接。新增根目录`PROJECT_MASTER_HANDOFF.md`作为唯一最高层阅读地图：给出当前结论、优先级、阅读顺序、迁移/冷启动分流、非主线工作以及不可违反的GT/指标/许可/版本边界。
 - 新增`forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md`：固定全量 RICH Stage-A v2 的研究问题、split、输入/监督隔离、模型、config、v1失败和v2修复、run/plan/weight/cache hash、主指标、基线、结果趋势、局限与可证伪下一阶段。唯一有效运行已完成30/30 epoch：epoch5 best all-candidate AP=.94421/F1=.86902，matched AP=.97444/F1=.92168，coverage=.89676；epoch30 AP=.93940/F1=.85196。明确它不是official test、也不代表接触修正或渲染改善。
 - 同步更新`AGENT_HANDOFF.md`、`TODO.md`、`CONTACT_ESTIMATOR_ARCHITECTURE.md`和`TRAINING.md`，消除“训练进行中/未启动”的旧表述，并把下一步收敛为冻结best后错误分析、单变量消融、official val/test、reliability/abstention、Stage-A+B causal rollout、最后才是LBS。数据、权重、cache、checkpoint及运行产物仍不提交Git。
+- 用户要求继续把可上传内容放入Git，并在文档列出已上传和未上传内容。新增`GIT_ASSET_INVENTORY.md`，逐项列出代码/文档/config/patch、RICH公开清单、最终机器可读证据、数据、cache、checkpoint、GUSH3R、SMPL/SMPL-X、DINO、工具/凭据、历史原始证据和本机构建产物的路径、体积、许可理由、获取方式与承接影响。新增`forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/`，提交完成run的config、contract、完整30 epoch history和progress（总约54KB）；checkpoint仅以SHA256记录。
 
 ## 2026-09-18（项目迁移与 agent 交接）
 
