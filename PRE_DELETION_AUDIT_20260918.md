@@ -4,7 +4,7 @@
 
 ## 已验证可从远端恢复
 
-- Git 本地 `HEAD` 与 `origin/main` 均为 `59166ecf44d9aeb8473efc5221b174ddbacfea27`；远端包含总代码、固定子模块指针、交接入口、迁移/冷启动文档、实验记录、处理和训练脚本。
+- Git 本地 `HEAD` 与 `origin/main` 均为 `889827373e34e8eb8f41768eca63cde62a46d6d9`；远端包含总代码、固定子模块指针、交接入口、迁移/冷启动文档、实验记录、处理和训练脚本。
 - [PROJECT_MASTER_HANDOFF.md](PROJECT_MASTER_HANDOFF.md)、[AGENT_HANDOFF.md](AGENT_HANDOFF.md)、[COMPLETE_REPRODUCTION_MANIFEST.md](COMPLETE_REPRODUCTION_MANIFEST.md)、[GIT_ASSET_INVENTORY.md](GIT_ASSET_INVENTORY.md)、[MIGRATION.md](MIGRATION.md)、[COLD_START_NEW_MACHINE.md](COLD_START_NEW_MACHINE.md) 和 `CLAUDE_SESSION_LOG.md` 都已在 `origin/main` 实测存在。
 - 研究点一 VIMO v4 粗对齐 Release：<https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-v4-final-results>。27 项均为 uploaded：六场景18k final 的24项，以及 parkinglot 11k峰值三件套；每项已与本地 SHA256/大小核验。
 - 研究点一 GT 对齐最佳 Release：<https://github.com/OIIAIIOOIIAII/ml-hugs-work/releases/tag/research-point-1-gt-alignment-best-results>。24 项均为 uploaded，且每项已与本地 SHA256/大小核验。
