@@ -1,0 +1,3 @@
+e02474e77375fe050c5ce1060acd41754527614b9da5294a8e4f10246329a502  output/human_scene/neuman/parkinglot_vimo_v4/hugs_trimlp/v4_correct_inline_attn_18k/2026-06-15_03-29-29/ckpt/scene_011000.pth
+7f06c073aa7a0c3c760a29b388b695a89a8da1bdae05307e286be6e2f2e0d3d7  output/human_scene/neuman/parkinglot_vimo_v4/hugs_trimlp/v4_correct_inline_attn_18k/2026-06-15_03-29-29/ckpt/human_011000.pth
+ad29be57d9e07f16c5019a7a74739e827f75b6842bfc43d00783b206eb9e60ec  output/human_scene/neuman/parkinglot_vimo_v4/hugs_trimlp/v4_correct_inline_attn_18k/2026-06-15_03-29-29/ckpt/anchor_attention_011000.pth

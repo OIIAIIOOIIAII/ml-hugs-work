@@ -1,5 +1,10 @@
 # Claude 协作记录
 
+## 2026-09-18（GitHub 登录确认与研究点一终态 Release 上传跟踪）
+
+- 用户已完成 GitHub CLI 登录；现场确认账户`OIIAIIOOIIAII`处于 active 状态，令牌具备`repo`与`workflow`权限，目标仓库为`OIIAIIOOIIAII/ml-hugs-work`。
+- 已发布的`research-point-1-v4-final-results`经审计仅对应 **VIMO v4 粗对齐** 路线的六场景18k final（24个资产），而不是两条路线的全集。用户指出两种路线后，已核对`BEST_PIPELINE.md`与所有本地结果：GT对齐最佳路线为`depth_sup12k + AnchorAttention_6k`（6场景final平均HUMAN_PSNR=19.6174），其完整24资产已生成独立清单和上传脚本；VIMO v4中parkinglot的11k峰值HUMAN_PSNR=16.7302，高于18k final=15.2645，已准备额外的scene/human/anchor三件套。
+
 ## 2026-09-18（双研究点完整复刻资产边界）
 
 - 用户确认目标是完整复刻研究点一和研究点二。新增`COMPLETE_REPRODUCTION_MANIFEST.md`，将每点分为代码、最终结果、精确评测和重训资产：研究点一必须取得24个最终 scene/human/anchor/config Release assets（约9.3GB）及原始场景输入；研究点二除Git中best checkpoint外，精确内部验证必须有相同RICH plan/cache（约35GB），重新训练还需RICH原始数据、GUSH3R、SMPL/SMPL-X和DINO。
