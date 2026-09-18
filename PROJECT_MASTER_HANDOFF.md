@@ -2,7 +2,7 @@
 
 这是新机器、新 agent 的最高层入口。先读本页，再按下方顺序进入具体文档；不要从数千行历史日志或旧 TODO 中猜测当前任务。
 
-Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模块、入口文档、7 个 RICH 脚本启动参数和资产清单均可用。逐项结果及尚需受控迁移/重新获取的资产见 [HANDOFF_VERIFICATION_20260918.md](HANDOFF_VERIFICATION_20260918.md)。
+Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模块、入口文档、7 个 RICH 脚本启动参数和资产清单均可用。逐项结果及尚需受控迁移/重新获取的资产见 [HANDOFF_VERIFICATION_20260918.md](HANDOFF_VERIFICATION_20260918.md)。 删除本机前的最终远端、Release、未同步资产核验见 [PRE_DELETION_AUDIT_20260918.md](PRE_DELETION_AUDIT_20260918.md)。
 
 若目标是完整复刻两个研究点，而不是只承接代码，必须按 [COMPLETE_REPRODUCTION_MANIFEST.md](COMPLETE_REPRODUCTION_MANIFEST.md) 获取研究点一最终场景 Release 与研究点二 RICH plan/cache/前端资产；小型 `model_weights/` 不足以单独恢复完整运行结果。
 
