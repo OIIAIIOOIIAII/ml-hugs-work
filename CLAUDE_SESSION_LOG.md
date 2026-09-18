@@ -1,5 +1,11 @@
 # Claude 协作记录
 
+## 2026-09-18（自研研究模块权重同步）
+
+- 用户明确要求同步本项目自己的研究点一、研究点二最佳权重。已将研究点一 NeuMan v4 的六个按场景 Anchor Attention `anchor_attention_final.pth` state dict（bike、seattle、jogging、lab、parkinglot、citron，合计5,308,498 bytes）及研究点二 RICH Stage-A epoch-5 best checkpoint（6,577,126 bytes）放入受版本控制的`model_weights/`。
+- 7个文件均在同步前以`torch.load(weights_only=True)`和SHA256验证；研究点一每个state dict有72个tensor，研究点二模型有33个tensor，checkpoint的`state.epoch=6`表示epoch 5评估后下一轮训练入口。README记录文件映射、SHA256和加载限制。
+- 提交`cbf3c4e`已推送。GitHub Contents API实测远端目录含6个研究点一文件及研究点二checkpoint，大小与本机一致。未同步每场景1.5GB级scene Gaussian、约100MB级human Gaussian、数据、cache或上游权重；它们仍按迁移文档受控处理。
+
 ## 2026-09-18（换机承接干净 clone 验证）
 
 - 用户澄清“再验证一轮”是验证项目承接，而非再次验证模型指标。已从 GitHub `origin/main` 做干净 HTTPS clone，HEAD=`df56f36`与源工作区一致；顶层两个子模块及嵌套GLM均检出到主仓库固定提交。
