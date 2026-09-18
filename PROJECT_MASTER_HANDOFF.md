@@ -4,6 +4,8 @@
 
 Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模块、入口文档、7 个 RICH 脚本启动参数和资产清单均可用。逐项结果及尚需受控迁移/重新获取的资产见 [HANDOFF_VERIFICATION_20260918.md](HANDOFF_VERIFICATION_20260918.md)。
 
+若目标是完整复刻两个研究点，而不是只承接代码，必须按 [COMPLETE_REPRODUCTION_MANIFEST.md](COMPLETE_REPRODUCTION_MANIFEST.md) 获取研究点一最终场景 Release 与研究点二 RICH plan/cache/前端资产；小型 `model_weights/` 不足以单独恢复完整运行结果。
+
 ## 2026-09-18 当前结论
 
 项目的近期主线是：冻结 GUSH3R 前端，利用 RICH 的真实稠密人体—场景接触监督，训练局部 RGB--mesh--point Stage-A 接触估计器；随后才研究时序控制、人体低维修正与 human Gaussian LBS 回写。

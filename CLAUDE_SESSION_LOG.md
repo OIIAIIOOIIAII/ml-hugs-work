@@ -1,5 +1,10 @@
 # Claude 协作记录
 
+## 2026-09-18（双研究点完整复刻资产边界）
+
+- 用户确认目标是完整复刻研究点一和研究点二。新增`COMPLETE_REPRODUCTION_MANIFEST.md`，将每点分为代码、最终结果、精确评测和重训资产：研究点一必须取得24个最终 scene/human/anchor/config Release assets（约9.3GB）及原始场景输入；研究点二除Git中best checkpoint外，精确内部验证必须有相同RICH plan/cache（约35GB），重新训练还需RICH原始数据、GUSH3R、SMPL/SMPL-X和DINO。
+- 当前本机`gh`已安装在`.tools/bin/gh`，但`gh auth status`确认未登录。Release清单和上传脚本已提交；完成GitHub API写权限登录后将发布研究点一资产，再按清单核验远端Release。
+
 ## 2026-09-18（研究点一完整场景结果 Release 发布准备）
 
 - 用户要求上传研究点一不止 Anchor Attention 的完整场景运行结果。已确定发布最小可加载终态，而非19GB的全部中间checkpoint/debug/日志：NeuMan v4 的六个场景各含`scene_final.pth`、`human_final.pth`、`anchor_attention_final.pth`和`config_train.yaml`，共24个资产、约9.3GB；每个scene文件约1.5--1.6GB，低于GitHub Release单资产2GB上限。
