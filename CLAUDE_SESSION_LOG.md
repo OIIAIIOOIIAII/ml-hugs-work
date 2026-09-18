@@ -1,5 +1,11 @@
 # Claude 协作记录
 
+## 2026-09-18（研究点一完整场景结果 Release 发布准备）
+
+- 用户要求上传研究点一不止 Anchor Attention 的完整场景运行结果。已确定发布最小可加载终态，而非19GB的全部中间checkpoint/debug/日志：NeuMan v4 的六个场景各含`scene_final.pth`、`human_final.pth`、`anchor_attention_final.pth`和`config_train.yaml`，共24个资产、约9.3GB；每个scene文件约1.5--1.6GB，低于GitHub Release单资产2GB上限。
+- 新增`releases/research_point_1_v4_final_results/SHA256SUMS`、README和`scripts/upload_research_point_1_v4_release.sh`。脚本已通过语法检查，24/24个源文件SHA256验证通过，并会在实际上传前重复验证；上传时以场景前缀重命名资产，避免同名文件冲突。
+- 当前机器只有Git SSH deploy key，能推送代码/tag但不能调用GitHub Releases API；环境未安装`gh`且没有GitHub API写入凭据。发布清单、脚本和文档会先同步Git；获得目标仓库的GitHub CLI/API登录后运行上传脚本，再核对远端Release资产和SHA256。
+
 ## 2026-09-18（自研研究模块权重同步）
 
 - 用户明确要求同步本项目自己的研究点一、研究点二最佳权重。已将研究点一 NeuMan v4 的六个按场景 Anchor Attention `anchor_attention_final.pth` state dict（bike、seattle、jogging、lab、parkinglot、citron，合计5,308,498 bytes）及研究点二 RICH Stage-A epoch-5 best checkpoint（6,577,126 bytes）放入受版本控制的`model_weights/`。

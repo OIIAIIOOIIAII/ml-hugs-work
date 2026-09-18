@@ -16,6 +16,8 @@ Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模
 
 用户已明确授权将本项目小型最佳模块权重同步到 Git：`model_weights/` 保存研究点一六个 Anchor Attention state dict 与研究点二的 RICH Stage-A epoch-5 best checkpoint。它们不替代 RICH、cache、GUSH3R/SMPL-X 或按场景生成的 human/scene Gaussian checkpoint；完整文件映射和 SHA256 见 [model_weights/README.md](model_weights/README.md)。
 
+研究点一 NeuMan v4 六场景的完整最终可加载结果（scene/human Gaussian、Anchor Attention、config）已按 24 assets、约9.3GB 准备为 GitHub Release，清单和校验在 [`releases/research_point_1_v4_final_results/`](releases/research_point_1_v4_final_results/)。普通 Git 不承载这些大文件；上传需要 GitHub API 写权限，准备脚本会在上传前复核全部 SHA256。
+
 ## 新 agent 的阅读顺序
 
 | 顺序 | 文档 | 目的 |
