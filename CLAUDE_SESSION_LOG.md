@@ -1,5 +1,11 @@
 # Claude 协作记录
 
+## 2026-09-18（换机承接干净 clone 验证）
+
+- 用户澄清“再验证一轮”是验证项目承接，而非再次验证模型指标。已从 GitHub `origin/main` 做干净 HTTPS clone，HEAD=`df56f36`与源工作区一致；顶层两个子模块及嵌套GLM均检出到主仓库固定提交。
+- 在干净 clone 中核验11项入口/配置/补丁/复现证据全部存在；7个RICH获取、处理、计划、训练、评测脚本的`--help`均可运行；总交接、agent交接、冷启动、迁移和资产清单的本地相对链接全通过。工作树未依赖源机器未提交文件。
+- 发现冷启动文档首次clone使用SSH会要求新机器先有私钥，而公开仓库的HTTPS只读clone已实测可用；已改为HTTPS。推送仍要求目标机器自己配置写权限，不能复制源机器deploy私钥。新增`HANDOFF_VERIFICATION_20260918.md`固化验收结果、承接顺序和不可由Git传递的许可资产边界。
+
 ## 2026-09-18（冻结 Stage-A checkpoint 的细粒度内部验证）
 
 - 用户要求做详细测试集 validation。官方 RICH val/test 尚未下载，因而没有将 ParkingLot2 说成 official test；改为对从 official train 划出的 ParkingLot2 内部开发集做冻结 checkpoint 的完整独立复评。

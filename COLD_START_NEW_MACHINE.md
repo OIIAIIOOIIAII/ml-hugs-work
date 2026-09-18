@@ -13,14 +13,14 @@
 | RICH | 在官网接受非商业研究许可，并在新机器录入自己的账号密码 |
 | GUSH3R | Hugging Face 账号能访问 `abkeito/GUSH3R` |
 | SMPL/SMPL-X | 在官方页面接受各自许可 |
-| GitHub | 在新机器创建自己的 SSH key 或 credential；不要复制旧机器 deploy 私钥 |
+| GitHub | 首次只读 clone 可用 HTTPS；需要推送时，在新机器创建自己的 SSH key 或 credential，绝不复制旧机器 deploy 私钥 |
 
 不要把 RICH、SMPL/SMPL-X、模型权重或任何 token 上传到公开 Git、Hugging Face 或网盘。
 
 ## 1. 克隆固定代码
 
 ```bash
-git clone --recurse-submodules git@github.com:OIIAIIOOIIAII/ml-hugs-work.git
+git clone --recurse-submodules https://github.com/OIIAIIOOIIAII/ml-hugs-work.git
 cd ml-hugs-work
 git checkout main
 git pull --ff-only origin main

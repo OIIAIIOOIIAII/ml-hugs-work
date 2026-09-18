@@ -2,6 +2,8 @@
 
 这是新机器、新 agent 的最高层入口。先读本页，再按下方顺序进入具体文档；不要从数千行历史日志或旧 TODO 中猜测当前任务。
 
+Git 承接已在干净 HTTPS clone 中实际演练通过；代码、固定子模块、入口文档、7 个 RICH 脚本启动参数和资产清单均可用。逐项结果及尚需受控迁移/重新获取的资产见 [HANDOFF_VERIFICATION_20260918.md](HANDOFF_VERIFICATION_20260918.md)。
+
 ## 2026-09-18 当前结论
 
 项目的近期主线是：冻结 GUSH3R 前端，利用 RICH 的真实稠密人体—场景接触监督，训练局部 RGB--mesh--point Stage-A 接触估计器；随后才研究时序控制、人体低维修正与 human Gaussian LBS 回写。
@@ -17,16 +19,17 @@
 | 顺序 | 文档 | 目的 |
 |---:|---|---|
 | 1 | [AGENT_HANDOFF.md](AGENT_HANDOFF.md) | 工作约束、数据/GT 边界、当前 run 和首次现场检查 |
-| 2 | [forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md](forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md) | 全量 Stage-A 的数据、模型、协议、结果、限制和下一步 |
-| 3 | [forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md](forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md) | 冻结 epoch-5 的序列/主体/左右脚/阈值/校准内部复评 |
-| 4 | [forward_contact_pipeline/CONTACT_ESTIMATOR_ARCHITECTURE.md](forward_contact_pipeline/CONTACT_ESTIMATOR_ARCHITECTURE.md) | 最终系统目标与当前已实现部分的边界 |
-| 5 | [forward_contact_pipeline/TODO.md](forward_contact_pipeline/TODO.md) 顶部 | 当前待办与禁止事项；旧条目仅作追溯 |
-| 6 | [forward_contact_pipeline/CONTACT_CORRECTION_EXPERIMENT_PLAN.md](forward_contact_pipeline/CONTACT_CORRECTION_EXPERIMENT_PLAN.md) | 可执行研究协议与历史失败原因 |
-| 7 | [forward_contact_pipeline/RICH_DATASET.md](forward_contact_pipeline/RICH_DATASET.md) 和 [RICH_PREPARATION.md](forward_contact_pipeline/RICH_PREPARATION.md) | RICH 数据契约、处理和许可边界 |
-| 8 | [MIGRATION.md](MIGRATION.md) | 有数据/权重/cache 时的受控迁移或续训 |
-| 9 | [COLD_START_NEW_MACHINE.md](COLD_START_NEW_MACHINE.md) | 无任何资产时的重新下载、处理与新 run |
-| 10 | [CLAUDE_SESSION_LOG.md](CLAUDE_SESSION_LOG.md) 顶部及关键词搜索 | 决策时间线；不应替代上述状态文档 |
-| 11 | [GIT_ASSET_INVENTORY.md](GIT_ASSET_INVENTORY.md) | 已上传/未上传资产、大小、许可边界及重建方式 |
+| 2 | [HANDOFF_VERIFICATION_20260918.md](HANDOFF_VERIFICATION_20260918.md) | 干净 clone 演练结果、承接步骤和剩余外部资产 |
+| 3 | [forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md](forward_contact_pipeline/reports/rich_full_contact_v1_v2_20260918.md) | 全量 Stage-A 的数据、模型、协议、结果、限制和下一步 |
+| 4 | [forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md](forward_contact_pipeline/reproducibility/rich_full_contact_v1_seed42_v2/internal_validation_detailed.md) | 冻结 epoch-5 的序列/主体/左右脚/阈值/校准内部复评 |
+| 5 | [forward_contact_pipeline/CONTACT_ESTIMATOR_ARCHITECTURE.md](forward_contact_pipeline/CONTACT_ESTIMATOR_ARCHITECTURE.md) | 最终系统目标与当前已实现部分的边界 |
+| 6 | [forward_contact_pipeline/TODO.md](forward_contact_pipeline/TODO.md) 顶部 | 当前待办与禁止事项；旧条目仅作追溯 |
+| 7 | [forward_contact_pipeline/CONTACT_CORRECTION_EXPERIMENT_PLAN.md](forward_contact_pipeline/CONTACT_CORRECTION_EXPERIMENT_PLAN.md) | 可执行研究协议与历史失败原因 |
+| 8 | [forward_contact_pipeline/RICH_DATASET.md](forward_contact_pipeline/RICH_DATASET.md) 和 [RICH_PREPARATION.md](forward_contact_pipeline/RICH_PREPARATION.md) | RICH 数据契约、处理和许可边界 |
+| 9 | [MIGRATION.md](MIGRATION.md) | 有数据/权重/cache 时的受控迁移或续训 |
+| 10 | [COLD_START_NEW_MACHINE.md](COLD_START_NEW_MACHINE.md) | 无任何资产时的重新下载、处理与新 run |
+| 11 | [CLAUDE_SESSION_LOG.md](CLAUDE_SESSION_LOG.md) 顶部及关键词搜索 | 决策时间线；不应替代上述状态文档 |
+| 12 | [GIT_ASSET_INVENTORY.md](GIT_ASSET_INVENTORY.md) | 已上传/未上传资产、大小、许可边界及重建方式 |
 
 ## 当前任务优先级
 
