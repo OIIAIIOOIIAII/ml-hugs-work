@@ -176,255 +176,13 @@ I_t + model state_{t-1}
 3. 不把 Gaussian center 当表面；通过 local proxy/point patch 表达 surface evidence；
 4. 几何不可靠时显式 abstain/reset，避免“错误修正比不修正更糟”。
 
-### 2.2 GUSH3R 前端的准确分工：Human3R 先验，不是外接 HumanGS
-
-研究点二的当前前馈候选是 GUSH3R。这里必须把三个名称分清：
-
-```text
-Human3R（已有 foundation backbone，GUSH3R 冻结使用）
-  -> human token、image token、SMPL-X mesh、scene point cloud
-
-GUSH3R（作者自主提出的两个 decoder）
-  -> Scene Gaussian Decoder：scene point cloud + image token -> static scene Gaussians
-  -> Human Gaussian Decoder / HGT：SMPL-X mesh + human token + image token -> dynamic human Gaussians
-
-LHM / 其他同名 HumanGS 工作（外部已有工作）
-  -> GUSH3R 论文中的分解式 baseline 或相关工作，不是 GUSH3R 主模型的 Human Decoder
-```
-
-GUSH3R 论文 Sec.3.1 明确称 Scene Gaussian Decoder 与 Human Gaussian Decoder 为其新引入的两条分支。官方代码将后者实现为 `HumanGSHead`，但这是**代码类名**，不应误说成“GUSH3R 调用了外部 HumanGS”。论文里真正作为外部人体重建基线的是 `AnySplat + LHM + Human3R`：先用 Human3R 估计人体 mask/SMPL-X，再由 LHM 重建人、AnySplat 重建背景，最后做后处理拼接；GUSH3R 的意义正是避免这种分离拼接。
-
-Human Gaussian Decoder 的内部过程是：以 SMPL-X mesh 的固定语义表面点作 anchor，在 canonical body space 建立 vertex token；Human Gaussian Transformer（HGT）以 human token、vertex token 和按人维护的 appearance-memory token 为 query，以当前 image token 为 key/value；最后预测每个 anchor 周围 Gaussian 的 offset、scale、rotation、opacity 和颜色。SMPL-X/LBS 将这些 body-bound points 变到当前姿态，Gaussian renderer 输出人体 RGB 和 alpha mask。该 alpha mask 经 dilation 后用于排除背景候选，因此人景分离由 GUSH3R 内部完成，不依赖部署时的外部 GT segmentation。
-
-这也界定了我们与 GUSH3R 的关系：我们冻结其 Human3R backbone 与两条 GUSH3R decoder，把 `SMPL-X + human Gaussian + scene Gaussian + image/human token` 当作粗前端；我们的贡献从这里开始，负责接触关系、因果状态、低维修正和安全回退。它不是重新训练 Human Gaussian Decoder。
-
-要落地 `corrected SMPL-X -> human Gaussian`，还需要导出每个 Human Gaussian 对应的 SMPL-X query point / LBS transform 或建立等价 binding。GUSH3R 当前 inference export 已给出 Gaussian 与 SMPL-X，但没有把这一 binding 作为稳定外部接口导出；因此它是 E4 的明确工程任务，不能说已经完成。
-
-#### 2.2.1 GUSH3R 的完整前向图
-
-```text
-causal RGB video frame I_t
-  -> frozen Human3R recurrent foundation model
-       -> camera pose T_t, scene point map X_t
-       -> image token F'_t
-       -> detected people: human token h_t,k, SMPL-X parameters and mesh V_t,k
-       -> shared recurrent state
-
-  -> GUSH3R Scene Gaussian Decoder
-       X_t as Gaussian centers
-       + DPT-decoded image token + CNN raw-image feature
-       -> per-pixel {opacity, rotation, scale, color}
-       -> confidence + predicted human-region filtering
-       -> causal voxel aggregation with G^S_(t-1)
-       -> static scene Gaussian map G^S_t
-
-  -> GUSH3R Human Gaussian Decoder, for each person k
-       canonical SMPL-X sampled anchors + h_t,k + F'_t + memory m_k
-       -> Human Gaussian Transformer (HGT)
-       -> per-anchor {offset, opacity, rotation, scale, color}
-       -> SMPL-X LBS to posed space
-       -> dynamic human Gaussians G^H_(t,k) + alpha mask
-
-  -> merge G^S_t and all G^H_(t,k) in the same metric frame
-       -> Gaussian rasterizer -> final render
-```
-
-官方实现中，Human Gaussian Decoder 并不在每个 SMPL-X 的 10,475 个顶点上都直接放一个 token；它把 canonical mesh 采样为 `1000` 个空间 group、每 group `10` 个 query point，即约 `10,000` 个人体 Gaussian query。每个 group 先形成 vertex/point embedding。HGT 是 4 层、512 hidden、8 heads 的 cross-attention：`human token + 1000 group token + optional person memory token` 作 query，当前帧 image token 作 key/value。group feature 被复制给 group 内 query point，再和 point positional feature送入 Gaussian MLP，预测 offset、opacity、rotation、scale、颜色。实际姿态由 SMPL-X LBS 施加到 canonical A-pose Gaussian 上。
-
-这里有三种时序状态，不能混为一谈：Human3R 的共享 recurrent state 用于视频几何；scene Gaussian map 以 voxelization 只积累到当前帧；每个人还有按 SMPL-X matching 对应的 appearance-memory token，用于衣服/外观在遮挡和视角变化下保持一致。它们都不是接触状态。
-
-#### 2.2.2 Human Decoder 如何训练
-
-训练时冻结整个 Human3R foundation backbone，只训练 GUSH3R 新增的 Scene Gaussian Decoder 和 Human Gaussian Decoder，且两条 decoder **分开训练**。因此 GUSH3R 的“统一”主要是共享冻结几何先验、坐标系和最终 Gaussian 渲染表示，不是以人—场接触损失端到端联合训练。
-
-| 分支 | 训练数据 | 监督与损失 | 论文训练配置 |
-|---|---|---|---|
-| Scene Gaussian Decoder | BEDLAM；另加 DL3DV 提升真实场景泛化 | 仅 GT background mask 区域：RGB MSE、LPIPS、GT depth、Gaussian scale anisotropy regularizer | 100k iterations，batch 2，A100 80GB，约1天 |
-| Human Gaussian Decoder | BEDLAM；另加 Motion-X++ 提升真实人体动作/外观泛化 | human RGB MSE、human silhouette BCE、完整图+upper-body+face crop 的 partial LPIPS、Gaussian shape regularizer | 150k iterations，batch 1，A100 40GB，约2天 |
-
-两支训练都输入顺序图像，长边缩放至 512。附录给出的权重为：scene `MSE=1, LPIPS=.2, depth=.1, regularizer=.05`；human `MSE=1, partial-LPIPS=.5, silhouette=1, regularizer=100`。人分支使用 silhouette loss，说明它学习人体覆盖范围；scene 分支用 GT background mask，只在背景处计算 RGB/depth 监督，避免把动态人写入静态 scene Gaussian。
-
-#### 2.2.3 GUSH3R 内部“人—场关系”到底是什么
-
-它存在三层关系，但没有接触关系：
-
-1. **共享几何先验。** Human3R 同时预测相机、metric point map 和 SMPL-X；因此人体与场景理论上被放进同一坐标系。
-2. **分离与合成。** scene decoder 用人体 detection score / human mask 过滤人体区域，human decoder 用 SMPL-X anchors 表示动态人；二者生成 Gaussian 后在同一坐标系合成渲染。
-3. **图像级弱耦合。** HGT 的 key/value 是全图 image token，人体外观可以间接利用图像中的环境线索；但它不查询 scene Gaussian、scene surface、SDF 或接触标签。
-
-因此 GUSH3R 没有显式的 foot-ground distance、penetration penalty、contact probability、contact episode memory 或接触期间零切向速度约束。它优化的是渲染质量、depth、silhouette、Gaussian shape 与外观时序一致性。视觉上“像落地”不代表几何上满足接触。这也是当前 GUSH3R 在 PROX held-out 接触尺度门槛失败后，不能直接作为接触 teacher 的根本原因。
-
-研究点二应把接触层放在这个缺口上：从 GUSH3R 输出的 `SMPL-X + local scene Gaussian proxy + image/human token` 构造 AnchorAttention-style implicit interaction field，估计 contact/proximity/reliability，再用因果状态输出低维修正。这样使用 GUSH3R 的重建能力，但不把其渲染 alpha 或 Gaussian center 错当成物理接触。
-
-#### 2.2.4 从 Human3R 到 GUSH3R：完整技术路线（学习与面试版）
-
-这一条路线要先分清“**几何理解**”与“**可渲染表示**”。Human3R 解决前者：从单目视频在线恢复相机、米制场景点图和人体 SMPL-X；它输出的是几何状态，不是照片级 Gaussian 渲染器。GUSH3R 在冻结的 Human3R 几何状态上增加两个 Gaussian decoder，才把“人 + 场景”的结构化几何变为可以实时渲染的表示。
-
-```text
-单目、按时间到达的 RGB 流 I_1, I_2, ..., I_t
-        │
-        ├─ Human3R：在线几何底座
-        │    ├─ CUT3R recurrent scene reconstruction：相机 + point map + scene memory
-        │    └─ Multi-HMR human prior + human prompt：多人 SMPL-X、mask、track
-        │
-        ├─ GUSH3R Scene Gaussian Decoder：静态背景的 Gaussian map
-        ├─ GUSH3R Human Gaussian Decoder / HGT：随 SMPL-X 运动的人体 Gaussian
-        │
-        └─ 同一米制坐标系合成 → Gaussian rasterizer → RGB / alpha / depth render
-
-在我们的工作中：上述全部冻结为 coarse front-end；
-人—场局部 relation/contact controller 再修正 SMPL-X，最后通过 LBS 更新人体 Gaussian。
-```
-
-##### A. Human3R：为什么它是 GUSH3R 的必要前端
-
-普通单帧 HMR 只会给出“相机坐标里的一个人”。这不足以做 human-centered reconstruction：当相机自己在动时，不知道脚是否真的落在同一块地面，也无法累积场景。Human3R 的目标是对每一帧同时给出三类量：
-
-| 输出 | 记号 | 用途 | GUSH3R 怎样使用 |
-|---|---|---|---|
-| 相机位姿 | `T_t` | 将当前观测放回全局米制坐标 | scene/human Gaussian 合成和渲染相机 |
-| metric point map | `X_t` | 每个像素对应的 3D 场景点及置信度 | scene Gaussian 的初始中心/几何证据 |
-| 多人 SMPL-X + human token | `Y_t,k`, `h_t,k` | 人的姿态、形状、全局 root 和外观/身份语义 | human Gaussian 的 canonical anchor、HGT 条件和跨帧身份 |
-
-它建立在 CUT3R 的在线重建机制上。当前 RGB 的 ViT patch token 与一个固定长度的 recurrent scene state 交互；该 state 汇总过去帧但不保存无限长图像序列。decoder 更新 state 并读出当前帧的 image token、camera token、world metric point map 和 camera pose。因此它是 **causal online**：到 `t` 时只使用 `I_1...I_t`，不是把整段视频拿到后再做 batch optimization。
-
-可以把每一帧的几何主干理解为：
-
-```text
-I_t
-  → CUT3R image tokenizer → F_t
-  → F_t 与 S_(t-1) 交互，两个 transformer decoder 更新 S_t
-  → {refined image token F'_t, camera token z'_t}
-  → {metric point map X_t^cam / X_t^world, confidence, camera pose T_t}
-```
-
-这里的 “point map” 是带像素对应关系的三维点图，不是已经清理、闭合的 scene mesh，也不是 Gaussian surface；这个区别对后面的接触问题非常重要。
-
-##### B. Human3R 人体分支：Multi-HMR 不是简单外接检测器
-
-Human3R 用 CUT3R 的 3D/时序表征，但单靠通用 scene token 不擅长精细人体。它因而引入冻结的 Multi-HMR ViT-DINO encoder 作为 human-specific prior。流程是 bottom-up、多人的，而不是对每个人裁一个图再跑一次 HMR：
-
-```text
-F'_t 的每个 patch
-  → head detection score
-  → 检出的 head patch 位置 u_(t,k)
-  → 取该位置的 CUT3R token + 同位置的 Multi-HMR token
-  → projection MLP → human prompt H_(t,k)
-  → human prompt 与全图 image token self-attention
-  → human prompt 与 recurrent scene state cross-attention
-  → refined human token h_(t,k)
-  → human MLP → SMPL-X 参数、local camera/root transform
-  → 用 T_t 变换到 world frame → 10475-vertex SMPL-X mesh V_(t,k)
-```
-
-human prompt 的意义是把“这个空间位置是某一个人”显式写入已有的 scene-memory 推理，而不是把 Human3R 粗暴地拆成 CUT3R 和 Multi-HMR 的后处理拼接。它让人体 root、相机和 surrounding point map 在同一世界坐标假设下被预测。人 token 的跨帧特征匹配（Sinkhorn/optimal transport，含 dustbin 处理新出现或消失的人）给出 track ID；该 ID 再让下游的人体 appearance memory 不会把不同人混在一起。
-
-**mask 从哪里来？** Human3R 不是在部署时另跑 SAM。它将 patch-level image feature 送入 MLP、sigmoid 和 PixelShuffle，预测 dense human mask；该 mask/检测分数能帮助把动态人体从 background reconstruction 中排除。它是视觉分离线索，不是三维接触标签，也不能据此推出地面接触。
-
-##### C. Human3R 怎样训练，以及它留下什么局限
-
-Human3R 在 BEDLAM 上做人类提示微调。BEDLAM 约有 6k 序列，提供世界坐标的 scene depth、camera pose 与多人的 SMPL-X。训练目标同时守住通用 3D 能力和人体能力：
-
-```text
-L_Human3R = L_confident-pointmap + L_camera-pose
-           + L_head-detection(BCE)
-           + L_SMPL-parameter(L1) + L_mesh + L_reprojection
-```
-
-Multi-HMR encoder 冻结，CUT3R 主干主要保持其已有的场景时空先验，只对 human-prompt 相关部分做高效微调；论文报告单张 48GB GPU 约一天。这里的监督教会它“几何、相机和人体在共同世界系中一致”，但没有 RGB render loss 来学习 Gaussian 外观，也没有 contact/penetration/foot-lock loss。
-
-应主动说明它的边界：recurrent state 的训练上下文较短，超长序列会出现 memory forgetting；严重遮挡时若两人落在同一个 head token，身份区分会退化。更关键的是，我们的 PROX held-out 审计中 Human3R 的几何误差 median 为 7.37 cm，仍大于约 2 cm 的接触尺度。因此“世界系一致”是正确的系统接口，不等于已经达到可直接做物理接触的精度。
-
-##### D. 由 Human3R 过渡到 GUSH3R：冻结、分叉，而非重训一个端到端 backbone
-
-GUSH3R 不重新学习相机、人体姿态和稠密场景几何。它冻结 Human3R，把其输出看作具语义与米制坐标的条件输入，再训练两个相互独立的解码器：一个负责不随人体运动的 scene Gaussian，一个负责可由 SMPL-X 驱动的 human Gaussian。
-
-这一步的设计选择很关键：
-
-| 若直接从 RGB 预测全部 Gaussian | GUSH3R 的选择 |
-|---|---|
-| 人体和背景会竞争同一批点，动态人容易写进静态地图 | 按 human mask/detection 分离背景，scene map 只累积静态证据 |
-| 人体点没有稳定对应，跨帧外观和动作容易漂移 | 在 canonical SMPL-X body space 放置语义一致的 query，再由 LBS 变形 |
-| 需要为每帧重新推断人体几何 | 复用 Human3R 的 pose/shape/root，只预测体表附近的 Gaussian 属性 |
-
-##### E. Scene Gaussian Decoder：从点图到可积累的静态背景
-
-scene branch 的原理可分四步：
-
-```text
-Human3R point map X_t（每个可信像素的三维点）
-  + DPT 解码的 F'_t（高层视觉特征）
-  + raw RGB CNN feature（局部纹理）
-  → MLP 预测每个候选点的 {opacity, rotation, scale, color}
-  → 去除低置信点和 human-region 候选
-  → 将新 Gaussian 与历史 G^S_(t-1) 按 voxel 聚合
-  → static causal scene map G^S_t
-```
-
-point map 直接给中心，使 decoder 不必从零猜三维位置；网络重点补全 Gaussian 的体积、方向、透明度和颜色。voxel aggregation 是在线地图维护，不是全序列 bundle adjustment：重访的静态区域可累积，人体区域被过滤后不应固化到背景。它对动态场景的假设是“背景近似静态”；移动椅子、镜子、强反光、持续遮挡仍会造成失败。
-
-scene training 用 BEDLAM，并加 DL3DV 改善真实场景泛化。只在 GT background mask 内计算 RGB MSE、LPIPS 与 GT depth，另加 scale anisotropy regularizer；论文配置为 100k iterations、batch 2、A100 80GB 约一天。这解释了为什么它有比较好的背景 render，却没有从损失中学习人—场接触。
-
-##### F. Human Gaussian Decoder / HGT：从 SMPL-X 到动态人体 Gaussian
-
-人体分支绝不是“把 SMPL-X mesh 原样渲染”。SMPL-X 只给出可控的 body coordinate system，HGT 学的是衣物、头发、人体表面外观和相对 body surface 的微小几何残差。其结构为：
-
-```text
-canonical A-pose SMPL-X surface
-  → 1000 spatial groups × 10 query points/group ≈ 10000 body-bound queries
-  + person token h_(t,k)
-  + current full-image token F'_t
-  + this person's appearance-memory token m_(t-1,k)
-  → 4-layer HGT cross-attention (hidden 512, 8 heads)
-  → 每个 query 的 {offset, opacity, rotation, scale, color}
-  → canonical human Gaussians
-  → SMPL-X LBS(theta_t,k, beta_k, root_t,k)
-  → posed human Gaussians G^H_(t,k) 与 alpha mask
-```
-
-更精确地说，human/group/optional-memory token 构成 query，当前帧完整 image tokens 是 key/value；每个 group 的 context 复制给该组的 10 个 point query，再与其 canonical positional feature 一起送入 Gaussian attribute head。这样既能让衣服颜色参考当前图像，也保留“某个 Gaussian 属于脚、手或躯干哪个语义部位”的固定绑定。appearance memory 是按 track ID 维护的外观状态，解决遮挡和视角变化下的纹理不稳定；它不等价于 Human3R 的 shared scene memory，更不等价于我们的 contact state。
-
-训练时 Human3R 仍冻结。human decoder 在 BEDLAM + Motion-X++ 上单独训练，以人体 RGB MSE、silhouette BCE、full/upper-body/face crop 的 partial LPIPS 及 Gaussian shape regularizer 为损失；论文配置为 150k iterations、batch 1、A100 40GB 约两天。silhouette loss 只约束人体投影轮廓，不会自动产生可靠的脚—地面距离或阻止三维穿透。
-
-##### G. 最终合成与“人—场关系”的强弱
-
-最后两类 Gaussian 已处于同一个 Human3R metric frame：
-
-```text
-G^S_t（静态背景） + Σ_k G^H_(t,k)（当前姿态的人）
-      → Gaussian rasterizer(camera T_t) → rendered RGB, alpha, depth
-```
-
-这使 GUSH3R 比 `AnySplat + LHM + Human3R` 的后处理拼接更统一，但“统一坐标 + 合成渲染”不等于“理解 interaction”。它有三种真实耦合：共享 world coordinate、human mask 对 scene branch 的显式排除、HGT 对全图 image token 的弱上下文查询；它**没有** human Gaussian 到 scene Gaussian 的显式 cross-attention，也没有 SDF、最小表面距离、穿透、接触概率、接触持续状态或零滑动约束。
-
-所以面试中可用一句话区分：
-
-> Human3R 保证“人、相机、点图有机会在同一世界系说话”；GUSH3R 保证“这些结构可以被拆成人体与背景 Gaussian 并渲染”；我们的第二研究点才要解决“在这个不完美前端下，接触是否真实、是否持续、以及不可靠时是否应拒绝修正”。
-
-##### H. 与我们接触层的精确接口：已有、待实现、不能夸大
-
-| 接口项 | 当前状态 | 我们怎样用 | 不能误说成 |
-|---|---|---|---|
-| `SMPL-X / mesh / root / track` | GUSH3R 前端已有 | foot/hand ROI、低维 root/ankle/foot correction | 已有接触真值 |
-| `F'_t, h_t,k, m_t,k` | 前端内部语义/外观特征 | 输入 AnchorAttention-style implicit relation field | 已做 scene-contact attention |
-| scene GS 的 center/covariance/opacity/color | 可作局部 evidence | 构造 reliability-aware local proxy，并与 point patch/RGB 一起输入 | Gaussian center 就是零厚度 scene surface |
-| `corrected SMPL-X → G^H` | 原理上应由 LBS 支持 | 纠正后重算 human GS 的 posed position/orientation | 当前 export 已稳定提供 query-to-LBS binding |
-
-最后一行是当前 E4 的具体工程缺口：必须在 GUSH3R decoder/export 中保存每个 human Gaussian 的 canonical query point、skin/LBS weights 或等价的 per-Gaussian transform。拿到 binding 后，controller 修正 `theta/root` 才能以一次 LBS 前向更新人体 Gaussian，而不是把数万 Gaussian 当自由点硬移动。现有 inference export 虽有 Gaussian 与 SMPL-X，但没有把此 binding 作为稳定接口，故只能把它写为待实现 adapter。
-
-当前还存在更早的科学门槛：GUSH3R→PROXD held-out coarse SMPL-X 误差 median 19.95 cm、p95 54.69 cm，远大于接触约 2 cm 的尺度。这不否定它作为 render/coarse-evidence front-end 的价值，但意味着接触头不能把它当作“已经准确的三维表面 teacher”。因此实验路径必须先用 oracle SDF 证明 controller 机制，再做退化鲁棒性和真实前端几何契约；不可用漂亮 render 替代接触精度证明。
-
-##### I. 一分钟面试表述
-
-> 我们把系统拆成两层。底层 Human3R 是一个因果的 video geometry foundation model：CUT3R 的 recurrent memory 输出相机和 metric point map，Multi-HMR 的 human prompt 从同一状态中读出多人的 world-space SMPL-X、mask 和 track。它解决的是“人和场景如何在同一坐标系被理解”，但不能直接给照片级渲染。GUSH3R 冻结它，再分出两个 decoder：scene decoder 用 point map 加图像特征预测并 voxel-累积静态 Gaussian；human decoder 在 canonical SMPL-X 上布置约一万个 body-bound query，用 HGT 从全图与外观 memory 预测 Gaussian 属性，再用 LBS 跟随姿态运动。两类 Gaussian 最后在同一坐标渲染。现有方法的缺口是：它只做分离和合成，没有显式人—场接触约束。我们的工作不重训整个 renderer，而是在其 SMPL-X、local scene evidence 与 token 接口上增加 AnchorAttention-style interaction field 和因果低维控制；只修 root/foot/ankle，再经 LBS 更新人体 Gaussian，并在前端几何不可靠时主动 abstain。
-
-### 2.3 为什么不直接优化所有 Gaussian
+### 2.2 为什么不直接优化所有 Gaussian
 
 逐帧移动数十万 human/scene Gaussian 的问题：高延迟、易漂移、不可解释、破坏场景静态性，而且很难保证接触期足端速度为零。
 
 我们的可控变量是约 20–40 维：左右脚 contact、切向 action、root/ankle/foot residual、uncertainty/reset。执行时 action 被投影到局部切平面，并做 `tanh` 限幅。场景 GS 不随接触模块移动；纠正只经 SMPL-X/LBS 传给人体 GS。
 
-### 2.4 接触状态与因果控制
+### 2.3 接触状态与因果控制
 
 每只脚维护一个 contact episode anchor：脚首次可靠接触时记录世界坐标 anchor；持续接触时，预测切向 action 使脚相对该 anchor 的速度降低；离开时释放 anchor。
 
@@ -443,7 +201,7 @@ L = contact BCE
 
 这解释了为什么只做 penetration clearance 不够：法向修正可把脚推出地面，但不能保证接触期间的切向零速度。
 
-### 2.5 分阶段技术路线
+### 2.4 分阶段技术路线
 
 | 阶段 | 要验证的命题 | 数据/输入 | 前进门槛 |
 |---|---|---|---|
@@ -455,7 +213,7 @@ L = contact BCE
 
 这套路线的好处是可证伪：前端不达门槛就停在 diagnostic，而不是用 oracle 标签伪造在线结果。
 
-### 2.6 已完成的、可以讲的实证结果
+### 2.5 已完成的、可以讲的实证结果
 
 以下都应明确标为 **oracle-scene mechanism result**：使用 PROXD + 官方 PROX SDF，人工注入 root/foot drift；不是 Human3R/GUSH3R 的真实在线结果。
 
@@ -466,7 +224,7 @@ L = contact BCE
 5. **中等场景退化暴露关键风险。** 冻结 controller 在 normal 18°、distance noise 2cm、bias 1cm、20% dropout、2-frame delay 条件下，sliding 恶化到 0.463 m/s；简单 threshold 只有 100% abstain 才能回到基线。几何增强能将 sliding 降到 0.276 m/s，但 F1=0.722、transition F1=0.142，仍不够安全。
 6. **连续 proximity 是比伪 dense binary contact 更可靠的 Stage-A 目标。** local relation encoder 在严格 split 上 signed proximity MAE=**1.27 mm**，好于 constant-zero 的 1.79 mm 和 nearest-point 的 12.64 mm；但 ROI contact head all-positive，不能拿 F1 当成功结果。
 
-### 2.7 为什么现在不能说“GUSH3R 接触系统已完成”
+### 2.6 为什么现在不能说“GUSH3R 接触系统已完成”
 
 这是最重要的诚实边界。
 
@@ -480,7 +238,7 @@ L = contact BCE
 
 这比忽略误差、宣称“前馈 Gaussian 已实现物理接触”更能体现研究严谨性。
 
-### 2.8 研究点二最终评测表应如何设计
+### 2.7 研究点二最终评测表应如何设计
 
 不能只报一个 PSNR 或 contact F1。建议至少四张表：
 

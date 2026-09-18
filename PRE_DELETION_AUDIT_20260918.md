@@ -16,10 +16,10 @@
 - `output/` 约97.6GB，含历史中间结果和渲染产物。两条路线的最终可加载 scene/human/anchor/config 已在 Release；继续历史训练、取得未发布中间 checkpoint 或原始渲染，仍需保留/迁移本目录。
 - 上游 GUSH3R、SMPL/SMPL-X、DINO 等许可资产，以及本机工具、凭据和构建缓存，均不能放入公开 Git；重新获取方式在迁移与冷启动文档中。
 
-## 当前唯一未同步的项目差异
+## 删除前已处置与可忽略的本机差异
 
-1. `INTERVIEW_TECHNICAL_ROADMAP.md`：用户已有未提交修改（6行新增、248行删除）。它未被提交，删除项目会丢失该版本。
+1. `INTERVIEW_TECHNICAL_ROADMAP.md`：用户已确认保留；其当前版本已在本次删除前同步提交。
 2. `submodules/diff-gaussian-rasterization`：仅 `build/` 与 `__pycache__/` 本机构建缓存未跟踪。
 3. `submodules/simple-knn`：仅 `simple_knn.egg-info/` 本机构建元数据未跟踪。
 
-后两项可在新机器按固定子模块 commit 重新构建；第一项须在删除前决定保留到 Git 还是放弃。
+后两项可在新机器按固定子模块 commit 重新构建，不构成源码或实验记录缺口。
